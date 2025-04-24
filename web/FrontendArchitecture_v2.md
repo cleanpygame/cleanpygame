@@ -27,7 +27,7 @@ interface LevelState {
 
 interface ChatMessage {
   id: string
-  type: 'my' | 'explain' | 'hint' | 'error' | 'level_finished'
+  type: 'me' | 'buddy-instruct' | 'buddy-explain' | 'buddy-help' | 'buddy-reject' | 'buddy-summarize'
   text: string
 }
 
@@ -60,7 +60,7 @@ interface LevelData {
 
 - **GET_HINT**  
   * payload: none
-  * dispatches `POST_BUDDY_MESSAGE({ type: 'hint', text: pendingHintBlock.hint })`
+  * dispatches `POST_BUDDY_MESSAGE({ type: 'buddy-help', text: pendingHintBlock.hint })`
   * `autoHintAt = Date.now() + AUTOHINT_DELAY`
   * `pendingHintId = null`
 
@@ -68,14 +68,22 @@ interface LevelData {
   * payload: `{ levelId: LevelId }`
   * sets `currentLevelId` and `currentLevel` to the level with the given ID with zero progress.
   * calculates `currentLevel.pendingHintId` (id of the first non-triggered event with an attached hint)
-  * Dispatches `POST_BUDDY_MESSAGE({ type: 'info', text: level.startInstructions })`.
+  * Dispatches `POST_BUDDY_MESSAGE({ type: 'buddy-instruct', text: currentLevel.startInstructions })`.
   * `autoHintAt = Date.now() + AUTOHINT_DELAY`
 
 - **APPLY_FIX**  
   * payload: `{ eventId: string }`
   * Appends `triggeredBlock.eventId` to `triggeredEvents`.  
   * calculates `currentLevel.pendingHintId`
-  * Dispatches `POST_BUDDY_MESSAGE({ type: 'success', text: triggeredBlock.explanation })`.
+  * Dispatches `POST_BUDDY_MESSAGE({ type: 'me', text: '<TOKEN> in line <LINE>' })`.
+  * Dispatches `POST_BUDDY_MESSAGE({ type: 'buddy-explain', text: triggeredBlock.explanation })`.
+  * Dispatches `POST_BUDDY_MESSAGE({ type: 'buddy-summarize', text: '<wisdoms>' })` if all issues are fixed.
+  * `autoHintAt = Date.now() + AUTOHINT_DELAY`
+- 
+- **WRONG_CLICK**
+  * payload: `{ lineIndex: number, colIndex: number, token: string }`
+  * Dispatches `POST_BUDDY_MESSAGE({ type: 'me', text: '<TOKEN> in line <LINE>' })`.
+  * Dispatches `POST_BUDDY_MESSAGE({ type: 'buddy-reject', text: 'Nope. not an issue' })`.
   * `autoHintAt = Date.now() + AUTOHINT_DELAY`
 
 * **NEXT_LEVEL**
@@ -194,6 +202,19 @@ Contains Ask For Help Button.
   
 Fixed-position; dispatches `GET_HINT` on click.
 
+### Message types
+
+- **me** — my messages appeared after code or button clicks.
+- **buddy-XXX* — are messages from Buddy. They are rendered in bubble alligned to the left with a small Buddy Avatar on the left side.
+
+| type            | text-color | back-color | button                   | bubble-align | 
+|-----------------|------------|------------|--------------------------|--------------|
+| me              | default    | light      | "I need help!"           | right        |
+| buddy-instruct  | default    | dark       | "Got it!", blocks clicks | left         |
+| buddy-explain   | green      | dark       | "I need help!"           | left         |
+| buddy-help      | default    | dark       | "I need help!"           | left         |
+| buddy-reject    | red        | dark       | "I need help!"           | left         |
+| buddy-summarize | default    | dark       | "Next task, please!"     | left         |
 
 ---
 
