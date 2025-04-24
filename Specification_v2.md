@@ -27,7 +27,9 @@ The game is designed for **solo self-paced learning**, but includes support for 
 - Progress of students who join via the link can be **tracked and monitored** by the instructor
 
 **Learning-Centric Design**  
-The game emphasizes a **minimal, distraction-free** experience. Gamification is avoided in favor of clarity and learning outcomes. Instead of points or badges, players build a **“pocket notebook”**—a persistent knowledge log that collects every clean-code principle or refactoring pattern they’ve encountered. This notebook serves as a growing revision tool the player can refer back to at any time.
+The game emphasizes a **minimal, distraction-free** experience. Gamification is mostly avoided in favor of clarity and learning outcomes. Instead of points or badges, players build a **“pocket notebook”**—a persistent knowledge log that collects every clean-code principle or refactoring pattern they’ve encountered. 
+This notebook serves as a growing revision tool the player can refer back to at any time.
+
 
 ---
 
@@ -35,43 +37,37 @@ The game emphasizes a **minimal, distraction-free** experience. Gamification is 
 
 **Core Gameplay Loop**
 
+Player is guided by a Buddy — a mentor character that provides hints, feedback, and encouragement throughout the game.
+
 Each level presents a short Python code snippet containing several **code smells** or **anti-patterns**. The player’s objective is to visually inspect and **click** on the problematic code elements. Each interaction results in **immediate feedback**:
 
-- ✅ **Correct** — The game confirms the issue, explains the problem, offers ways to fix it, and presents a **"Fix" button** to apply the refactoring. Once fixed, the issue is visually resolved in the code.
-- ❌ **Incorrect** — The game gently informs the player: “No, this is not a problem.” A progressive delay is applied before the player can interact again.
-- 🤔 **Subjective** — For debatable cases, the game responds: “This might be a problem, but it depends on the team’s style. We won’t fix it here.”
+- ✅ **Correct Click** — Triggers a bad code replacement with the good one and a **Buddy chat message** explaining the issue.
+- ❌ **Incorrect Click** — Triggers a small animation feedback and a **Buddy message**: “Nope, not an issue.”
+- 🤔 **Subjective Cases** — May trigger a neutral Buddy message if applicable.
 
 The level is complete once **all confirmed issues** are correctly identified and fixed.
 
 **Support & Constraints**
 
-- ⏱ **Auto-Hint Mechanic**  
-  If the player spends more than **20 seconds** on the level without fixing all issues, the game provides a **“wisdom hint”** related to the **first remaining issue**, gently nudging the player in the right direction.
+- 🆘 **Ask for Help Button**
 
-- ⌛ **Penalty Delay on Incorrect Clicks**  
-  After each incorrect selection, the game applies a **progressive delay** before the player can interact again.  
-  - The delay is equal to the number of incorrect attempts (e.g., 1 second after the first mistake, 2 seconds after the second, etc.)  
-  - This encourages careful reading without punishment
+  - Triggers a **Buddy hint message** about the first remaining issue.
+  - Button is always visible during the level.
+
+- ⏱ **Auto-Hint Mechanic**
+
+  - If the player takes more than 20 seconds without progress, a **Buddy message** gives a wisdom-based hint.
 
 **Level Progression**
 
-- 📘 **Topics and Folders**  
-  The game is organized into **topics**, each focused on a specific clean-code theme (e.g., naming, duplication, method size).  
-  Players may **start any topic at any time**, even without completing previous ones. This allows for flexible, interest-driven exploration.
-
-- 🔁 **Linear Level Flow within Topics**  
-  Within a topic, levels must be **completed in sequence**. Each level unlocks the next upon completion.
-
-- 🧭 **Revisiting Solved Levels**  
-  Players can **return to any previously completed level** at any time for review or reinforcement.
+- 📘 **Topics & Folders** — Game is divided into topical folders. Players may start any topic.
+- 🔁 **Linear Flow Within Topics** — Levels must be completed in sequence.
+- 🧭 **Replayability** — Players may revisit completed levels.
 
 **Level Completion**
 
-Upon finishing a level:
-
-- 📒 All new **wisdoms** (clean-code principles or refactoring rules) learned from the level are **added to the player’s notebook**  
-  - Newly added wisdoms are **highlighted**, helping the player track their learning progress  
-- ➡️ A **“Next Level”** button is shown to let the player continue at their own pace
+- 📒 **Wisdom Display** — At the end of a level, all new wisdoms are posted to the **Buddy chat**.
+- ➡️ A “Next Level” button in the chat lets players proceed at their own pace.
 
 The entire experience remains **minimal and distraction-free**, emphasizing understanding and reflection over gamified rewards.
 
@@ -103,54 +99,38 @@ The main game interface is divided into two key areas:
   - Players **click directly** on code elements to identify problems  
   - All interactions occur inline or via overlays within this editor area
 
-**Issue Feedback & Fixing Flow**
+- 💬 **Buddy Chat Area** —
+  - Always visible in the **bottom right corner**
+  - Displays feedback for clicks, hints, and level completion wisdoms
+  - New messages appear in the bottom. Old messages move up and are available with the scrolling up.
 
-When the player correctly identifies a problem in the code:
+**Interaction Feedback Flow**
 
-- A **contextual window** appears, anchored above the selected code
-- This window contains:
-  - 🧠 **Explanation Panel** — A brief description of the issue and why it violates clean code principles
-  - 🔍 **Before/After Diff View** — Side-by-side comparison showing how the code will change, with differences clearly highlighted
-  - ✅ **"Apply" Button** — Instantly replaces the problematic code in the main editor with the improved version
-- After applying the fix, the updated code section may **briefly highlight** or **fade in** to confirm the change before blending back into the code
+- Clicking on code:
+  - Triggers small animation
+  - Feedback appears as a **message from Buddy** in the persistent chat
 
-For incorrect or subjective selections:
+**Ask for Help Button**
 
-- ❌ **Incorrect Clicks**  
-  - A small tooltip appears with: “No, this is not a problem.”  
-  - A **progress bar** below the message shows the player’s temporary lockout  
-  - The delay increases with each mistake: 1s, 2s, 3s, etc.
+- Available at all times during the level
+- Triggers a Buddy message with a relevant hint
 
-- 🤔 **Subjective Feedback**  
-  - When a potentially controversial or stylistic issue is clicked, the tooltip says:  
-    “This might be a problem depending on team conventions. We won’t fix it here.”
+**Animations & Visual Feedback**
+
+- ✅ Small animation on correct or incorrect clicks (e.g., a quick visual pulse or flash)
+- 🔄 Code appears with a typing animation when loading new levels
+- 🔇 No sound effects — the game is silent
+
+**Wisdom Notebook**
+
+- Accessible via 📒 icon (top right)
+- But all newly gained wisdoms also appear directly in **Buddy chat** after level completion
 
 **Interactivity Cues**
 
 - The code editor is intentionally **devoid of hover or clickable hints**  
 - There is **no cursor change** and **no highlight on hover**  
 - The mouse cursor remains the standard **arrow pointer**, reinforcing the need to read and reason, not guess or hover-hunt
-
-**Animations & Visual Feedback**
-
-- 🔄 **Level Loading Animation**  
-  - When a new level is loaded, the code appears using a **fast typing animation**, simulating a developer entering the code in real time  
-  - Typing speed: ~**10 lines per second**, making the transition quick, engaging, and slightly playful
-
-- ⏳ **Incorrect Click Delay**  
-  - Every incorrect click shows a tooltip with a **progress bar**, visualizing how long the player must wait before clicking again  
-  - This helps maintain pacing while encouraging thoughtfulness
-
-- 🔇 **No Sound Effects**  
-  - The entire experience is **silent by design**, preserving a distraction-free, study-friendly environment
-
-**Wisdom Notebook**
-
-- A **side drawer or modal** accessed via a 📒 icon in the top-right corner
-- Contains all **learned clean-code principles** and refactoring patterns
-- Grouped by topic, searchable and reviewable
-- **Newly added wisdoms** from the latest level are **highlighted** for visibility
-
 
 ## 4. Data Model
 
@@ -496,3 +476,33 @@ It's scalable, secure, and removes the need to run your own backend server.
 ---
 
 This hybrid model — client-first with a plug-in backend — allows you to **move fast now** and **scale later** without rewriting the foundation.
+
+# Summary of Changes: v1 to v2
+
+The updated specification introduces several key changes that enhance the learning experience of the Clean-Code Game, particularly through the addition of a mentor-like character and revised interaction dynamics.
+
+## Key Changes
+
+### 1. Buddy System
+A major shift is the introduction of a **“Buddy”** — a mentor character who provides feedback, hints, and encouragement through a persistent chat interface. This replaces the prior neutral tooltips and explanation panels, making the interaction feel more conversational and guided.
+
+### 2. Hint Mechanics
+- The original auto-hint system after 20 seconds remains but now delivers hints through the Buddy.
+- A new **"Ask for Help" button** allows players to request hints proactively at any time, increasing accessibility and user agency.
+
+### 3. Feedback Presentation
+- Feedback for correct, incorrect, or subjective interactions now appears as chat messages from the Buddy, instead of tooltips or floating UI panels.
+- Visual feedback is enhanced with small animations on clicks, offering clearer responses to player actions.
+
+### 4. Wisdom Delivery
+- Previously, newly learned wisdoms were highlighted in a separate notebook interface.
+- Now, they are also displayed directly in the Buddy chat after level completion, creating a more integrated reflection loop.
+
+### 5. UI Enhancements
+- The Buddy chat area is permanently docked in the bottom-right corner, offering a consistent interface for guidance and progress acknowledgment.
+- While the core layout (VS Code-style editor and sidebar navigation) remains, the chat overlay adds a new dimension of interactivity without compromising the distraction-free philosophy.
+
+### 6. No Changes in Content Structure or Technical Stack
+The backend model (levels.json format, authoring tools, and deployment architecture) remains unchanged, ensuring full compatibility and ease of migration from the earlier version.
+
+These revisions aim to make the game more supportive and engaging without introducing traditional gamification, aligning with its pedagogical goals while improving user experience.
