@@ -20,13 +20,11 @@ interface GameState {
 interface LevelState {
   level: LevelData                  // level data (filename, blocks, ...)
   triggeredEvents: string[]         // in-level progress: all event IDs clicked
-  mistakeCount: number              // number of incorrect clicks so far
   pendingHintId: string | null      // ID of the next hint to send via chat, ID is a blockId if the block with the hint
   autoHintAt: number | null         // timestamp (ms) when auto-hint should post
 }
 
 interface ChatMessage {
-  id: string
   type: 'me' | 'buddy-instruct' | 'buddy-explain' | 'buddy-help' | 'buddy-reject' | 'buddy-summarize'
   text: string
 }
@@ -197,15 +195,20 @@ Shows line numbers for the code.
 ## BuddyChat  
   
 Renders `buddyMessages` as a scrollable chat UI. Handles message types.
+All messages are vertically aligned to the bottom. Old on top, new on bottom.
 
-Contains Ask For Help Button.  
-  
+The width of the chat is 25% of the viewport width. Height is 50% of the viewport height.
+The chat is scrollable. The last message is always visible. 
+The chat is scrollable only when the last message is not visible.
+
 Fixed-position; dispatches `GET_HINT` on click.
 
 ### Message types
 
 - **me** — my messages appeared after code or button clicks.
-- **buddy-XXX* — are messages from Buddy. They are rendered in bubble alligned to the left with a small Buddy Avatar on the left side.
+- **buddy-XXX* — are messages from Buddy. They are rendered in bubble aligned to the left with a small Buddy Avatar on the left side.
+- all buttons should be rendered blow all messages in the area where one expects to have an edit-box to send messages.
+So button click emulates typing and sending a message to Buddy.
 
 | type            | text-color | back-color | button                   | bubble-align | 
 |-----------------|------------|------------|--------------------------|--------------|

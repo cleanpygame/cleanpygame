@@ -37,7 +37,7 @@ export function SidebarNavigationContainer() {
   };
 
   return (
-    <div className="w-64 h-full overflow-y-auto bg-[#252526] border-r border-[#3c3c3c]">
+    <div className="w-50 h-full overflow-y-auto bg-[#252526] border-r border-[#3c3c3c]">
       <div className="p-2 text-sm">
         {state.topics.map((topic) => (
           <div key={topic.name} className="mb-2">

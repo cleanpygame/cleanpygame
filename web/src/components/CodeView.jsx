@@ -10,31 +10,41 @@ import './CodeView.css'; // Ensure CSS defines .code-line, .line-number, and .co
  *  - regions: TextRegion[]
  *  - animate: boolean // whether to animate the code
  *  - contentId: number // animation is triggered only when contentId changes
- *  - onEvent: (id: string) => void // called when a region token is clicked
- *  - onMisclick: (line: number, col: number, token: Token | string) => void // called when clicking non-region tokens
+ *  - onEvent: (eventId: string, line: number, col: number, token: string) => void // called when a region token is clicked
+ *  - onMisclick: (line: number, col: number, token: string) => void // called when clicking non-region tokens
  */
 export function CodeView({ code, regions, animate, contentId, onEvent, onMisclick }) {
     const [cursor, setCursor] = useState(0);
     const [flashingKey, setFlashingKey] = useState(null);
 
-    let ref = useRef(0);
+    const ref = useRef('');
 
     useEffect(() => {
-        const intervalRef = { id: null };
-        intervalRef.id = setInterval(() => {
-            setCursor(c => {
-                if (c + 1 >= code.length) {
-                    clearInterval(intervalRef.id);
-                    return Infinity;
-                }
-                return c + 1;
-            });
-        }, 1);
-        return () => clearInterval(intervalRef.id);
-    }, [code]);
+
+        // Reset cursor when animation should restart
+        if (animate && ref.current !== contentId) {
+            ref.current = contentId;
+            setCursor(0);
+        }
+        if (animate) {
+            const intervalRef = { id: null };
+            intervalRef.id = setInterval(() => {
+                setCursor(c => {
+                    if (c + 2 >= code.length) {
+                        clearInterval(intervalRef.id);
+                        return Infinity;
+                    }
+                    return c + 2;
+                });
+            }, 5); // Slightly slower animation for better performance
+
+            return () => clearInterval(intervalRef.id);
+        }
+    }, [code, contentId, animate]);
 
 
-    let visibleCode = animate && ref.current !== contentId ? code.substring(0, Math.min(code.length, cursor)) : code;
+
+    let visibleCode = animate ? code.substring(0, Math.min(code.length, cursor)) : code;
 
 
     const handleClick = (lineIndex, colIndex, eventId, token) => {
@@ -43,9 +53,9 @@ export function CodeView({ code, regions, animate, contentId, onEvent, onMisclic
         setTimeout(() => {
                 setFlashingKey(null);
                 if (eventId)
-                    onEvent(eventId);
+                    onEvent(eventId, lineIndex, colIndex, token.content);
                 else
-                    onMisclick(lineIndex, colIndex, token);
+                    onMisclick(lineIndex, colIndex, token.content);
             }, 100);
     };
 
@@ -115,11 +125,8 @@ CodeView.propTypes = {
             eventId: PropTypes.string.isRequired,
         })
     ).isRequired,
-    typingAnimationProgress: PropTypes.number,
     onEvent: PropTypes.func.isRequired,
     onMisclick: PropTypes.func.isRequired,
 };
 
-CodeView.defaultProps = {
-    typingAnimationProgress: Infinity,
-};
+CodeView.defaultProps = {};

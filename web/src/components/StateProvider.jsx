@@ -15,12 +15,12 @@ export function StateProvider({ children }) {
         // In a real app, this would fetch from an API or import a JSON file
         // For now, we'll mock it with an empty array
         const levelsData = { topics: [] };
-        
+
         dispatch({
           type: 'SET_TOPICS',
           payload: { topics: levelsData.topics }
         });
-        
+
         // If there are topics and levels, load the first one
         if (levelsData.topics.length > 0 && levelsData.topics[0].levels.length > 0) {
           dispatch({
@@ -38,45 +38,24 @@ export function StateProvider({ children }) {
       }
     };
 
-    fetchLevels();
+    fetchLevels().catch((error) => console.error('Failed to load levels:', error));
   }, []);
 
-  // Check timer for auto-hint
+  // Check timer for an auto-hint
   useEffect(() => {
     if (!state.currentLevel || !state.currentLevel.autoHintAt) return;
 
     const checkAutoHint = () => {
       if (
         state.currentLevel.autoHintAt &&
-        !state.currentLevel.isHintShown &&
-        state.currentLevel.currentHintId &&
+        state.currentLevel.pendingHintId &&
         Date.now() >= state.currentLevel.autoHintAt
       ) {
-        dispatch({ type: 'SHOW_HINT' });
+        dispatch({ type: 'GET_HINT' });
       }
     };
 
     const timerId = setInterval(checkAutoHint, 1000);
-    return () => clearInterval(timerId);
-  }, [state.currentLevel]);
-
-  // Check timer for unlocking UI after mistake
-  useEffect(() => {
-    if (
-      !state.currentLevel ||
-      !state.currentLevel.lockUiUntil
-    ) return;
-
-    const checkUnlock = () => {
-      if (
-        state.currentLevel.lockUiUntil &&
-        Date.now() >= state.currentLevel.lockUiUntil
-      ) {
-        dispatch({ type: 'UNLOCK' });
-      }
-    };
-
-    const timerId = setInterval(checkUnlock, 100);
     return () => clearInterval(timerId);
   }, [state.currentLevel]);
 

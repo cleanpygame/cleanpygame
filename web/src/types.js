@@ -36,15 +36,17 @@
  */
 
 /**
+ * @typedef {Object} ChatMessage
+ * @property {string} type - message type ('me' | 'buddy-instruct' | 'buddy-explain' | 'buddy-help' | 'buddy-reject' | 'buddy-summarize')
+ * @property {string} text - message content
+ */
+
+/**
  * @typedef {Object} LevelState
  * @property {LevelData} level - level data
  * @property {string[]} triggeredEvents - events triggered by player
- * @property {number} mistakeCount - number of mistakes
- * @property {string|null} currentHintId - id of current hint
- * @property {boolean} isHintShown - whether hint is visible
+ * @property {string|null} pendingHintId - id of the next hint to send via chat
  * @property {number|null} autoHintAt - time when auto-hint should appear
- * @property {number|null} lockUiUntil - time when incorrect click overlay should hide
- * @property {string|null} justTriggeredEvent - event that was just triggered
  */
 
 /**
@@ -54,7 +56,8 @@
  * @property {LevelState} currentLevel - current level state
  * @property {LevelId[]} solvedLevels - list of solved levels
  * @property {string[]} discoveredWisdoms - wisdoms discovered across all levels
- * @property {'opened'|'closed'|'level_finished'} notebookState - state of notebook drawer
+ * @property {Boolean} notebookOpen - state of notebook drawer
+ * @property {ChatMessage[]} chatMessages - chat history from the Buddy mentor
  */
 
 /**

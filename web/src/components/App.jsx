@@ -1,5 +1,5 @@
 import { StateProvider } from './StateProvider.jsx';
-import { GameContainer } from './GameContainer.jsx';
+import { IdeLayout } from './IdeLayout.jsx';
 
 /**
  * Root application component
@@ -7,7 +7,7 @@ import { GameContainer } from './GameContainer.jsx';
 export function App() {
   return (
     <StateProvider>
-      <GameContainer />
+      <IdeLayout />
     </StateProvider>
   );
 }
