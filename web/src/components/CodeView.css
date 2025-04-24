@@ -1,0 +1,39 @@
+.code-line {
+    display: flex;
+}
+
+.line-number {
+    width: 2em;
+    text-align: right;
+    padding-right: 0.5em;
+    border-right: 1px solid #3C3C3C;
+    margin-right: 0.5em;
+    user-select: none;
+    opacity: 0.6;
+}
+
+.code-content {
+    flex: 1;
+}
+
+.flash-ok {
+    animation: flash-ok 0.2s;
+}
+
+.flash-error {
+    animation: flash-error 0.2s;
+}
+
+@keyframes flash-ok {
+    0% { color: lime; }
+    100% { color: inherit; }
+}
+
+@keyframes flash-error {
+    0% { color: red; }
+    100% { color: inherit; }
+}
+
+pre {
+    cursor: pointer;
+}

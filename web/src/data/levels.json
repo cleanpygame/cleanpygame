@@ -1,0 +1,155 @@
+{
+  "topics": [
+    {
+      "name": "Testing",
+      "wisdoms": [
+        {
+          "id": "1",
+          "text": "Поспешишь — QA-ев насмешишь!"
+        },
+        {
+          "id": "2",
+          "text": "Под лежачий прод бабло не течёт!"
+        }
+      ],
+      "levels": [
+        {
+          "filename": "onboarding.py",
+          "wisdoms": [
+            "1",
+            "2"
+          ],
+          "blocks": [
+            {
+              "type": "text",
+              "text": "def foo():\n    print(42)\n\n\n"
+            },
+            {
+              "type": "replace",
+              "text": "def bar():\n    print(\"Hello bar!\")\n",
+              "replacement": "def greet_user():\n    print(\"Hello\")\n",
+              "event": "f587b965-17f7-4214-a4cf-82a8541a7b63",
+              "clickable": "bar",
+              "explanation": "No Foos!"
+            },
+            {
+              "type": "text",
+              "text": "\n"
+            },
+            {
+              "type": "replace",
+              "text": "def BAD_CODE():\n    print(\"BAD\")\n",
+              "replacement": "",
+              "event": "BAD_CODE",
+              "explanation": "Do not write bad code!"
+            },
+            {
+              "type": "text",
+              "text": "\n"
+            },
+            {
+              "type": "replace-on",
+              "text": "",
+              "replacement": "def BAD_CODE():\n    print(\"GOOD\")\n",
+              "event": "BAD_CODE"
+            },
+            {
+              "type": "replace-span",
+              "clickable": "foo",
+              "replacement": "bar bar",
+              "event": "9298be3d-ed8e-4713-9d21-0d138675bbc7",
+              "explanation": "no foos",
+              "hint": "Look at foo!"
+            },
+            {
+              "type": "text",
+              "text": "\n"
+            },
+            {
+              "type": "replace-span",
+              "clickable": "42",
+              "replacement": "the_answer",
+              "event": "e42",
+              "explanation": "No Foos!",
+              "hint": "42 = 6 * 8"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Naming",
+      "wisdoms": [
+        {
+          "id": "naming-good-names",
+          "text": "Use descriptive names that convey intent."
+        }
+      ],
+      "levels": [
+        {
+          "filename": "onboarding.py",
+          "wisdoms": [],
+          "blocks": [
+            {
+              "type": "text",
+              "text": "# Hello, Junior!\n# According to our team process, you are not yet allowed to write code.\n# So, you can only review a code of your colleagues \n# and fix some small and not significant details.\n\n# Let's train you a little. Look at this terrible variable name. \n# Click to fix it!\n\ndef main():\n    BaD_VAriABLE_NAME = \"Hello!\"\n    print(BaD_VAriABLE_NAME)\n"
+            },
+            {
+              "type": "replace-span",
+              "clickable": "BaD_VAriABLE_NAME",
+              "replacement": "greeting",
+              "event": "54645bde-b034-41c8-a8a8-9d25d54563c3",
+              "explanation": "Names should be meaningfull",
+              "hint": "Click on bad variable name!"
+            }
+          ]
+        },
+        {
+          "filename": "Understandable",
+          "wisdoms": [
+            "no-abbr",
+            "sign-is-doc"
+          ],
+          "blocks": [
+            {
+              "type": "text",
+              "text": "# Okay, you are ready to some real work.\n# Check if this code is easy to understand.\n\ndef fmt_temp(idx, tt):\n    dnms = [\"Monday\", \"Tuesday\", \"Wednesday\", \"Thursday\", \"Friday\", \"Saturday\", \"Sunday\"]\n    return \"Temperature for \" + dnms[idx] + \" is \" + tt + \"̈° C\"\n"
+            },
+            {
+              "type": "replace-span",
+              "clickable": "idx",
+              "replacement": "day_of_week",
+              "event": "11b1f3c9-0db9-4c4b-a3cd-aff4dbab29c3",
+              "explanation": "Argument name is a part of code documentation. It is important to make it meaningful",
+              "hint": "%sign-is-doc"
+            },
+            {
+              "type": "replace-span",
+              "clickable": "tt",
+              "replacement": "temperature",
+              "event": "f74dc936-f280-40c0-8562-f4cf18339cda",
+              "explanation": "%no-abbr",
+              "hint": "%sign-is-doc"
+            },
+            {
+              "type": "replace-span",
+              "clickable": "dnms",
+              "replacement": "day_names",
+              "event": "b46b9046-55b6-48da-b0a1-d250ae651369",
+              "explanation": "Vowels are happy now!",
+              "hint": "Do you wnt hnts? yrwlcm!"
+            },
+            {
+              "type": "replace-span",
+              "clickable": "fmt_temp",
+              "replacement": "format_temperature",
+              "event": "bcde0485-71b7-4310-b011-42d5c68eea5a",
+              "explanation": "Is temp for temporary?",
+              "hint": "%sign-is-doc"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
