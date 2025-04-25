@@ -1,11 +1,8 @@
-import { TopBar } from './TopBar.jsx';
-import { SidebarNavigationContainer } from './SidebarNavigationContainer.jsx';
-import { LevelViewportContainer } from './LevelViewportContainer.jsx';
-import { NotebookContainer } from './NotebookContainer.jsx';
+import {TopBar} from './TopBar.jsx';
+import {SidebarNavigationContainer} from './SidebarNavigationContainer.jsx';
+import {LevelViewportContainer} from './LevelViewportContainer.jsx';
+import {NotebookContainer} from './NotebookContainer.jsx';
 
-/**
- * Main game container component
- */
 export function IdeLayout() {
 
   return (

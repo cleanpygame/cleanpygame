@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useEffect } from 'react';
+import React, {useContext} from 'react';
 import {GameStateContext, GET_HINT, NEXT_LEVEL, POST_BUDDY_MESSAGE} from '../reducer';
 
 /**
@@ -21,36 +21,34 @@ export function BuddyChat() {
 
 
   // Render different button based on a message type
-  const renderButton = (type) => {
-    switch (type) {
-      case 'buddy-instruct':
-        return (
-          <button 
-            className="px-4 py-2 bg-blue-600 text-white rounded-md mt-2 cursor-pointer"
-            onClick={handleGotIt}
-          >
-            Got it!
-          </button>
-        );
-      case 'buddy-summarize':
-        return (
-          <button 
-            className="px-4 py-2 bg-blue-600 text-white rounded-md mt-2 cursor-pointer"
-            onClick={handleNextLevel}
+  const renderButton = () => {
+    if (state.currentLevel.isFinished) {
+      return (
+          <button
+              className="px-4 py-2 bg-blue-600 text-white rounded-md mt-2 cursor-pointer"
+              onClick={handleNextLevel}
           >
             Next task, please!
           </button>
-        );
-      default:
-        return (
-          <button 
+      );
+    }
+    if (state.currentLevel.chatMessages && state.currentLevel.chatMessages[state.currentLevel.chatMessages.length - 1].type === 'buddy-instruct')
+      return (
+          <button
+              className="px-4 py-2 bg-blue-600 text-white rounded-md mt-2 cursor-pointer"
+              onClick={handleGotIt}
+          >
+            Got it!
+          </button>
+      );
+    return (
+        <button
             className="px-4 py-2 bg-gray-600 text-white rounded-md mt-2 cursor-pointer"
             onClick={handleGetHint}
-          >
-            I need help!
-          </button>
-        );
-    }
+        >
+          I need help!
+        </button>
+    );
   };
 
   // Get text color based on a message type
@@ -98,7 +96,7 @@ export function BuddyChat() {
       </div>
 
       <div className="p-4 border-t border-gray-700">
-        {state.chatMessages.length > 0 && renderButton(state.chatMessages[state.chatMessages.length - 1].type)}
+        {renderButton()}
       </div>
     </div>
   );

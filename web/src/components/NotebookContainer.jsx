@@ -1,6 +1,6 @@
-import { useContext, useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
-import { GameStateContext } from '../reducer.js';
+import {useContext, useEffect, useState} from 'react';
+import {createPortal} from 'react-dom';
+import {GameStateContext} from '../reducer.js';
 
 /**
  * Notebook container component
@@ -39,23 +39,10 @@ export function NotebookContainer() {
     return entries;
   };
 
-  // Find new wisdoms (from the current level)
-  const getNewWisdomIds = () => {
-    if (!state.currentLevel) return [];
-
-    return state.currentLevel.level.wisdoms.filter(
-      id => state.discoveredWisdoms.includes(id)
-    );
-  };
-
   // Group wisdoms by topic
   const wisdoms = getWisdomEntries();
-  const newIds = getNewWisdomIds();
   // Handle both notebookOpen and notebookState for backward compatibility
   const isOpen = state.notebookOpen;
-
-  // Check if wisdom is new
-  const isNewWisdom = (id) => newIds.includes(id);
 
   if (!portalElement || !isOpen) return null;
 
@@ -82,20 +69,15 @@ export function NotebookContainer() {
                 {wisdoms.map((wisdom) => (
                     <li
                       key={wisdom.id}
-                      className={`p-3 rounded ${isNewWisdom(wisdom.id) ? 'bg-[#3c3c3c]' : 'bg-[#2d2d2d]'}`}
+                      className={`p-3 rounded bg-[#2d2d2d]`}
                     >
-                      {isNewWisdom(wisdom.id) && (
-                        <span className="inline-block px-2 py-1 text-xs bg-blue-600 text-white rounded mb-2">
-                          New
-                        </span>
-                      )}
                       <p>{wisdom.text}</p>
                     </li>
                 ))}
               </ul>
           ) : (
             <p className="text-[#888888]">
-              You haven't unlocked any wisdoms yet. Complete levels to collect wisdom!
+              Nothing here yet...
             </p>
           )}
         </div>

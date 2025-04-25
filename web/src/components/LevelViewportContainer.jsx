@@ -1,8 +1,7 @@
-import { useContext } from 'react';
-import { GameStateContext } from '../reducer';
-import { CodeView } from './CodeView.jsx';
-import { BuddyChat } from './BuddyChat.jsx';
-import { applyEvents } from "../utils/pylang.js";
+import {useContext} from 'react';
+import {GameStateContext} from '../reducer';
+import {CodeView} from './CodeView.jsx';
+import {BuddyChat} from './BuddyChat.jsx';
 
 /**
  * Level viewport container component
@@ -10,22 +9,11 @@ import { applyEvents } from "../utils/pylang.js";
 export function LevelViewportContainer() {
   const { state, dispatch } = useContext(GameStateContext);
 
-  // Compute regions and lines for CodeView
+  // Get code and regions from state
 
-  const { code, regions } = applyEvents(state.currentLevel.level.blocks, state.currentLevel.triggeredEvents);
-
-  const handleEventClick = (eventId, lineIndex, colIndex, token) => {
-    setTimeout(() => {
-      dispatch({
-        type: 'APPLY_FIX',
-        payload: { eventId, lineIndex, colIndex, token }
-      });
-    }, 200);
-  };
-
-  const handleMisclick = (lineIndex, colIndex, token) => {
+  const handleCodeClick = (lineIndex, colIndex, token) => {
     dispatch({
-      type: 'WRONG_CLICK',
+      type: 'CODE_CLICK',
       payload: { lineIndex, colIndex, token }
     });
   };
@@ -38,21 +26,21 @@ export function LevelViewportContainer() {
     );
   }
 
+  const headerStyle = state.currentLevel.isFinished ? 'bg-green-900' : '';
+
   return (
     <div className="flex-1 flex flex-col overflow-auto relative bg-[#1e1e1e]">
-      <div className="p-2 border-b border-[#3c3c3c]">
+      <div className={`p-2 border-b border-[#3c3c3c] ${headerStyle}`}>
         <h1 className="text-lg font-medium">{state.currentLevel.level.filename}</h1>
       </div>
 
       <div className="flex flex-1 overflow-hidden relative">
         <div className="code-viewport flex-1 overflow-hidden relative">
           <CodeView
-            code={code}
-            regions={regions}
+              code={state.currentLevel.code}
             animate={true}
             contentId={state.currentLevel.level.topic + "/" + state.currentLevel.level.filename}
-            onEvent={handleEventClick}
-            onMisclick={handleMisclick}
+              onClick={handleCodeClick}
           />
         </div>
         <BuddyChat />

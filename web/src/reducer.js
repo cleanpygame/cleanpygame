@@ -1,5 +1,6 @@
-import { createContext } from 'react';
+import {createContext} from 'react';
 import levelsData from './data/levels.json';
+import {applyEvents} from './utils/pylang.js';
 
 // Action types
 export const LOAD_LEVEL = 'LOAD_LEVEL';
@@ -11,6 +12,7 @@ export const RESET_PROGRESS = 'RESET_PROGRESS';
 export const OPEN_NOTEBOOK = 'OPEN_NOTEBOOK';
 export const CLOSE_NOTEBOOK = 'CLOSE_NOTEBOOK';
 export const NEXT_LEVEL = 'NEXT_LEVEL';
+export const CODE_CLICK = 'CODE_CLICK';
 
 const AUTO_HINT_DELAY = 20_000;
 /**
@@ -33,12 +35,18 @@ const calculateNextHintId = (levelData, triggeredEvents) => {
  * @param {LevelData} levelData - Data for the level
  * @returns {LevelState} Initial level state
  */
-const createInitialLevelState = (levelData) => ({
-  level: levelData,
-  triggeredEvents: [],
-  pendingHintId: calculateNextHintId(levelData, []),
-  autoHintAt: Date.now() + AUTO_HINT_DELAY,
-});
+const createInitialLevelState = (levelData) => {
+  const {code, regions} = applyEvents(levelData.blocks, []);
+  return {
+    level: levelData,
+    code,
+    regions,
+    triggeredEvents: [],
+    isFinished: false,
+    pendingHintId: calculateNextHintId(levelData, []),
+    autoHintAt: Date.now() + AUTO_HINT_DELAY,
+  };
+};
 
 let firstTopic = levelsData.topics[0];
 // Initial state
@@ -104,11 +112,10 @@ const findLevelData = (topics, levelId) => {
 };
 
 function getInstructionChatMessage(levelData) {
-  const buddyInstructMessage = {
+  return {
     type: 'buddy-instruct',
     text: `Let's look at ${levelData.filename}. Find and fix all the issues in this code.`
   };
-  return buddyInstructMessage;
 }
 
 /**
@@ -120,6 +127,29 @@ function getInstructionChatMessage(levelData) {
 export function gameReducer(state, action) {
   console.log(action.type, action.payload);
   switch (action.type) {
+    case CODE_CLICK: {
+      if (!state.currentLevel) return state;
+      if (state.currentLevel.isFinished) return state;
+
+      const {lineIndex, colIndex, token} = action.payload;
+
+      // Find the region that contains the clicked position
+      const region = state.currentLevel.regions.find(r => r.contains(lineIndex, colIndex, token.length));
+
+      if (region) {
+        // If a region was found, dispatch APPLY_FIX
+        return gameReducer(state, {
+          type: APPLY_FIX,
+          payload: {eventId: region.eventId, lineIndex, colIndex, token}
+        });
+      } else {
+        // If no region was found, dispatch WRONG_CLICK
+        return gameReducer(state, {
+          type: WRONG_CLICK,
+          payload: {lineIndex, colIndex, token}
+        });
+      }
+    }
     case LOAD_LEVEL: {
       const { levelId } = action.payload;
       const levelData = findLevelData(state.topics, levelId);
@@ -142,14 +172,17 @@ export function gameReducer(state, action) {
 
       const { eventId, lineIndex, colIndex, token } = action.payload;
       const triggeredEvents = state.currentLevel.triggeredEvents.includes(eventId)
-        ? state.currentLevel.triggeredEvents
-        : [...state.currentLevel.triggeredEvents, eventId];
+          ? state.currentLevel.triggeredEvents
+          : [...state.currentLevel.triggeredEvents, eventId];
 
       const nextHintId = calculateNextHintId(state.currentLevel.level, triggeredEvents);
 
+      // Update code and regions with applyEvents
+      const {code, regions} = applyEvents(state.currentLevel.level.blocks, triggeredEvents);
+
       // Find the block that was triggered
       const triggeredBlock = state.currentLevel.level.blocks.find(
-        block => block.event === eventId
+          block => block.event === eventId
       );
 
       // Create messages for the chat
@@ -166,8 +199,8 @@ export function gameReducer(state, action) {
 
       // Check if all issues are fixed
       const allIssuesFixed = state.currentLevel.level.blocks
-        .filter(block => block.event && block.type !== 'neutral')
-        .every(block => triggeredEvents.includes(block.event) || eventId === block.event);
+          .filter(block => block.event && block.type !== 'neutral')
+          .every(block => triggeredEvents.includes(block.event) || eventId === block.event);
 
       // If all issues are fixed, add a summary message
       const buddySummarizeMessage = allIssuesFixed ? {
@@ -182,12 +215,27 @@ export function gameReducer(state, action) {
         ...(buddySummarizeMessage ? [buddySummarizeMessage] : [])
       ];
 
+      // Add the current level to solved levels if all issues are fixed
+      let solvedLevels = state.solvedLevels;
+      if (allIssuesFixed) {
+        solvedLevels = state.solvedLevels.some(
+            level => level.topic === state.currentLevelId.topic &&
+                level.levelId === state.currentLevelId.levelId
+        )
+            ? state.solvedLevels
+            : [...state.solvedLevels, state.currentLevelId];
+      }
+
       return {
         ...state,
         chatMessages: [...state.chatMessages, ...newMessages],
+        solvedLevels: solvedLevels,
         currentLevel: {
           ...state.currentLevel,
+          code,
+          regions,
           triggeredEvents,
+          isFinished: allIssuesFixed,
           pendingHintId: nextHintId,
           autoHintAt: Date.now() + AUTO_HINT_DELAY,
           justTriggeredEvent: null
@@ -200,7 +248,7 @@ export function gameReducer(state, action) {
 
       // Find the block with the pending hint
       const blockWithHint = state.currentLevel.level.blocks.find(
-        block => block.event === state.currentLevel.pendingHintId
+          block => block.event === state.currentLevel.pendingHintId
       );
 
       // Create a buddy help message
@@ -236,14 +284,11 @@ export function gameReducer(state, action) {
         text: 'Nope, not an issue.'
       };
 
-      const mistakeCount = state.currentLevel.mistakeCount + 1;
-
       return {
         ...state,
         chatMessages: [...state.chatMessages, meMessage, buddyRejectMessage],
         currentLevel: {
           ...state.currentLevel,
-          mistakeCount,
           autoHintAt: Date.now() + AUTO_HINT_DELAY,
         }
       };
@@ -283,15 +328,9 @@ export function gameReducer(state, action) {
     case NEXT_LEVEL: {
       if (!state.currentLevel || !state.currentLevelId) return state;
 
-      const nextLevelId = findNextLevelId(state);
-      if (!nextLevelId) return state;
-
-      const nextLevelData = findLevelData(state.topics, nextLevelId);
-      if (!nextLevelData) return state;
-
       // Add current level wisdoms to discovered wisdoms
       const newWisdoms = state.currentLevel.level.wisdoms.filter(
-        w => !state.discoveredWisdoms.includes(w)
+          w => !state.discoveredWisdoms.includes(w)
       );
 
       const discoveredWisdoms = [
@@ -299,13 +338,16 @@ export function gameReducer(state, action) {
         ...newWisdoms
       ];
 
-      // Add current level to solved levels
-      const solvedLevels = state.solvedLevels.some(
-        level => level.topic === state.currentLevelId.topic && 
-                level.levelId === state.currentLevelId.levelId
-      )
-        ? state.solvedLevels
-        : [...state.solvedLevels, state.currentLevelId];
+      const newState = {
+        ...state,
+        discoveredWisdoms,
+      };
+
+      const nextLevelId = findNextLevelId(state);
+      if (!nextLevelId) return newState;
+
+      const nextLevelData = findLevelData(state.topics, nextLevelId);
+      if (!nextLevelData) return newState;
 
       // Create a buddy instruction message for the next level
       const buddyInstructMessage = {
@@ -314,10 +356,7 @@ export function gameReducer(state, action) {
       };
 
       return {
-        ...state,
-        notebookState: 'closed',
-        solvedLevels,
-        discoveredWisdoms,
+        ...newState,
         currentLevelId: nextLevelId,
         currentLevel: createInitialLevelState(nextLevelData),
         chatMessages: [buddyInstructMessage]

@@ -1,5 +1,5 @@
-import { useContext } from 'react';
-import { GameStateContext } from '../reducer.js';
+import {useContext} from 'react';
+import {GameStateContext} from '../reducer.js';
 
 /**
  * Top navigation bar component
@@ -8,27 +8,13 @@ import { GameStateContext } from '../reducer.js';
 export function TopBar() {
   const { dispatch } = useContext(GameStateContext);
 
-  const handleOpenNotebook = () => {
-    dispatch({ type: 'OPEN_NOTEBOOK' });
-  };
-
-  const handleAskForHelp = () => {
-    dispatch({ type: 'GET_HINT' });
-  };
-
-  const handleResetProgress = () => {
-    if (window.confirm('Are you sure you want to reset all progress?')) {
-      dispatch({ type: 'RESET_PROGRESS' });
-    }
-  };
-
   return (
     <div className="flex items-center justify-between h-12 px-4 bg-[#252526] border-b border-[#3c3c3c]">
       <div className="text-lg font-medium">Clean Code Game</div>
 
       <div className="flex gap-4">
         <button
-            onClick={handleAskForHelp}
+            onClick={() => dispatch({type: 'GET_HINT'})}
             className="px-3 py-1 flex items-center gap-2 rounded hover:bg-[#3c3c3c] transition-colors"
             title="Ask for Help"
         >
@@ -37,7 +23,7 @@ export function TopBar() {
         </button>
 
         <button
-          onClick={handleOpenNotebook}
+            onClick={() => dispatch({type: 'OPEN_NOTEBOOK'})}
           className="px-3 py-1 flex items-center gap-2 rounded hover:bg-[#3c3c3c] transition-colors"
           title="Open Notebook"
         >
@@ -46,7 +32,7 @@ export function TopBar() {
         </button>
 
         <button
-          onClick={handleResetProgress}
+            onClick={() => dispatch({type: 'RESET_PROGRESS'})}
           className="px-3 py-1 flex items-center gap-2 rounded hover:bg-[#3c3c3c] transition-colors"
           title="Reset Progress"
         >

@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import { Highlight, themes } from 'prism-react-renderer';
+import {Highlight, themes} from 'prism-react-renderer';
 import PropTypes from 'prop-types';
 import './CodeView.css'; // Ensure CSS defines .code-line, .line-number, and .code-content
 
@@ -7,13 +7,11 @@ import './CodeView.css'; // Ensure CSS defines .code-line, .line-number, and .co
  * CodeView component
  * Props:
  *  - code: string // code lines
- *  - regions: TextRegion[]
  *  - animate: boolean // whether to animate the code
  *  - contentId: number // animation is triggered only when contentId changes
- *  - onEvent: (eventId: string, line: number, col: number, token: string) => void // called when a region token is clicked
- *  - onMisclick: (line: number, col: number, token: string) => void // called when clicking non-region tokens
+ *  - onClick: (line: number, col: number, token: string) => void // called when a code is clicked
  */
-export function CodeView({ code, regions, animate, contentId, onEvent, onMisclick }) {
+export function CodeView({code, animate, contentId, onClick}) {
     const [cursor, setCursor] = useState(0);
     const [flashingKey, setFlashingKey] = useState(null);
 
@@ -47,26 +45,22 @@ export function CodeView({ code, regions, animate, contentId, onEvent, onMisclic
     let visibleCode = animate ? code.substring(0, Math.min(code.length, cursor)) : code;
 
 
-    const handleClick = (lineIndex, colIndex, eventId, token) => {
+    const handleClick = (lineIndex, colIndex, token) => {
         const key = `${lineIndex} ${colIndex}`;
         setFlashingKey(key);
         setTimeout(() => {
                 setFlashingKey(null);
-                if (eventId)
-                    onEvent(eventId, lineIndex, colIndex, token.content);
-                else
-                    onMisclick(lineIndex, colIndex, token.content);
-            }, 100);
+            onClick(lineIndex, colIndex, token.content);
+        }, 50);
     };
 
 
     function renderToken(lineIndex, colIndex, token, getTokenProps) {
         const {key, children: _, ...tokenProps} =
             getTokenProps({token, key: `${lineIndex} ${colIndex}`});
-        const region = regions.find(r => r.contains(lineIndex, colIndex, token.content.length));
         let flashingClass = '';
         if (flashingKey === key) {
-            flashingClass = region ? 'flash-ok' : 'flash-error';
+            flashingClass = 'flash-ok';
         }
 
 
@@ -75,7 +69,7 @@ export function CodeView({ code, regions, animate, contentId, onEvent, onMisclic
                 key={ key }
                 {...tokenProps}
                 className={`${tokenProps.className} ${flashingClass}`}
-                onClick={() => handleClick(lineIndex, colIndex, region?.eventId, token)} >
+                onClick={() => handleClick(lineIndex, colIndex, token)}>
                 {token.content}
             </span>
         );
@@ -116,17 +110,11 @@ export function CodeView({ code, regions, animate, contentId, onEvent, onMisclic
 
 CodeView.propTypes = {
     code: PropTypes.string.isRequired,
-    regions: PropTypes.arrayOf(
-        PropTypes.shape({
-            startLine: PropTypes.number.isRequired,
-            startCol: PropTypes.number.isRequired,
-            endLine: PropTypes.number.isRequired,
-            endCol: PropTypes.number.isRequired,
-            eventId: PropTypes.string.isRequired,
-        })
-    ).isRequired,
-    onEvent: PropTypes.func.isRequired,
-    onMisclick: PropTypes.func.isRequired,
+    animate: PropTypes.bool,
+    contentId: PropTypes.string,
+    onClick: PropTypes.func.isRequired,
 };
 
-CodeView.defaultProps = {};
+CodeView.defaultProps = {
+    animate: false,
+};

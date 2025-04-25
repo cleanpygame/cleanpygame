@@ -1,8 +1,10 @@
-# Frontend Architecture (v2)
+# Frontend Architecture
 
-This document describes the updated frontend architecture for the Clean‑Code Game, incorporating all changes from Specification v1 → v2.
-
----
+| Part                | Tech                 | Purpose                                               |
+|---------------------|----------------------|-------------------------------------------------------|
+| Framework           | React                | UI rendering, component model, state management       |
+| Syntax Highlighting | prism-react-renderer | Lightweight, read-only syntax highlighting for Python |
+| Styling             | Tailwind CSS         | Utility-first styling, matches VS Code feel           |
 
 ## State Shape
 
@@ -19,6 +21,8 @@ interface GameState {
 
 interface LevelState {
   level: LevelData                  // level data (filename, blocks, ...)
+  code: string                      // code to be displayed in the editor
+  regions: EventRegion[]            // list of regions with events
   triggeredEvents: string[]         // in-level progress: all event IDs clicked
   pendingHintId: string | null      // ID of the next hint to send via chat, ID is a blockId if the block with the hint
   autoHintAt: number | null         // timestamp (ms) when auto-hint should post
@@ -53,8 +57,8 @@ interface LevelData {
 ## Actions
 
 - **POST_BUDDY_MESSAGE**  
-  _payload:_ `{ message: ChatMessage }`  
-  Dispatch to append a new chat entry (correct/incorrect feedback, hints, wisdoms).
+  * payload: `{ message: ChatMessage }`
+  * Dispatch to append a new chat entry (correct/incorrect feedback, hints, wisdoms).
 
 - **GET_HINT**  
   * payload: none
@@ -69,9 +73,14 @@ interface LevelData {
   * Dispatches `POST_BUDDY_MESSAGE({ type: 'buddy-instruct', text: currentLevel.startInstructions })`.
   * `autoHintAt = Date.now() + AUTOHINT_DELAY`
 
+- **CODE_CLICK**
+  * payload: `{ lineIndex: number, colIndex: number, token: string }`
+  * dispatches APPLY_FIX or WRONG_CLICK depending on click position, and state.regions.
+
 - **APPLY_FIX**  
   * payload: `{ eventId: string }`
-  * Appends `triggeredBlock.eventId` to `triggeredEvents`.  
+  * Appends `triggeredBlock.eventId` to `triggeredEvents`.
+  * Update regions and code with the help of `applyEvents`.
   * calculates `currentLevel.pendingHintId`
   * Dispatches `POST_BUDDY_MESSAGE({ type: 'me', text: '<TOKEN> in line <LINE>' })`.
   * Dispatches `POST_BUDDY_MESSAGE({ type: 'buddy-explain', text: triggeredBlock.explanation })`.
@@ -90,7 +99,7 @@ interface LevelData {
   * adds `currentLevelId` to `solvedLevels`
   * adds `level.wisdoms` to `discoveredWisdoms`
   * sets `currentLevelId` to the next level in the list of topics
-  * sets `currentLevel` to the level with the new ID with zero progress.
+  * sets `currentLevel` to the level with the new ID with zero progress and empty buddy messages.
   * `autoHintAt = Date.now() + AUTOHINT_DELAY`
   * 
 * **RESET_PROGRESS**
@@ -149,6 +158,16 @@ Dispatches actions: OPEN_NOTEBOOK and RESET_PROGRESS.
 ## SidebarNavigationContainer
 
 Shows a collapsible directory tree of topics → levels, handles navigation and progress highlighting.
+Lightweight visual, no borders, no shadows, just text, small icons for topics and indentation of the levels.
+
+Clickable levels:
+
+- all solved levels (state.solvedLevels) are clickable.
+- first level in each topic is clickable.
+- next level after any solved level is clickable.
+- all other levels are disabled.
+
+When a level is clicked, it dispatches `LOAD_LEVEL` action.
 
 Use context: topics, currentLevelId, solvedLevels.
 
@@ -156,26 +175,36 @@ Use context: topics, currentLevelId, solvedLevels.
 
 Container for everything that happens while playing a single level (filename header, editor, chat).
 
-Compute `code` and `regions` for CodeView based on `level.blocks` and `triggeredEvents`.
-Delegates this calculation to a utility function from the separate module.
-
 Props: none.
 
 Use context: currentLevel.
 
-Renders CodeView, FixPreviewOverlay, LockUiOverlay, HintOverlay.
+Renders CodeView, BuddyChat.
 
 ## CodeView
 
-Responsibility – Read‑only, syntax‑highlighted code block with typing animation. Adds data‑event-id attributes to clickable substrings and intercepts clicks to dispatch game events (no separate CodeLine or InteractiveSpan).
+Read‑only, syntax‑highlighted code with click interception, and typing animation.
+
+Layout: should take full free parent client height and width. Shows line numbers for the code.
+
+Import `prism-react-renderer` for syntax highlighting.
+
+```js
+import {Highlight, themes} from 'prism-react-renderer';
+```
+
+Typing animation should happen ONLY on the first render of the same content.
+Changing the code property without changing the contentId prop should NOT trigger typing animation.
+After all text appeared after typing animation, it is disabled until contentId is changed.
+So even if the code changes to the larger one — no typing animation should happen.
+
+Typing animation speed: 5 characters in 10ms.
 
 Props:
 - code: string // code lines
-- regions: TextRegion[]
 - animate: boolean // whether to animate the code
 - contentId: number // animation is triggered only when contentId changes
-- onEvent: (id: string) => void // called when a region token is clicked
-- onMisclick: (line: number, col: number, token: Token | string) => void // called when clicking non-region tokens
+- onClick: (line: number, col: number, token: string) => void // called when a code is clicked
 
 
 ```ts
@@ -188,18 +217,15 @@ interface EventRegion {
 }
 ```
 
-CodeView uses prismjs-react-renderer for syntax highlighting.
-
-Shows line numbers for the code.
-
 ## BuddyChat  
   
 Renders `buddyMessages` as a scrollable chat UI. Handles message types.
-All messages are vertically aligned to the bottom. Old on top, new on bottom.
+All messages are vertically aligned to the bottom.
+**New messages** are appended to the **bottom of the chat**.
 
-The width of the chat is 25% of the viewport width. Height is 50% of the viewport height.
-The chat is scrollable. The last message is always visible. 
-The chat is scrollable only when the last message is not visible.
+The width of the chat is 25% of the viewport width.
+The chat becomes scrollable if the content is larger than the viewport height.
+When a new message appears, the chat scrolls to the bottom.
 
 Fixed-position; dispatches `GET_HINT` on click.
 
@@ -210,14 +236,14 @@ Fixed-position; dispatches `GET_HINT` on click.
 - all buttons should be rendered blow all messages in the area where one expects to have an edit-box to send messages.
 So button click emulates typing and sending a message to Buddy.
 
-| type            | text-color | back-color | button                   | bubble-align | 
-|-----------------|------------|------------|--------------------------|--------------|
-| me              | default    | light      | "I need help!"           | right        |
-| buddy-instruct  | default    | dark       | "Got it!", blocks clicks | left         |
-| buddy-explain   | green      | dark       | "I need help!"           | left         |
-| buddy-help      | default    | dark       | "I need help!"           | left         |
-| buddy-reject    | red        | dark       | "I need help!"           | left         |
-| buddy-summarize | default    | dark       | "Next task, please!"     | left         |
+| type            | text-color | back-color | button                             | bubble-align | 
+|-----------------|------------|------------|------------------------------------|--------------|
+| me              | default    | light      | "I need help!", neutral color      | right        |
+| buddy-instruct  | default    | dark       | "Got it!", accent color            | left         |
+| buddy-explain   | green      | dark       | "I need help!", neutral color      | left         |
+| buddy-help      | default    | dark       | "I need help!", neutral color      | left         |
+| buddy-reject    | red        | dark       | "I need help!", neutral color      | left         |
+| buddy-summarize | default    | dark       | "Next task, please!", accent color | left         |
 
 ---
 
@@ -229,3 +255,8 @@ Reducer in /web/src/reducer.js
 
 PyLang EventRegion and applyEvents in /web/src/utils/applyEvents.js
 
+# Testing
+
+## Reducer Tests
+
+* check that all levels can be solved one by one.

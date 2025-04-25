@@ -1,5 +1,5 @@
-import { useContext, useState } from 'react';
-import { GameStateContext } from '../reducer.js';
+import {useContext, useState} from 'react';
+import {GameStateContext} from '../reducer.js';
 
 /**
  * Sidebar navigation component showing topics and levels
@@ -14,14 +14,10 @@ export function SidebarNavigationContainer() {
       [topicName]: !prev[topicName]
     }));
   };
-  
-  const handleLevelSelect = (topic, levelId) => {
-    dispatch({
-      type: 'LOAD_LEVEL',
-      payload: { levelId: { topic, levelId } }
-    });
-  };
-  
+
+  const handleLevelSelect = (topic, levelId) =>
+      dispatch({type: 'LOAD_LEVEL', payload: {levelId: {topic, levelId}}});
+
   const isLevelSolved = (topic, levelId) => {
     return state.solvedLevels.some(
       level => level.topic === topic && level.levelId === levelId
@@ -38,7 +34,7 @@ export function SidebarNavigationContainer() {
 
   return (
     <div className="w-50 h-full overflow-y-auto bg-[#252526] border-r border-[#3c3c3c]">
-      <div className="p-2 text-sm">
+      <div className="p-2 text-sm font-mono">
         {state.topics.map((topic) => (
           <div key={topic.name} className="mb-2">
             <div
@@ -46,7 +42,7 @@ export function SidebarNavigationContainer() {
               onClick={() => toggleTopic(topic.name)}
             >
               <span className="mr-1">
-                {expandedTopics[topic.name] ? '▼' : '▶'}
+                {expandedTopics[topic.name] ? '-' : '+'}
               </span>
               <span>{topic.name}</span>
             </div>
@@ -64,7 +60,7 @@ export function SidebarNavigationContainer() {
                     onClick={() => handleLevelSelect(topic.name, level.filename)}
                   >
                     <span className="mr-2">
-                      {isLevelSolved(topic.name, level.filename) ? '✅' : '📄'}
+                      {isLevelSolved(topic.name, level.filename) ? '✔️' : ' '}
                     </span>
                     <span>{level.filename}</span>
                   </div>
