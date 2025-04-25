@@ -21,7 +21,7 @@ export function NotebookContainer() {
   }, []);
 
   const handleCloseNotebook = () => {
-    dispatch({ type: 'CLOSE_NOTEBOOK' });
+    dispatch({type: 'TOGGLE_NOTEBOOK'});
   };
 
   // Get the current wisdoms for the notebook

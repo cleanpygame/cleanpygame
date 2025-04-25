@@ -3,7 +3,7 @@ import {GameStateContext} from '../reducer.js';
 
 /**
  * Top navigation bar component
- * Dispatches actions: OPEN_NOTEBOOK, RESET_PROGRESS, GET_HINT
+ * Dispatches actions: TOGGLE_NOTEBOOK, RESET_PROGRESS, GET_HINT
  */
 export function TopBar() {
   const { dispatch } = useContext(GameStateContext);
@@ -23,9 +23,9 @@ export function TopBar() {
         </button>
 
         <button
-            onClick={() => dispatch({type: 'OPEN_NOTEBOOK'})}
+            onClick={() => dispatch({type: 'TOGGLE_NOTEBOOK'})}
           className="px-3 py-1 flex items-center gap-2 rounded hover:bg-[#3c3c3c] transition-colors"
-          title="Open Notebook"
+            title="Toggle Notebook"
         >
           <span role="img" aria-label="notebook">📒</span>
           <span>Notebook</span>

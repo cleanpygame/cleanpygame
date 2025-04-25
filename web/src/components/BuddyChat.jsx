@@ -1,5 +1,7 @@
 import React, {useContext} from 'react';
 import {GameStateContext, GET_HINT, NEXT_LEVEL, POST_BUDDY_MESSAGE} from '../reducer';
+import BuddyChatMessage from './BuddyChatMessage';
+import MyChatMessage from './MyChatMessage';
 
 /**
  * BuddyChat component
@@ -51,18 +53,6 @@ export function BuddyChat() {
     );
   };
 
-  // Get text color based on a message type
-  const getTextColor = (type) => {
-    switch (type) {
-      case 'buddy-explain':
-        return 'text-green-400';
-      case 'buddy-reject':
-        return 'text-red-400';
-      default:
-        return 'text-white';
-    }
-  };
-
   return (
     <div 
       className="w-1/3 absolute bottom-0 right-0 flex flex-col bg-gray-800 border-l border-t border-gray-700 overflow-hidden"
@@ -77,20 +67,10 @@ export function BuddyChat() {
             key={index} 
             className={`flex ${message.type === 'me' ? 'justify-end' : 'justify-start'}`}
           >
-            <div 
-              className={`max-w-[80%] rounded-lg p-3 ${
-                message.type === 'me' 
-                  ? 'bg-gray-600 text-white' 
-                  : 'bg-gray-900 ' + getTextColor(message.type)
-              }`}
-            >
-              {message.type !== 'me' && (
-                <span className="items-center mr-2">
-                    😎️
-                </span>
-              )}
-              <span className="whitespace-pre-wrap">{message.text}</span>
-            </div>
+            {message.type === 'me'
+                ? <MyChatMessage message={message}/>
+                : <BuddyChatMessage message={message}/>
+            }
           </div>
         ))}
       </div>

@@ -9,8 +9,7 @@ export const WRONG_CLICK = 'WRONG_CLICK';
 export const GET_HINT = 'GET_HINT';
 export const POST_BUDDY_MESSAGE = 'POST_BUDDY_MESSAGE';
 export const RESET_PROGRESS = 'RESET_PROGRESS';
-export const OPEN_NOTEBOOK = 'OPEN_NOTEBOOK';
-export const CLOSE_NOTEBOOK = 'CLOSE_NOTEBOOK';
+export const TOGGLE_NOTEBOOK = 'TOGGLE_NOTEBOOK';
 export const NEXT_LEVEL = 'NEXT_LEVEL';
 export const CODE_CLICK = 'CODE_CLICK';
 
@@ -188,7 +187,7 @@ export function gameReducer(state, action) {
       // Create messages for the chat
       const meMessage = {
         type: 'me',
-        text: `I see issue at '${lineIndex+1}:${colIndex+1} → "${token}"`
+        text: `I see issue at ${lineIndex + 1}:${colIndex + 1} → "${token}"`
       };
 
       const buddyExplainMessage = {
@@ -311,17 +310,10 @@ export function gameReducer(state, action) {
       };
     }
 
-    case OPEN_NOTEBOOK: {
+    case TOGGLE_NOTEBOOK: {
       return {
         ...state,
-        notebookOpen: true
-      };
-    }
-
-    case CLOSE_NOTEBOOK: {
-      return {
-        ...state,
-        notebookOpen: false
+        notebookOpen: !state.notebookOpen
       };
     }
 

@@ -107,13 +107,9 @@ interface LevelData {
   * revert state to initial value, resetting all the progress.
   * `autoHintAt = Date.now() + AUTOHINT_DELAY`
 
-* **OPEN_NOTEBOOK**
+* **TOGGLE_NOTEBOOK**
   * payload: none
-  * `notebookOpen = true`
-
-* **CLOSE_NOTEBOOK**
-  * payload: none
-  * `notebookOpen = false`
+  * `notebookOpen = !notebookOpen` (toggles between true and false)
 
 ---
 
@@ -153,7 +149,7 @@ Responsibility – Layout of SideBar, TopBar, and Notebook Container. No props. 
 
 Top bar with buttons: notebook, reset progress.
 
-Dispatches actions: OPEN_NOTEBOOK and RESET_PROGRESS.
+Dispatches actions: TOGGLE_NOTEBOOK and RESET_PROGRESS.
 
 ## SidebarNavigationContainer
 
@@ -218,7 +214,7 @@ interface EventRegion {
 ```
 
 ## BuddyChat  
-  
+
 Renders `buddyMessages` as a scrollable chat UI. Handles message types.
 All messages are vertically aligned to the bottom.
 **New messages** are appended to the **bottom of the chat**.
