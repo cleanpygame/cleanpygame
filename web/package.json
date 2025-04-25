@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "tsc && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "ui": "vite src\\tests\\index.html --config vite.config.js",
+    "ui": "vite src\\tests\\index.html --config vite.config.ts",
     "test": "vitest run"
   },
   "dependencies": {
@@ -26,12 +26,15 @@
     "@testing-library/react": "^16.3.0",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
     "@vitejs/plugin-react-swc": "^3.8.0",
     "eslint": "^9.22.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
     "happy-dom": "^17.4.4",
+    "typescript": "^5.4.2",
     "vite": "^6.3.1",
     "vitest": "^3.1.2"
   }
