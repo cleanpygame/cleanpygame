@@ -5,16 +5,19 @@ import {EventRegion} from "./regions.js";
  *
  * @param {LevelBlock[]} blocks - The code blocks to process
  * @param {string[]} events - List of triggered event IDs
- * @returns {LevelBlock[]} - triggered span replacements
+ * @returns {{triggeredSpans: LevelBlock[], pendingSpans: LevelBlock[]}} - triggered span replacements
  */
-function getTriggeredSpanBlocks(blocks, events) {
-    const triggeredSpanReplacements = [];
+function sortSpanBlocks(blocks, events) {
+    const triggered = [];
+    const pending = [];
     for (const block of blocks) {
-        if (block.type === 'replace-span' && events.includes(block.event)) {
-            triggeredSpanReplacements.push(block);
-        }
+        if (block.type !== 'replace-span') continue;
+        if (events.includes(block.event))
+            triggered.push(block);
+        else
+            pending.push(block);
     }
-    return triggeredSpanReplacements;
+    return {triggeredSpans: triggered, pendingSpans: pending};
 }
 
 
@@ -37,85 +40,125 @@ function countLines(text) {
  * @returns {{code: string, regions: EventRegion[]}} - The resulting code and interactive regions
  */
 export function applyEvents(blocks, events) {
-    // First, collect all replace-span operations that have been triggered
-    const triggeredSpanBlocks = getTriggeredSpanBlocks(blocks, events);
+    const {pendingSpans, triggeredSpans} = sortSpanBlocks(blocks, events);
+    const { code, regions} = renderReplaceBlocks(blocks, events, triggeredSpans);
+    const spanRegions = getRegionsFromPendingReplaceSpans(pendingSpans, code);
+    return {
+        code: code.replace(/\n$/, ""),
+        regions: [...regions, ...spanRegions]
+    };
+}
 
-    // Process each block and apply events
+/**
+ * Process all blocks and collect code and regions
+ * 
+ * @param {LevelBlock[]} blocks - The code blocks to process
+ * @param {string[]} events - List of triggered event IDs
+ * @param {LevelBlock[]} triggeredSpanBlocks - Span blocks that have been triggered
+ * @returns {{code: string, regions: EventRegion[], pendingReplaceSpans: LevelBlock[]}} - Processing results
+ */
+function renderReplaceBlocks(blocks, events, triggeredSpanBlocks) {
     let finalCode = '';
     let regions = [];
     let lineOffset = 0;
-
-    // Collect replace-span blocks that haven't been triggered
     const pendingReplaceSpans = [];
 
     for (const block of blocks) {
-        let processedText = block.text;
-        let processedReplacement = block.replacement;
+        const processedText = block.text ? replaceAll(block.text, triggeredSpanBlocks) : block.text;
+        const processedReplacement = block.replacement ? replaceAll(block.replacement, triggeredSpanBlocks) : block.replacement;
+        const processedBlock = /** @type {LevelBlock} */ {...block, text: processedText, replacement: processedReplacement};
+        const result = processBlock(processedBlock, events, lineOffset);
 
-        if (block.text) {
-            processedText = replaceAll(block.text, triggeredSpanBlocks);
+        finalCode += result.text;
+        if (result.regions.length > 0) {
+            regions = [...regions, ...result.regions];
         }
-        if (block.replacement)
-            processedReplacement = replaceAll(block.replacement, triggeredSpanBlocks);
-
-        if (block.type === 'replace-span' && !events.includes(block.event)) {
-            pendingReplaceSpans.push(block);
-        }
-
-        switch (block.type) {
-            case 'text': {
-                finalCode += processedText;
-                lineOffset += countLines(processedText);
-                break;
-            }
-
-            case 'replace': {
-                const isReplaceTriggered = events.includes(block.event);
-                const displayedText = isReplaceTriggered ? processedReplacement : processedText
-                finalCode += displayedText;
-                const linesCount = countLines(displayedText);
-
-                if (!isReplaceTriggered) {
-                    if (block.clickable) {
-                        // If there's a specific clickable substring
-                        const replaceRegions = findAllSubstringPositions(processedText, block.clickable, lineOffset);
-
-                        for (const region of replaceRegions) {
-                            regions.push(new EventRegion(
-                                region.startLine,
-                                region.startColumn,
-                                region.endLine,
-                                region.endColumn,
-                                block.event
-                            ));
-                        }
-                    } else {
-                        // The whole block is clickable
-                        regions.push(new EventRegion(
-                            lineOffset,
-                            0,
-                            lineOffset + linesCount - 1,
-                            100500,
-                            block.event
-                        ));
-                    }
-                    lineOffset += countLines(displayedText);
-                }
-                break;
-            }
-
-            case 'replace-on': {
-                const isReplaceTriggered = events.includes(block.event);
-                const displayedText = isReplaceTriggered ? processedReplacement : processedText;
-                finalCode += displayedText;
-                lineOffset += countLines(displayedText);
-                break;
-            }
-        }
+        lineOffset += countLines(result.text);
     }
 
+    return { code: finalCode, regions, pendingReplaceSpans };
+}
+
+/**
+ * Process a single block
+ * 
+ * @param {LevelBlock} block - The block to process
+ * @param {string[]} events - List of triggered event IDs
+ * @param {number} lineOffset - Current line offset
+ * @returns {{text: string, regions: EventRegion[]}} - Processed text and regions
+ */
+function processBlock(block, events, lineOffset) {
+    const isEventTriggered = block.event ? events.includes(block.event) : false;
+    const displayedText = isEventTriggered ? block.replacement : block.text;
+    switch (block.type) {
+        case 'text':
+            return { text: block.text, regions: [] };
+
+        case 'replace': {
+            const regions = isEventTriggered ? [] : createRegionsForReplaceBlock(block, isEventTriggered, lineOffset);
+            return { text: displayedText, regions };
+        }
+
+        case 'replace-on': {
+            return { text: displayedText, regions: [] };
+        }
+
+        default:
+            return { text: '', regions: [] };
+    }
+}
+
+/**
+ * Create regions for a replace-block
+ *
+ * @param {LevelBlock} block - The replace-block
+ * @param {Boolean} isTriggered
+ * @param {number} lineOffset - Current line offset
+ * @returns {EventRegion[]} - Regions for the block
+ */
+function createRegionsForReplaceBlock(block, isTriggered, lineOffset) {
+    if (isTriggered) return [];
+
+    const linesCount = countLines(block.text);
+
+    if (block.clickable) {
+        // If there's a specific clickable substring
+        const replaceRegions = findAllSubstringPositions(block.text, block.clickable);
+        return replaceRegions.map(region => 
+            new EventRegion(
+                region.startLine + lineOffset,
+                region.startColumn,
+                region.endLine + lineOffset,
+                region.endColumn,
+                block.event
+            )
+        );
+    } else {
+        // The whole block is clickable
+        return [
+            new EventRegion(
+                lineOffset,
+                0,
+                lineOffset + linesCount - 1,
+                100500,
+                block.event
+            )
+        ];
+    }
+}
+
+/**
+ * Process pending replace spans
+ * 
+ * @param {LevelBlock[]} pendingReplaceSpans - Pending replace span blocks
+ * @param {string} code - The final code
+ * @returns {EventRegion[]} - Regions for the pending spans
+ */
+function getRegionsFromPendingReplaceSpans(pendingReplaceSpans, code) {
+    const regions = [];
+
     for (const pendingSpan of pendingReplaceSpans) {
-        const allOccurrences = findAllSubstringPositions(finalCode, pendingSpan.clickable, 0);
+        const allOccurrences = findAllSubstringPositions(code, pendingSpan.clickable);
 
         for (const occurrence of allOccurrences) {
             regions.push(new EventRegion(
@@ -128,10 +171,7 @@ export function applyEvents(blocks, events) {
         }
     }
 
-    return {
-        code: finalCode.replace(/\n$/, ""),
-        regions
-    };
+    return regions;
 }
 
 /**
@@ -154,10 +194,9 @@ function replaceAll(text, spanReplacementBlocks) {
  *
  * @param {string} text - The full text to search in
  * @param {string} substring - The substring to find
- * @param {number} lineOffset - Line offset to add to resulting positions
  * @returns {Array<{startLine: number, startColumn: number, endLine: number, endColumn: number}>} - Array of positions
  */
-function findAllSubstringPositions(text, substring, lineOffset) {
+function findAllSubstringPositions(text, substring) {
     if (!text || !substring) return [];
 
     const results = [];
@@ -173,9 +212,9 @@ function findAllSubstringPositions(text, substring, lineOffset) {
             if (index === -1) break;
 
             results.push({
-                startLine: i + lineOffset,
+                startLine: i,
                 startColumn: index,
-                endLine: i + lineOffset,
+                endLine: i,
                 endColumn: index + substring.length
             });
 
