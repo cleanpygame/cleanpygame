@@ -49,7 +49,7 @@ export const initialState = {
   solvedLevels: [],
   discoveredWisdoms: [],
   notebookOpen: false,
-  chatMessages: []
+  chatMessages: [getInstructionChatMessage(firstTopic.levels[0])],
 };
 
 
@@ -103,6 +103,14 @@ const findLevelData = (topics, levelId) => {
   return topic.levels.find(l => l.filename === levelId.levelId) || null;
 };
 
+function getInstructionChatMessage(levelData) {
+  const buddyInstructMessage = {
+    type: 'buddy-instruct',
+    text: `Let's look at ${levelData.filename}. Find and fix all the issues in this code.`
+  };
+  return buddyInstructMessage;
+}
+
 /**
  * Game state reducer
  * @param {GameState} state - Current state
@@ -121,18 +129,11 @@ export function gameReducer(state, action) {
       // Create an initial level state
       const newLevelState = createInitialLevelState(levelData);
 
-      // Create a buddy instruction message
-      const buddyInstructMessage = {
-        id: `buddy-instruct-${Date.now()}`,
-        type: 'buddy-instruct',
-        text: `Let's look at ${levelData.filename}. Find and fix all the issues in this code.`
-      };
-
       return {
         ...state,
         currentLevelId: levelId,
         currentLevel: newLevelState,
-        chatMessages: [buddyInstructMessage]
+        chatMessages: [getInstructionChatMessage(levelData)]
       };
     }
 

@@ -7,27 +7,18 @@ import {GameStateContext, GET_HINT, NEXT_LEVEL, POST_BUDDY_MESSAGE} from '../red
  */
 export function BuddyChat() {
   const { state, dispatch } = useContext(GameStateContext);
-  const messagesEndRef = useRef(null);
-  const chatContainerRef = useRef(null);
-
-  // With flex-col-reverse, new messages appear at the bottom automatically
-  // No need to scroll manually, but keeping the ref for future use
-  useEffect(() => {
-    // The container will automatically scroll to show new messages at the bottom
-  }, [state.chatMessages]);
 
   const handleGetHint = () => {
     dispatch({ type: POST_BUDDY_MESSAGE, payload: { message: { type: "me", text: 'I need help!' } } });
     setTimeout(() => dispatch({ type: GET_HINT }), 300);
   };
 
-  const handleGotIt = () => {
-    dispatch({ type: POST_BUDDY_MESSAGE, payload: { message: { type: "me", text: 'Got it!' } } });
-  };
+  const handleGotIt = () =>
+      dispatch({ type: POST_BUDDY_MESSAGE, payload: { message: { type: "me", text: 'Got it!' } } });
 
-  const handleNextLevel = () => {
-    dispatch({ type: NEXT_LEVEL });
-  };
+  const handleNextLevel = () =>
+      dispatch({ type: NEXT_LEVEL });
+
 
   // Render different button based on a message type
   const renderButton = (type) => {
@@ -77,14 +68,12 @@ export function BuddyChat() {
   return (
     <div 
       className="w-1/3 absolute bottom-0 right-0 flex flex-col bg-gray-800 border-l border-t border-gray-700 overflow-hidden"
-      ref={chatContainerRef}
     >
       <div className="p-2 border-b border-gray-700">
         <h2 className="text-lg font-medium text-white">Buddy Chat</h2>
       </div>
 
       <div className="h-64 overflow-y-auto p-3 flex flex-col-reverse space-y-reverse space-y-2">
-        <div ref={messagesEndRef} />
         {state.chatMessages.slice().reverse().map((message, index) => (
           <div 
             key={index} 
