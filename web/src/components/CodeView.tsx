@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Highlight, themes, Token} from 'prism-react-renderer';
 import './CodeView.css'; // Ensure CSS defines .code-line, .line-number, and .code-content
 
@@ -16,28 +16,24 @@ interface CodeViewProps {
 export function CodeView({
                              code,
                              animate = false,
-                             contentId,
                              onClick
                          }: CodeViewProps): React.ReactElement {
     const [cursor, setCursor] = useState<number>(0);
     const [flashingKey, setFlashingKey] = useState<string | null>(null);
 
-    const ref = useRef<string>('');
-
     useEffect(() => {
-        // Reset cursor when animation should restart
-        if (animate && ref.current !== contentId) {
-            ref.current = contentId || '';
-            setCursor(0);
+        if (!animate) {
+            return;
         }
 
         if (animate) {
-            const intervalRef = {id: null as number | null};
-            intervalRef.id = window.setInterval(() => {
+            setCursor(0);
+            console.log("Starting animation for code:", code);
+            const intervalRef = window.setInterval(() => {
                 setCursor(c => {
                     if (c + 2 >= code.length) {
-                        if (intervalRef.id !== null) {
-                            clearInterval(intervalRef.id);
+                        if (intervalRef !== null) {
+                            clearInterval(intervalRef);
                         }
                         return Infinity;
                     }
@@ -46,12 +42,12 @@ export function CodeView({
             }, 5); // Slightly slower animation for better performance
 
             return () => {
-                if (intervalRef.id !== null) {
-                    clearInterval(intervalRef.id);
+                if (intervalRef !== null) {
+                    clearInterval(intervalRef);
                 }
             };
         }
-    }, [code, contentId, animate]);
+    }, []);
 
     const visibleCode = animate ? code.substring(0, Math.min(code.length, cursor)) : code;
 

@@ -41,9 +41,9 @@ export function LevelViewportContainer(): React.ReactElement {
             <div className="flex flex-1 overflow-hidden relative">
                 <div className="code-viewport flex-1 overflow-hidden relative">
                     <CodeView
+                        key={state.currentLevelId.topic + "/" + state.currentLevelId.levelId}
                         code={state.currentLevel.code}
                         animate={true}
-                        contentId={state.currentLevelId.topic + "/" + state.currentLevelId.levelId}
                         onClick={handleCodeClick}
                     />
                 </div>
