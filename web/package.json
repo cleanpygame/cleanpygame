@@ -8,7 +8,6 @@
     "build": "tsc && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "ui": "vite src\\tests\\index.html --config vite.config.ts",
     "test": "vitest run"
   },
   "dependencies": {
