@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useMemo} from 'react';
 import {GameStateContext} from '../reducer';
 import {CodeView} from './CodeView';
 import {BuddyChat} from './BuddyChat';
@@ -22,6 +22,24 @@ export function LevelViewportContainer(): React.ReactElement {
         });
     };
 
+    // Determine if the CodeView should be disabled
+    const shouldDisableCodeView = useMemo(() => {
+        // Case 1: Level is finished
+        if (state.currentLevel?.isFinished) {
+            return true;
+        }
+
+        // Case 2: New level instructions are shown
+        if (state.chatMessages.length > 0) {
+            const lastMessage = state.chatMessages[state.chatMessages.length - 1];
+            if (lastMessage.type === 'buddy-instruct') {
+                return true;
+            }
+        }
+
+        return false;
+    }, [state.currentLevel?.isFinished, state.chatMessages]);
+
     if (!state.currentLevel) {
         return (
             <div className="flex-1 p-4 flex items-center justify-center">
@@ -30,12 +48,10 @@ export function LevelViewportContainer(): React.ReactElement {
         );
     }
 
-    const headerStyle = state.currentLevel.isFinished ? 'bg-green-900' : '';
-
     return (
         <div className="flex-1 flex flex-col overflow-auto relative bg-[#1e1e1e]">
-            <div className={`p-2 border-b border-[#3c3c3c] ${headerStyle}`}>
-                <h1 className="text-lg font-medium">{state.currentLevel.level.filename}</h1>
+            <div className={`p-2 border-b border-[#3c3c3c]`}>
+                <h1 className="font-normal">{state.currentLevel.level.filename}</h1>
             </div>
 
             <div className="flex flex-1 overflow-hidden relative">
@@ -44,6 +60,7 @@ export function LevelViewportContainer(): React.ReactElement {
                         key={state.currentLevelId.topic + "/" + state.currentLevelId.levelId}
                         code={state.currentLevel.code}
                         animate={true}
+                        disable={shouldDisableCodeView}
                         onClick={handleCodeClick}
                     />
                 </div>

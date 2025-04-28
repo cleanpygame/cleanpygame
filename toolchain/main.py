@@ -134,13 +134,13 @@ def read_add_on(context):
         raise ValueError("##add-on requires exactly one argument: event")
     event = context.args[0]
     context.idx += 1
-    lines_block, context.idx = collect_block_until(context.lines, context.idx, "end")
+    lines, context.idx = collect_block_until(context.lines, context.idx, "end")
     context.idx += 1
     block = {
         "type": "replace-on",
         "event": event,
         "text": "",
-        "replacement": replacement,
+        "replacement": lines,
     }
     context.level["blocks"].append(block)
 
@@ -149,12 +149,12 @@ def read_remove_on(context):
         raise ValueError("##remove-on requires exactly one argument: event")
     event = context.args[0]
     context.idx += 1
-    lines_block, context.idx = collect_block_until(context.lines, context.idx, "end")
+    lines, context.idx = collect_block_until(context.lines, context.idx, "end")
     context.idx += 1
     block = {
         "type": "replace-on",
         "event": event,
-        "text": text,
+        "text": lines,
         "replacement": ""
     }
     context.level["blocks"].append(block)
@@ -193,6 +193,63 @@ def read_hint(context):
     prev_block["hint"] = value
     context.idx += 1
 
+def read_level(context):
+    if len(context.args) != 1:
+        raise ValueError("##level must have exactly one argument")
+    context.level["filename"] = context.args[0]
+    context.idx += 1
+
+    # Check if we have more lines and the next line contains triple quotes
+    if context.idx < len(context.lines):
+        current_line = context.lines[context.idx].strip()
+
+        # Handle the case where triple quotes are on their own line
+        if current_line == '"""':
+            context.idx += 1  # Skip the opening triple quote line
+            instructions = []
+
+            # Collect lines until we find the closing triple quote
+            while context.idx < len(context.lines) and not context.lines[context.idx].strip().endswith('"""'):
+                instructions.append(context.lines[context.idx].rstrip("\n"))
+                context.idx += 1
+
+            # Include the last line without the closing triple quotes if needed
+            if context.idx < len(context.lines):
+                last_line = context.lines[context.idx].rstrip("\n")
+                if last_line.strip() != '"""':  # If it's not just quotes, include the content
+                    instructions.append(last_line.rstrip('"""').rstrip())
+                context.idx += 1
+
+            context.level["instructions"] = "\n".join(instructions)
+
+        # Handle the case where the line starts with triple quotes (possibly with content)
+        elif current_line.startswith('"""'):
+            # If the line both starts and ends with triple quotes, it's a single-line instruction
+            if current_line.endswith('"""') and len(current_line) > 6:  # More than just opening and closing quotes
+                # Extract content between triple quotes
+                instructions = current_line[3:-3]
+                context.idx += 1
+                context.level["instructions"] = instructions
+            else:
+                # Multi-line instruction starting on this line
+                instructions = [current_line[3:]]  # Skip opening quotes
+                context.idx += 1
+
+                # Collect lines until we find the closing triple quote
+                while context.idx < len(context.lines) and not context.lines[context.idx].strip().endswith('"""'):
+                    instructions.append(context.lines[context.idx].rstrip("\n"))
+                    context.idx += 1
+
+                # Include the last line without the closing triple quotes
+                if context.idx < len(context.lines):
+                    last_line = context.lines[context.idx].rstrip("\n")
+                    if last_line.endswith('"""'):
+                        # Remove closing quotes
+                        instructions.append(last_line[:-3])
+                    context.idx += 1
+
+                context.level["instructions"] = "\n".join(instructions)
+
 def parse_level_file(path: Path):
     with open(path, "r", encoding="utf-8") as f:
         lines = f.readlines()
@@ -212,6 +269,7 @@ def parse_level_file(path: Path):
 
                 match context.cmd:
                     case "filename": read_filename(context)
+                    case "level": read_level(context)
                     case "wisdoms": read_wisdoms(context)
                     case "replace-span": read_replace_span(context)
                     case "replace": read_replace(context)
@@ -228,7 +286,7 @@ def parse_level_file(path: Path):
             logger.error(f"{str(e)}. Line {context.idx+1} in {path}")
             return
     return level
-        
+
 @app.command()
 def build(source: str = "levels", output: str = "web/src/data/levels.json"):
     """

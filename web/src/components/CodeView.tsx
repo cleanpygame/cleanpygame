@@ -6,6 +6,7 @@ interface CodeViewProps {
     code: string;
     animate?: boolean;
     contentId?: string;
+    disable?: boolean;
     onClick: (lineIndex: number, colIndex: number, token: string) => void;
 }
 
@@ -16,6 +17,7 @@ interface CodeViewProps {
 export function CodeView({
                              code,
                              animate = false,
+                             disable = false,
                              onClick
                          }: CodeViewProps): React.ReactElement {
     const [cursor, setCursor] = useState<number>(0);
@@ -52,6 +54,8 @@ export function CodeView({
     const visibleCode = animate ? code.substring(0, Math.min(code.length, cursor)) : code;
 
     const handleClick = (lineIndex: number, colIndex: number, token: Token): void => {
+        if (disable) return;
+
         const key = `${lineIndex} ${colIndex}`;
         setFlashingKey(key);
         setTimeout(() => {
@@ -119,7 +123,7 @@ export function CodeView({
     return (
         <Highlight code={visibleCode} theme={themes.vsDark} language="python">
             {({className, style, tokens, getLineProps, getTokenProps}) => (
-                <pre className={className} style={style}>
+                <pre className={`${className} ${disable ? 'disabled-code' : ''}`} style={style}>
           {tokens.map((lineTokens, lineIndex) =>
               renderLine(
                   lineIndex,

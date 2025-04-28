@@ -27,6 +27,7 @@ export interface LevelData {
     filename: string;
     wisdoms: string[];
     blocks: LevelBlock[];
+    instructions?: string;
 }
 
 export interface Topic {

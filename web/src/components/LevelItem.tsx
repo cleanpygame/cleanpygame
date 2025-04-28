@@ -26,12 +26,12 @@ export function LevelItem({state, level, topicName, onLevelSelect}: LevelItemPro
     return (
         <div
             key={level.filename}
-            className={`flex items-center p-1 rounded ${
+            className={`flex items-center pl-4 p-1 ${
                 levelClickable
                     ? `cursor-pointer ${
                         levelCurrent
                             ? 'bg-[#37373d]'
-                            : 'hover:bg-[#3c3c3c]'
+                            : ''
                     }`
                     : 'cursor-not-allowed opacity-50'
             }`}

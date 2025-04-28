@@ -11,7 +11,7 @@ interface MyChatMessageProps {
  */
 function MyChatMessage({message}: MyChatMessageProps): React.ReactElement {
     return (
-        <div className="max-w-[80%] rounded-lg p-3 bg-gray-600 text-white">
+        <div className="rounded-lg p-3 bg-gray-600 text-white">
             <span className="whitespace-pre-wrap">{message.text}</span>
         </div>
     );

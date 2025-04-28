@@ -1,1 +1,49 @@
 @import "tailwindcss";
+
+/* UI font settings */
+body {
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Code editor font settings */
+pre, code {
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 14px;
+}
+
+/* Flashing border animation */
+@keyframes flash-border {
+  0% {
+    border-color: rgba(59, 130, 246, 0.5);
+  }
+  50% {
+    border-color: rgba(59, 130, 246, 1);
+  }
+  100% {
+    border-color: rgba(59, 130, 246, 0.5);
+  }
+}
+
+.flash-border {
+  animation: flash-border 1s ease-in-out infinite;
+}
+
+/* Flashing header animation */
+@keyframes flash-header {
+  0% {
+    background-color: rgba(59, 130, 246, 0.1);
+  }
+  50% {
+    background-color: rgba(59, 130, 246, 0.4);
+  }
+  100% {
+    background-color: rgba(59, 130, 246, 0.1);
+  }
+}
+
+.flash-header {
+  animation: flash-header 1s ease-in-out infinite;
+}

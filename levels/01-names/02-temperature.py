@@ -1,7 +1,9 @@
-##filename Understandable
+##level temperature.py
+"""
+Okay, you are ready to some real work.
+Check if this code is easy to understand.
+"""
 ##wisdoms no-abbr sign-is-doc
-# Okay, you are ready to some real work.
-# Check if this code is easy to understand.
 
 def fmt_temp(idx, tt):
     dnms = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]

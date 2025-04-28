@@ -30,7 +30,10 @@ export function SidebarNavigationContainer(): React.ReactElement {
 
     return (
         <div className="w-50 h-full overflow-y-auto bg-[#252526] border-r border-[#3c3c3c]">
-            <div className="p-2 text-sm font-mono">
+            <div className={`p-2`}>
+                <h1 className="text-m font-light">EXPLORER</h1>
+            </div>
+            <div className="text-sm">
                 {state.topics.map((topic) => (
                     <TopicItem
                         key={topic.name}
@@ -43,7 +46,7 @@ export function SidebarNavigationContainer(): React.ReactElement {
                 ))}
 
                 {state.topics.length === 0 && (
-                    <div className="p-2 text-[#888888]">Loading topics...</div>
+                    <div className="p-2 text-[#888888]">Loading...</div>
                 )}
             </div>
         </div>

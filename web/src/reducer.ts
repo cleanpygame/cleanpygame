@@ -1,15 +1,7 @@
 import React, {createContext} from 'react';
 import levelsData from './data/levels.json';
 import {applyEvents} from './utils/pylang';
-import {
-    GameState,
-    LevelData,
-    LevelId,
-    Topic,
-    ChatMessage,
-    LevelState,
-    ChatMessageType
-} from './types';
+import {ChatMessage, ChatMessageType, GameState, LevelData, LevelId, LevelState, Topic} from './types';
 
 // Action types
 export const LOAD_LEVEL = 'LOAD_LEVEL';
@@ -192,7 +184,7 @@ const findLevelData = (topics: Topic[], levelId: LevelId): LevelData | null => {
 function getInstructionChatMessage(levelData: LevelData): ChatMessage {
     return {
         type: 'buddy-instruct' as ChatMessageType,
-        text: `Let's look at ${levelData.filename}. Find and fix all the issues in this code.`
+        text: levelData.instructions || `Let's look at ${levelData.filename}. Find and fix all the issues in this code.`
     };
 }
 
@@ -248,7 +240,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         case APPLY_FIX: {
             if (!state.currentLevel) return state;
 
-            const {eventId, lineIndex, colIndex, token} = action.payload;
+            const {eventId, lineIndex, colIndex} = action.payload;
             const triggeredEvents = state.currentLevel.triggeredEvents.includes(eventId)
                 ? state.currentLevel.triggeredEvents
                 : [...state.currentLevel.triggeredEvents, eventId];
@@ -258,20 +250,21 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
             // Update code and regions with applyEvents
             const {code, regions} = applyEvents(state.currentLevel.level.blocks, triggeredEvents);
 
-            // Find the block that was triggered
-            const triggeredBlock = state.currentLevel.level.blocks.find(
-                block => block.event === eventId
-            );
 
             // Create messages for the chat
             const meMessage: ChatMessage = {
                 type: 'me',
-                text: `I see issue at ${lineIndex + 1}:${colIndex + 1} → "${token}"`
+                text: `I see issue at ${lineIndex + 1}:${colIndex + 1}`
             };
+
+            // Find the block that was triggered
+            const triggeredBlock = state.currentLevel.level.blocks.find(
+                block => block.event === eventId && block.explanation
+            );
 
             const buddyExplainMessage: ChatMessage = {
                 type: 'buddy-explain',
-                text: `Good catch! ${triggeredBlock?.explanation}`
+                text: `Yes! ${triggeredBlock?.explanation}`
             };
 
             // Check if all issues are fixed
@@ -324,7 +317,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
             // Find the block with the pending hint
             const blockWithHint = state.currentLevel.level.blocks.find(
-                block => block.event === state.currentLevel.pendingHintId
+                block => block.event === state.currentLevel.pendingHintId && block.hint
             );
 
             // Create a buddy help message
@@ -415,21 +408,10 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
             const nextLevelId = findNextLevelId(state);
             if (!nextLevelId) return newState;
 
-            const nextLevelData = findLevelData(state.topics, nextLevelId);
-            if (!nextLevelData) return newState;
-
-            // Create a buddy instruction message for the next level
-            const buddyInstructMessage: ChatMessage = {
-                type: 'buddy-instruct',
-                text: `Let's look at ${nextLevelData.filename}. Find and fix all the issues in this code.`
-            };
-
-            return {
-                ...newState,
-                currentLevelId: nextLevelId,
-                currentLevel: createInitialLevelState(nextLevelData),
-                chatMessages: [buddyInstructMessage]
-            };
+            return gameReducer(newState, {
+                type: LOAD_LEVEL,
+                payload: {levelId: nextLevelId}
+            });
         }
 
         default:

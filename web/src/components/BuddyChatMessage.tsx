@@ -27,7 +27,7 @@ function BuddyChatMessage({message}: BuddyChatMessageProps): React.ReactElement 
       <span className="flex-shrink-0 mr-2 mt-1">
         😎️
       </span>
-            <div className={`max-w-[80%] rounded-lg p-3 bg-gray-900 ${getTextColor(message.type)}`}>
+            <div className={`rounded-lg p-3 bg-gray-900 ${getTextColor(message.type)}`}>
                 <span className="whitespace-pre-wrap">{message.text}</span>
             </div>
         </div>

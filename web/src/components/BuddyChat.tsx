@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useMemo} from 'react';
 import {GameStateContext, GET_HINT, NEXT_LEVEL, POST_BUDDY_MESSAGE} from '../reducer';
 import BuddyChatMessage from './BuddyChatMessage';
 import MyChatMessage from './MyChatMessage';
@@ -69,15 +69,39 @@ export function BuddyChat(): React.ReactElement {
         );
     };
 
+    // Determine if elements should flash
+    const shouldFlash = useMemo(() => {
+        // Case 1: Level is finished
+        if (state.currentLevel.isFinished) {
+            return true;
+        }
+
+        // Get the last message
+        const lastMessage = state.chatMessages[state.chatMessages.length - 1];
+        if (!lastMessage) return false;
+
+        // Case 2: New level instructions are shown
+        if (lastMessage.type === 'buddy-instruct') {
+            return true;
+        }
+
+        // Case 3: Auto hint appeared
+        if (lastMessage.type === 'buddy-help') {
+            return true;
+        }
+
+        return false;
+    }, [state.currentLevel.isFinished, state.chatMessages]);
+
     return (
         <div
-            className="w-1/3 absolute bottom-0 right-0 flex flex-col bg-gray-800 border-l border-t border-gray-700 overflow-hidden"
+            className={`w-1/3 absolute bottom-0 right-0 flex flex-col bg-gray-800 border-l border-t border-gray-700 ${shouldFlash ? 'flash-border' : ''} overflow-hidden`}
         >
-            <div className="p-2 border-b border-gray-700">
+            <div className={`p-2 border-b border-gray-700 ${shouldFlash ? 'flash-header' : ''}`}>
                 <h2 className="text-lg font-medium text-white">Buddy Chat</h2>
             </div>
 
-            <div className="h-64 overflow-y-auto p-3 flex flex-col-reverse space-y-reverse space-y-2">
+            <div className="h-80 overflow-y-auto p-3 flex flex-col-reverse space-y-reverse space-y-2">
                 {state.chatMessages.slice().reverse().map((message, index) => (
                     <div
                         key={index}

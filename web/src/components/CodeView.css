@@ -37,3 +37,9 @@
 pre {
     cursor: pointer;
 }
+
+.disabled-code {
+    opacity: 0.5;
+    cursor: default;
+    pointer-events: none;
+}

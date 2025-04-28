@@ -15,19 +15,19 @@ interface TopicItemProps {
  */
 export function TopicItem({state, topic, isExpanded, onToggle, onLevelSelect}: TopicItemProps): React.ReactElement {
     return (
-        <div className="mb-2">
+        <div className="">
             <div
-                className="flex items-center p-1 rounded cursor-pointer hover:bg-[#3c3c3c]"
+                className="flex items-center p-1 cursor-pointer"
                 onClick={() => onToggle(topic.name)}
             >
-        <span className="mr-1">
+        <span className="mr-1 font-mono">
           {isExpanded ? '-' : '+'}
         </span>
                 <span>{topic.name}</span>
             </div>
 
             {isExpanded && (
-                <div className="ml-4 mt-1">
+                <div>
                     {topic.levels.map((level) => (
                         <LevelItem
                             key={level.filename}

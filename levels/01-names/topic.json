@@ -4,6 +4,14 @@
     {
       "id": "naming-good-names",
       "text": "Use descriptive names that convey intent."
+    },
+    {
+      "id": "no-abbr",
+      "text": "Don't use abbreviations unless they are well-known."
+    },
+    {
+      "id": "sign-is-doc",
+      "text": "Function arguments are documentation. Use meaningful names!"
     }
   ]
 }

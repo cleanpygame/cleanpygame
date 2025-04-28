@@ -28,7 +28,7 @@
               "type": "replace",
               "text": "def bar():\n    print(\"Hello bar!\")\n",
               "replacement": "def greet_user():\n    print(\"Hello\")\n",
-              "event": "48d1f706-fc0a-4883-87f9-c313465a0422",
+              "event": "a02c4fde-723a-4545-a72c-7b145a4321db",
               "clickable": "bar",
               "explanation": "No Foos!"
             },
@@ -57,7 +57,7 @@
               "type": "replace-span",
               "clickable": "foo",
               "replacement": "bar bar",
-              "event": "2280af70-326f-4f6b-a999-3523eb8114bd",
+              "event": "fb567f09-accb-447f-86b3-5b31733c3e67",
               "explanation": "no foos",
               "hint": "Look at foo!"
             },
@@ -106,7 +106,7 @@
               "type": "replace-span",
               "clickable": "BaD_VAriABLE_NAME",
               "replacement": "greeting",
-              "event": "bbd01b81-2098-4221-a9b8-59b59ef4cc32",
+              "event": "43fc29d8-86c6-415f-adfb-aa91dfd7eb11",
               "explanation": "Names should be meaningfull",
               "hint": "Click on bad variable name!"
             }
@@ -128,7 +128,7 @@
               "type": "replace-span",
               "clickable": "idx",
               "replacement": "day_of_week",
-              "event": "d66b1f14-f971-4acd-829c-bef39c9a4a3c",
+              "event": "a8c4b609-e200-49a0-8b06-3549f062e4e6",
               "explanation": "Argument name is a part of code documentation. It is important to make it meaningful",
               "hint": "%sign-is-doc"
             },
@@ -136,7 +136,7 @@
               "type": "replace-span",
               "clickable": "tt",
               "replacement": "temperature",
-              "event": "506c8ddc-3d4e-4f12-9d66-904992b5b795",
+              "event": "b81ef81c-1aa8-44f9-a7ea-46c2aea6be9a",
               "explanation": "%no-abbr",
               "hint": "%sign-is-doc"
             },
@@ -144,7 +144,7 @@
               "type": "replace-span",
               "clickable": "dnms",
               "replacement": "day_names",
-              "event": "67f430aa-0eec-4e8a-9109-4c6123cafedb",
+              "event": "fbf3310f-cf3e-456a-b1a5-3da2b941bc55",
               "explanation": "Vowels are happy now!",
               "hint": "Do you wnt hnts? yrwlcm!"
             },
@@ -152,7 +152,7 @@
               "type": "replace-span",
               "clickable": "fmt_temp",
               "replacement": "format_temperature",
-              "event": "817e235a-bcee-4058-8568-0a401a8664d3",
+              "event": "a58e9efd-b549-4abc-b9ca-2f2a548a499c",
               "explanation": "Is temp for temporary?",
               "hint": "%sign-is-doc"
             }
@@ -171,31 +171,31 @@
               "type": "replace-span",
               "clickable": "get",
               "replacement": "get_empty_positions",
-              "event": "89bfbb7c-2dec-4414-befc-cf98b50d4d55",
+              "event": "8fea2be1-43d7-4b0e-b198-62684b70f0c0",
               "explanation": "Function name should describe what it does",
               "hint": "What does this function actually return?"
             },
             {
               "type": "replace-span",
-              "clickable": "lst1",
-              "replacement": "empty_positions",
-              "event": "0401f9e2-2aba-4bd4-bbe2-fdf889b5a61e",
-              "explanation": "Use descriptive variable names",
-              "hint": "What does this list store?"
-            },
-            {
-              "type": "replace-span",
               "clickable": "lst",
               "replacement": "cells",
-              "event": "61366329-5601-4e06-bcc9-e2a1d500dc49",
+              "event": "2032562e-7043-483b-a18a-bfde5f8d18a1",
               "explanation": "Use descriptive variable names",
               "hint": "What does this list contain?"
             },
             {
               "type": "replace-span",
+              "clickable": "lst1",
+              "replacement": "empty_positions",
+              "event": "3a93151b-adb4-4d18-ac35-515c10070499",
+              "explanation": "Use descriptive variable names",
+              "hint": "What does this list store?"
+            },
+            {
+              "type": "replace-span",
               "clickable": "c",
               "replacement": "cell",
-              "event": "c52c8ed0-92de-41f2-a3ec-d54424d5449a",
+              "event": "44ce4aea-7d99-413b-bcb9-cca923f8c146",
               "explanation": "Single-letter variable names are rarely descriptive",
               "hint": "What does each item in the list represent?"
             }
@@ -208,39 +208,21 @@
           "blocks": [
             {
               "type": "text",
-              "text": "\ndef get_views_per_second(views, date):\n"
-            },
-            {
-              "type": "replace-on",
-              "event": "MAGIC",
-              "text": "",
-              "replacement": "    n = 24 * 60 * 60\n"
-            },
-            {
-              "type": "text",
-              "text": "    daily_views = sum(1 for v in views if v.date == date)\n    return daily_views / 86400\n\n"
+              "text": "\ndef get_views_per_second(views, date):\n    n = 24 * 60 * 60\n    daily_views = sum(1 for v in views if v.date == date)\n    return daily_views / 86400\n\n"
             },
             {
               "type": "replace-span",
               "clickable": "86400",
-              "replacement": "(24*60*60)",
-              "event": "5389d8f8-5cdd-4bd7-bbbb-2562ea3cf2bc",
+              "replacement": "24*60*60",
+              "event": "22050b4b-cb0f-4dca-a0ce-47291825c422",
               "explanation": "Magic numbers make code harder to understand",
               "hint": "What does this number represent?"
             },
             {
               "type": "replace-span",
-              "clickable": "(24*60*60)",
-              "replacement": "n",
-              "event": "MAGIC",
-              "explanation": "Constant should have name",
-              "hint": "Why stop here?!"
-            },
-            {
-              "type": "replace-span",
               "clickable": "n",
               "replacement": "seconds_in_24h",
-              "event": "acda337d-d847-4350-b8df-111c61951170",
+              "event": "fcc11e1c-5a2d-40d5-b30c-4d6e04790436",
               "explanation": "Variable names should be descriptive",
               "hint": "What does this variable represent?"
             }
@@ -259,7 +241,7 @@
               "type": "replace-span",
               "clickable": "l",
               "replacement": "pattern_len",
-              "event": "5aea8dbe-182d-46e4-8f9c-f33d16435879",
+              "event": "d67595e4-afa8-45a5-ac83-ca7af79a9229",
               "explanation": "Avoid using lowercase 'l' as a variable name as it can be confused with the number '1'",
               "hint": "What does this variable represent?"
             },
@@ -267,7 +249,7 @@
               "type": "replace-span",
               "clickable": "i+1",
               "replacement": "i+l",
-              "event": "3a82594d-45b3-46de-84ce-b656581a22ba",
+              "event": "e4aad286-102b-4923-bd06-e273853401e9",
               "explanation": "This is a bug! We need to use the pattern length, not just 1 character",
               "hint": "How many characters should we compare?"
             }
@@ -286,7 +268,7 @@
               "type": "replace-span",
               "clickable": "flag",
               "replacement": "after_slash",
-              "event": "e6872c02-9b2b-43b2-890d-60cc215568f6",
+              "event": "40005d02-8d82-481e-9e78-40f8617bf24b",
               "explanation": "Variable names should describe their purpose, not just their type",
               "hint": "What does this boolean flag actually indicate?"
             },
@@ -294,7 +276,7 @@
               "type": "replace-span",
               "clickable": "ss",
               "replacement": "unescaped",
-              "event": "387e9ffa-a5bc-41b6-b2ac-e8915c3b8c3f",
+              "event": "f51acd34-62b0-4129-a20b-cd9308fc36d8",
               "explanation": "Single-letter variable names (or duplicates like 'ss') are rarely descriptive",
               "hint": "What does this string contain?"
             },
@@ -302,7 +284,7 @@
               "type": "replace-span",
               "clickable": "s",
               "replacement": "escaped",
-              "event": "38c33e78-b455-403b-b1e9-77172b038399",
+              "event": "1429473b-8b60-47ba-8945-b081dbf578e5",
               "explanation": "Single-letter variable names are rarely descriptive",
               "hint": "What does this parameter represent?"
             }
@@ -321,7 +303,7 @@
               "type": "replace-span",
               "clickable": "flag",
               "replacement": "every_order_has_discounted_item",
-              "event": "825f15eb-daf1-463c-a175-79dd6b5884e7",
+              "event": "965ca40d-a2ae-4ef6-b0ca-b2e8adec93f5",
               "explanation": "Variable names should describe their purpose, not just their type",
               "hint": "What does this boolean flag actually track?"
             },
@@ -329,7 +311,7 @@
               "type": "replace-span",
               "clickable": "flag2",
               "replacement": "has_discount",
-              "event": "e7f861da-a8b6-4585-9325-556c78cd7dd7",
+              "event": "052fb5bd-29b4-494f-8159-be6cedd64a26",
               "explanation": "Numbered variables (flag2) are rarely descriptive",
               "hint": "What does this boolean flag indicate about the order?"
             }
@@ -348,7 +330,7 @@
               "type": "replace-span",
               "clickable": "GetBigramsFrequency",
               "replacement": "get_bigrams_frequency",
-              "event": "134caada-0a26-4a27-9b43-a252b2a39804",
+              "event": "7c232594-68ac-41f6-a1e3-0601ae59f303",
               "explanation": "Python functions should use snake_case naming style",
               "hint": "Function names in Python should be lowercase with underscores"
             },
@@ -356,7 +338,7 @@
               "type": "replace-span",
               "clickable": "bigramsCount",
               "replacement": "bigrams_count",
-              "event": "8582c6e1-147a-4d95-bb98-8705948b3899",
+              "event": "2fe7d591-44e5-48ca-a8af-c19a9e31cc88",
               "explanation": "Python variables should use snake_case naming style",
               "hint": "Variable names in Python should be lowercase with underscores"
             },
@@ -364,7 +346,7 @@
               "type": "replace-span",
               "clickable": "I",
               "replacement": "i",
-              "event": "0242b846-f7ca-4305-a350-68b7d7f82ea3",
+              "event": "d4e572ff-6aa2-4801-b8a6-ffdf8827c96f",
               "explanation": "Single-letter variables should be lowercase",
               "hint": "Loop counters are typically lowercase"
             },
@@ -372,7 +354,7 @@
               "type": "replace-span",
               "clickable": "ws",
               "replacement": "words",
-              "event": "99c62a15-ff15-4131-ad64-60bffe60f5cd",
+              "event": "4b83f7c8-65a1-4d9c-8e21-bbebb10ac435",
               "explanation": "Variable names should be descriptive",
               "hint": "What does this parameter represent?"
             },
@@ -380,7 +362,7 @@
               "type": "replace-span",
               "clickable": "bg",
               "replacement": "bigram",
-              "event": "7178bb3e-d6be-4c8e-88db-d4b1f301f28d",
+              "event": "a02ede9e-c00d-47a6-9901-7ae3e3231a34",
               "explanation": "Avoid abbreviations unless they are well-known",
               "hint": "What does this variable represent?"
             },
@@ -388,7 +370,7 @@
               "type": "replace-span",
               "clickable": "bigramsfrequency",
               "replacement": "bigrams_frequency",
-              "event": "e3c70401-a68d-4bf6-af2b-67ea750aa8de",
+              "event": "ad8e3e87-4ed0-446d-b5d3-3ce300bbd3d7",
               "explanation": "Python variables should use snake_case naming style",
               "hint": "Variable names in Python should be lowercase with underscores"
             }
@@ -407,7 +389,7 @@
               "type": "replace-span",
               "clickable": "xs",
               "replacement": "destination",
-              "event": "a708a897-f6ea-4311-9406-b32d30e00da5",
+              "event": "e29ee731-fd3a-48fa-ad85-98143b7bf4d9",
               "explanation": "Variable names should be descriptive",
               "hint": "What does this parameter represent?"
             },
@@ -415,7 +397,7 @@
               "type": "replace-span",
               "clickable": "ys",
               "replacement": "source",
-              "event": "a777462d-373d-475c-83e6-b6fdfdf32b80",
+              "event": "136df3b3-f841-48a1-b510-02df9065cc6c",
               "explanation": "Variable names should be descriptive",
               "hint": "What does this parameter represent?"
             },
@@ -423,7 +405,7 @@
               "type": "replace-span",
               "clickable": "j",
               "replacement": "dest_start",
-              "event": "32886d65-2ff4-4b00-946b-ff8ac6b2520a",
+              "event": "fd78c83d-cb67-448f-bd76-c52f5b53865e",
               "explanation": "Single-letter variable names are rarely descriptive",
               "hint": "What does this parameter represent?"
             },
@@ -431,7 +413,7 @@
               "type": "replace-span",
               "clickable": "k",
               "replacement": "src_start",
-              "event": "2f61d2d4-b4e9-432d-9547-9a702bad852b",
+              "event": "30f38ab8-dac7-4044-b665-520b3268c547",
               "explanation": "Single-letter variable names are rarely descriptive",
               "hint": "What does this parameter represent?"
             },
@@ -439,7 +421,7 @@
               "type": "replace-span",
               "clickable": "n",
               "replacement": "count",
-              "event": "ec622667-1c4a-4931-8654-2bb7803290e2",
+              "event": "65dbbff8-7bf1-4a11-a616-3afb65240dc6",
               "explanation": "Single-letter variable names are rarely descriptive",
               "hint": "What does this parameter represent?"
             }
@@ -458,7 +440,7 @@
               "type": "replace-span",
               "clickable": "n",
               "replacement": "board_size",
-              "event": "7d59b63f-39b6-4a24-93dd-754489ee8e1d",
+              "event": "d3a6d1d6-c40d-466e-9043-8717a3f00d07",
               "explanation": "Variable names should be descriptive",
               "hint": "What does this variable represent?"
             },
@@ -466,7 +448,7 @@
               "type": "replace-span",
               "clickable": "initialization",
               "replacement": "initialize_board",
-              "event": "7867d47f-2226-46b9-91f1-75c525d5573b",
+              "event": "09b09fd8-fcf3-40ff-87ae-840071792e95",
               "explanation": "Function names should be verbs",
               "hint": "What action does this function perform?"
             },
@@ -474,7 +456,7 @@
               "type": "replace-span",
               "clickable": "creating_board",
               "replacement": "create_board",
-              "event": "efdbe693-5022-460f-93b4-54158c1574ba",
+              "event": "f793f9fd-89dc-464b-be77-b6b09a9cc2f9",
               "explanation": "Function names should be verbs, not gerunds",
               "hint": "Use the imperative form for function names"
             },
@@ -482,7 +464,7 @@
               "type": "replace-span",
               "clickable": "board_reader",
               "replacement": "read_board",
-              "event": "ce235b66-fdb6-433e-b106-a40b95336506",
+              "event": "36d0419b-f9bc-4df6-a291-1a85f01ebbff",
               "explanation": "Function names should be verbs",
               "hint": "What action does this function perform?"
             }
@@ -501,7 +483,7 @@
               "type": "replace-span",
               "clickable": "InstructionParser",
               "replacement": "parse_instructions",
-              "event": "8a998693-b45b-4f6a-8ab5-b1877fd9d065",
+              "event": "ef1f6ba1-d068-4f2b-9125-491ec7541b5a",
               "explanation": "Function names should be verbs and use snake_case in Python",
               "hint": "What does this function actually do?"
             },
@@ -509,7 +491,7 @@
               "type": "replace-span",
               "clickable": "Instructions",
               "replacement": "instructions",
-              "event": "7c032b64-bf1d-40a5-b547-7a68fc7269e4",
+              "event": "8232a19a-b715-4742-afb2-6007214e5d96",
               "explanation": "Variable names should use snake_case in Python",
               "hint": "Consistent naming conventions make code more readable"
             },
@@ -517,7 +499,7 @@
               "type": "replace-span",
               "clickable": "F",
               "replacement": "inside_begin_end",
-              "event": "32dae8bb-cec9-4fc0-9c9e-bbb5d2609a48",
+              "event": "2cad5d46-7e31-4b8d-8bc5-de152529b0f8",
               "explanation": "Single-letter variable names are rarely descriptive",
               "hint": "What does this boolean flag actually indicate?"
             },
@@ -525,7 +507,7 @@
               "type": "replace-span",
               "clickable": "l",
               "replacement": "line",
-              "event": "63986f93-0381-47b4-a203-dd4b27ca505e",
+              "event": "77904763-4c06-4923-821f-20c6be236661",
               "explanation": "Single-letter variable names are rarely descriptive",
               "hint": "What does each item in the loop represent?"
             },
@@ -533,23 +515,23 @@
               "type": "replace-span",
               "clickable": "i",
               "replacement": "instructions_text",
-              "event": "6a8af336-d3d1-4990-bdf4-c3b49e3953b9",
+              "event": "0fce2a60-4f7d-48ed-a625-c01453a17bb8",
               "explanation": "Single-letter variable names are rarely descriptive",
               "hint": "What does this parameter represent?"
             },
             {
               "type": "replace-span",
               "clickable": "4:",
-              "replacement": "len(\"add \"):",
-              "event": "ef18de0a-7da9-4951-bb63-907818fe1bc5",
+              "replacement": "len(add ):",
+              "event": "6fee393a-d166-460c-853d-80ca5b0efdfb",
               "explanation": "Magic numbers should be replaced with meaningful expressions",
               "hint": "What does this number represent?"
             },
             {
               "type": "replace-span",
               "clickable": "8:",
-              "replacement": "len(\"replace \"):",
-              "event": "8b3e9d2c-8caa-4ca2-aecf-b65eca200a81",
+              "replacement": "len(replace ):",
+              "event": "4c59b81d-2aad-434f-b7e9-cf22fa6d3019",
               "explanation": "Magic numbers should be replaced with meaningful expressions",
               "hint": "What does this number represent?"
             }
