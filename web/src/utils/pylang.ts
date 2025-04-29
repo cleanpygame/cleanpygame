@@ -6,40 +6,6 @@ import {LevelBlock} from "../types";
  *
  * @param blocks - The code blocks to process
  * @param events - List of triggered event IDs
- * @returns - triggered span replacements
- */
-function sortSpanBlocks(blocks: LevelBlock[], events: string[]): {
-    triggeredSpans: LevelBlock[];
-    pendingSpans: LevelBlock[];
-} {
-    const triggered: LevelBlock[] = [];
-    const pending: LevelBlock[] = [];
-    for (const block of blocks) {
-        if (block.type !== 'replace-span') continue;
-        if (events.includes(block.event || ''))
-            triggered.push(block);
-        else
-            pending.push(block);
-    }
-    return {triggeredSpans: triggered, pendingSpans: pending};
-}
-
-function countLines(text: string | undefined): number {
-    if (!text) return 0;
-    let count = 0;
-    for (let i = 0; i < text.length; i++) {
-        if (text[i] === '\n') {
-            count++;
-        }
-    }
-    return count;
-}
-
-/**
- * Processes blocks and applies events to generate final code with interactive regions
- *
- * @param blocks - The code blocks to process
- * @param events - List of triggered event IDs
  * @returns - The resulting code and interactive regions
  */
 export function applyEvents(blocks: LevelBlock[], events: string[]): {
@@ -47,10 +13,34 @@ export function applyEvents(blocks: LevelBlock[], events: string[]): {
     regions: EventRegion[];
 } {
     const {pendingSpans, triggeredSpans} = sortSpanBlocks(blocks, events);
-    const {code, regions} = renderReplaceBlocks(blocks, events, triggeredSpans);
-    const spanRegions = getRegionsFromPendingReplaceSpans(pendingSpans, code);
+
+    // Create a deep copy of pending spans to avoid modifying the original blocks
+    const processedPendingSpans = pendingSpans.map(span => ({...span}));
+
+    // Update clickable text in pending replace-span blocks with triggered replacements
+    for (const pendingSpan of processedPendingSpans) {
+        if (pendingSpan.clickable) {
+            pendingSpan.clickable = replaceAll(pendingSpan.clickable, triggeredSpans);
+        }
+        if (pendingSpan.replacement) {
+            pendingSpan.replacement = replaceAll(pendingSpan.replacement, triggeredSpans);
+        }
+    }
+
+    // Process blocks to get initial code
+    const {code: initialCode, regions} = renderReplaceBlocks(blocks, events, triggeredSpans);
+
+    // Apply triggered span replacements to the entire code
+    let processedCode = initialCode;
+    for (const triggeredSpan of triggeredSpans) {
+        if (triggeredSpan.clickable && triggeredSpan.replacement) {
+            processedCode = replaceSubstringWithWordBoundaries(processedCode, triggeredSpan.clickable, triggeredSpan.replacement);
+        }
+    }
+
+    const spanRegions = getRegionsFromPendingReplaceSpans(processedPendingSpans, processedCode);
     return {
-        code: code.replace(/\n$/, ""),
+        code: processedCode.replace(/\n$/, ""),
         regions: [...regions, ...spanRegions]
     };
 }
@@ -315,4 +305,38 @@ export function findAllSubstringPositions(text: string, substring: string): Arra
     }
 
     return results;
+}
+
+/**
+ * Processes blocks and applies events to generate final code with interactive regions
+ *
+ * @param blocks - The code blocks to process
+ * @param events - List of triggered event IDs
+ * @returns - triggered span replacements
+ */
+function sortSpanBlocks(blocks: LevelBlock[], events: string[]): {
+    triggeredSpans: LevelBlock[];
+    pendingSpans: LevelBlock[];
+} {
+    const triggered: LevelBlock[] = [];
+    const pending: LevelBlock[] = [];
+    for (const block of blocks) {
+        if (block.type !== 'replace-span') continue;
+        if (events.includes(block.event || ''))
+            triggered.push(block);
+        else
+            pending.push(block);
+    }
+    return {triggeredSpans: triggered, pendingSpans: pending};
+}
+
+function countLines(text: string | undefined): number {
+    if (!text) return 0;
+    let count = 0;
+    for (let i = 0; i < text.length; i++) {
+        if (text[i] === '\n') {
+            count++;
+        }
+    }
+    return count;
 }

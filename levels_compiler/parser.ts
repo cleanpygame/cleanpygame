@@ -11,7 +11,10 @@ export interface ParseContext {
 
 // Helper functions
 export function cleanArg(s: string): string {
-    return s.trim().replace(/^"(.*)"$/, '$1');
+    // First remove surrounding quotes
+    const trimmed = s.trim().replace(/^"(.*)"$/, '$1');
+    // Then replace escaped quotes with just quotes
+    return trimmed.replace(/\\"/g, '"');
 }
 
 export function parseDirective(context: ParseContext): [string, string[]] {
@@ -35,6 +38,9 @@ export function parseDirective(context: ParseContext): [string, string[]] {
 
             if (char === '"' && (i === 0 || argString[i - 1] !== '\\')) {
                 inQuotes = !inQuotes;
+            } else if (char === '"' && i > 0 && argString[i - 1] === '\\') {
+                // Handle escaped quotes by removing the backslash and adding just the quote
+                currentArg = currentArg.slice(0, -1) + '"';
             } else if (char === ' ' && !inQuotes) {
                 if (currentArg) {
                     args.push(currentArg);

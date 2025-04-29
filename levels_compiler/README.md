@@ -13,7 +13,9 @@ npm install
 ### Generate levels.json
 
 ```bash
-npm start --source <levels_dir> --output <output.json>
+npm start
+ 
+npm run dev <levels_dir> <output.json>
 ```
 
 ## Integration into build pipeline

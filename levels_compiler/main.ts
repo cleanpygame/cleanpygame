@@ -68,21 +68,6 @@ export function generate(source: string, output: string): void {
 // In ES modules, we can use import.meta.url to check if this is the main module
 const isMainModule = import.meta.url.endsWith(process.argv[1].replace(/\\/g, '/'));
 if (isMainModule) {
-    // Parse command line arguments
     const args = process.argv.slice(2);
-    let source = 'levels';
-    let output = 'web/src/data/levels.json';
-
-    // Simple argument parsing
-    for (let i = 0; i < args.length; i++) {
-        if (args[i] === '--source' && i + 1 < args.length) {
-            source = args[i + 1];
-            i++;
-        } else if (args[i] === '--output' && i + 1 < args.length) {
-            output = args[i + 1];
-            i++;
-        }
-    }
-
-    generate(source, output);
+    generate(args[0], args[1]);
 }

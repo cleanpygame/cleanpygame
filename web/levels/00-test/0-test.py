@@ -4,7 +4,7 @@ This is a test level
 """
 ##wisdoms 1 2
 def foo():
-    print(42 + 31)
+    print(42)
 
 ##replace - bar
 def bar():
