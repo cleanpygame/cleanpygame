@@ -1,5 +1,5 @@
 ##level final.py
-"""
+"""buddy
 Finally I finished a wonderful piece of the excellent code. However, according to our team process, somebody should review it.
 
 As it is already perfect, don't lose your time, just approve it!

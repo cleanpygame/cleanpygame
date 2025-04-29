@@ -1,5 +1,5 @@
 ##level unescape.py
-"""
+"""buddy
 1. If a variable stores string, it is 's'.
 2. If it stores a boolean, it is 'flag'.
 3. However, sometimes one also need 's1', 's2', etc.

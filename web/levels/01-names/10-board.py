@@ -1,5 +1,5 @@
 ##level board.py
-"""
+"""buddy
 It is simple: 
 'initialization' consists of 'creating a board' and filling it with the 'board_reader'!
 """

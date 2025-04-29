@@ -1,8 +1,10 @@
-##filename onboarding.py
+##level onboarding.py
+"""buddy
+This is a test level
+"""
 ##wisdoms 1 2
 def foo():
-    print(42)
-
+    print(42 + 31)
 
 ##replace - bar
 def bar():
@@ -22,13 +24,20 @@ def BAD_CODE():
 
 ##replace-on BAD_CODE
 ##with
-def BAD_CODE():
-    print("GOOD")
+def GOOD_CODE():
+    print("ABSOLUTELY GOOD CODE!")
 ##end
-##replace-span - foo "bar bar"
+##replace-span - foo "nonfoo"
 ##explain "no foos"
 ##hint "Look at foo!"
 
 ##replace-span e42 "42" "the_answer"
-##explain "No Foos!"
+##explain "no magic constants!"
 ##hint "42 = 6 * 8"
+##end
+# here after ##end instruction the test code starts. It should be ignored by toolchain!
+foo()
+bar()
+greet_user()
+BAD_CODE()
+GOOD_CODE()

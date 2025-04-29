@@ -1,7 +1,8 @@
 ##level contains.py
-"""
+"""buddy
 Uhh.. Can't find a bug here... Can you help me a little?
 """
+##reply "Let's find it!"
 
 def contains(text, pattern):
     l = len(pattern)
@@ -10,10 +11,8 @@ def contains(text, pattern):
             return True
     return False
 
-# Hint for the future: never use lowercase 'l' as a variable name!
-
 ##replace-span - l pattern_len
-##explain "Avoid using lowercase 'l' as a variable name as it can be confused with the number '1'"
+##explain "Hint for the future: never use lowercase 'l' as a variable name!"
 ##hint "What does this variable represent?"
 ##replace-span - i+1 i+l
 ##explain "This is a bug! We need to use the pattern length, not just 1 character"

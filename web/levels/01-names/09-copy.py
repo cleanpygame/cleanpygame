@@ -1,5 +1,5 @@
 ##level copy.py
-"""
+"""buddy
 Huh, somebody wrote documentation for their code?! Weakling! Real coders don't read or write docs. They read and write CODE!
 """
 

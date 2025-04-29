@@ -5,10 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "cd ../toolchain/web && npm install && npm run generate",
     "build": "tsc && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "generate-levels": "cd ../toolchain/web && npm run generate"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.4",

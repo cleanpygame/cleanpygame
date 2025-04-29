@@ -1,5 +1,5 @@
 ##level bigrams.py
-"""
+"""buddy
 Anders and Nicolaus wrote this code. Their naming style is a little bit non typical for python...
 """
 

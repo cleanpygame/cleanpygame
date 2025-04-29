@@ -1,5 +1,5 @@
 ##level discount.py
-"""
+"""buddy
 If we have already 'flag' and we need the second one, how should we name it? flag1 or flag2? What is your favorite?
 """
 

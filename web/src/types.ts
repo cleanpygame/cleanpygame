@@ -28,6 +28,10 @@ export interface LevelData {
     wisdoms: string[];
     blocks: LevelBlock[];
     instructions?: string;
+    chat: {
+        buddy: string;
+        reply?: string | undefined;
+    }
 }
 
 export interface Topic {

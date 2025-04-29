@@ -1,5 +1,5 @@
 ##level views.py
-"""
+"""buddy
 Do not change any constants here! They are magically calculated.
 Nobody knows how, but everything works perfectly.
 """

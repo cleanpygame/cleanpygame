@@ -1,10 +1,9 @@
 ##level cells.py
-"""
+"""buddy
 Nice work! After your fixes code becomes much more readable. 
-And this piece of code is realy short and simple.
+And this piece of code is really short and simple.
 Not sure if it needs any changes.
 """
-
 def get(lst):
     lst1 = []
     for c in lst:
