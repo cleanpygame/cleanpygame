@@ -7,6 +7,7 @@ interface CodeViewProps {
     animate?: boolean;
     contentId?: string;
     disable?: boolean;
+    isFinished?: boolean;
     onClick: (lineIndex: number, colIndex: number, token: string) => void;
 }
 
@@ -18,6 +19,7 @@ export function CodeView({
                              code,
                              animate = false,
                              disable = false,
+                             isFinished = false,
                              onClick
                          }: CodeViewProps): React.ReactElement {
     const [cursor, setCursor] = useState<number>(0);
@@ -54,7 +56,7 @@ export function CodeView({
     const visibleCode = animate ? code.substring(0, Math.min(code.length, cursor)) : code;
 
     const handleClick = (lineIndex: number, colIndex: number, token: Token): void => {
-        if (disable) return;
+        if (disable || isFinished) return;
 
         const key = `${lineIndex} ${colIndex}`;
         setFlashingKey(key);
@@ -120,10 +122,14 @@ export function CodeView({
         );
     }
 
+    // Determine which theme to use
+    const theme = isFinished ? themes.dracula : themes.vsDark;
+
     return (
-        <Highlight code={visibleCode} theme={themes.vsDark} language="python">
+        <Highlight code={visibleCode} theme={theme} language="python">
             {({className, style, tokens, getLineProps, getTokenProps}) => (
-                <pre className={`${className} ${disable ? 'disabled-code' : ''}`} style={style}>
+                <pre className={`${className} ${disable ? 'disabled-code' : ''} ${isFinished ? 'finished-code' : ''}`}
+                     style={style}>
           {tokens.map((lineTokens, lineIndex) =>
               renderLine(
                   lineIndex,

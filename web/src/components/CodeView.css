@@ -36,10 +36,24 @@
 
 pre {
     cursor: pointer;
+    transition: background-color 0.5s, color 0.5s;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    overflow: auto;
+}
+
+pre span {
+    transition: color 0.5s;
 }
 
 .disabled-code {
     opacity: 0.5;
+    cursor: default;
+    pointer-events: none;
+}
+
+.finished-code {
     cursor: default;
     pointer-events: none;
 }

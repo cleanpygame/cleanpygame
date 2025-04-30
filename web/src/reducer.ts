@@ -128,7 +128,7 @@ export const initialState: GameState = {
     solvedLevels: [],
     discoveredWisdoms: [],
     notebookOpen: false,
-    chatMessages: [getInstructionChatMessage(firstTopic.levels[0])],
+    chatMessages: [],
 };
 
 /**
@@ -184,7 +184,7 @@ const findLevelData = (topics: Topic[], levelId: LevelId): LevelData | null => {
 function getInstructionChatMessage(levelData: LevelData): ChatMessage {
     return {
         type: 'buddy-instruct' as ChatMessageType,
-        text: levelData.instructions || `Let's look at ${levelData.filename}. Find and fix all the issues in this code.`
+        text: levelData.instructions || `Find and fix all the issues in this code.`
     };
 }
 
@@ -229,18 +229,31 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
             // Create an initial level state
             const newLevelState = createInitialLevelState(levelData);
 
+            // Create messages for the chat
+            const messages = [];
+
+            // Add a buddy message if it exists
+            if (levelData.chat && levelData.chat.buddy) {
+                messages.push({
+                    type: 'buddy-instruct' as ChatMessageType,
+                    text: levelData.chat.buddy
+                });
+            } else {
+                messages.push(getInstructionChatMessage(levelData));
+            }
+
             return {
                 ...state,
                 currentLevelId: levelId,
                 currentLevel: newLevelState,
-                chatMessages: [getInstructionChatMessage(levelData)]
+                chatMessages: messages
             };
         }
 
         case APPLY_FIX: {
             if (!state.currentLevel) return state;
 
-            const {eventId, lineIndex, colIndex} = action.payload;
+            const {eventId} = action.payload;
             const triggeredEvents = state.currentLevel.triggeredEvents.includes(eventId)
                 ? state.currentLevel.triggeredEvents
                 : [...state.currentLevel.triggeredEvents, eventId];
@@ -250,21 +263,15 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
             // Update code and regions with applyEvents
             const {code, regions} = applyEvents(state.currentLevel.level.blocks, triggeredEvents);
 
-
-            // Create messages for the chat
-            const meMessage: ChatMessage = {
-                type: 'me',
-                text: `I see issue at ${lineIndex + 1}:${colIndex + 1}`
-            };
-
             // Find the block that was triggered
             const triggeredBlock = state.currentLevel.level.blocks.find(
                 block => block.event === eventId && block.explanation
             );
 
+            // Create a buddy explanation message
             const buddyExplainMessage: ChatMessage = {
                 type: 'buddy-explain',
-                text: `Yes! ${triggeredBlock?.explanation}`
+                text: triggeredBlock?.explanation || 'Good job!'
             };
 
             // Check if all issues are fixed
@@ -272,15 +279,46 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
                 .filter(block => block.event && block.type !== 'neutral')
                 .every(block => triggeredEvents.includes(block.event || '') || eventId === block.event);
 
-            // If all issues are fixed, add a summary message
-            const buddySummarizeMessage: ChatMessage | null = allIssuesFixed ? {
-                type: 'buddy-summarize',
-                text: 'Great job! You\'ve fixed all the issues in this level.'
-            } : null;
+            // If all issues are fixed, add a summary message with wisdoms
+            let buddySummarizeMessage: ChatMessage | null = null;
+
+            if (allIssuesFixed) {
+                // Get the wisdoms for this level
+                const levelWisdoms = state.currentLevel.level.wisdoms;
+
+                // Find the wisdom entries
+                const wisdomEntries = levelWisdoms.map(wisdomId => {
+                    // Find the topic that contains this wisdom
+                    for (const topic of state.topics) {
+                        const wisdom = topic.wisdoms.find(w => w.id === wisdomId);
+                        if (wisdom) {
+                            return wisdom;
+                        }
+                    }
+                    return null;
+                }).filter(Boolean);
+
+                // Create the message text
+                let messageText = 'Great job! You\'ve fixed all the issues in this level.';
+
+                // Add wisdoms if there are any
+                if (wisdomEntries.length > 0) {
+                    messageText += '\n\nWisdoms unlocked:\n';
+                    wisdomEntries.forEach((wisdom, index) => {
+                        if (wisdom) {
+                            messageText += `${index + 1}. ${wisdom.text}\n`;
+                        }
+                    });
+                }
+
+                buddySummarizeMessage = {
+                    type: 'buddy-summarize',
+                    text: messageText
+                };
+            }
 
             // Add messages to chat
             const newMessages: ChatMessage[] = [
-                meMessage,
                 buddyExplainMessage,
                 ...(buddySummarizeMessage ? [buddySummarizeMessage] : [])
             ];

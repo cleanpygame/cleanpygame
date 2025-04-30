@@ -26,19 +26,19 @@ export function LevelViewportContainer(): React.ReactElement {
     const shouldDisableCodeView = useMemo(() => {
         // Case 1: Level is finished
         if (state.currentLevel?.isFinished) {
-            return true;
+            return false; // Don't block editor when level is finished
         }
 
-        // Case 2: New level instructions are shown
+        // Case 2: New level instructions are shown and reply is required
         if (state.chatMessages.length > 0) {
             const lastMessage = state.chatMessages[state.chatMessages.length - 1];
-            if (lastMessage.type === 'buddy-instruct') {
+            if (lastMessage.type === 'buddy-instruct' && state.currentLevel?.level.chat.reply) {
                 return true;
             }
         }
 
         return false;
-    }, [state.currentLevel?.isFinished, state.chatMessages]);
+    }, [state.currentLevel?.isFinished, state.chatMessages, state.currentLevel?.level.chat.reply]);
 
     if (!state.currentLevel) {
         return (
@@ -61,6 +61,7 @@ export function LevelViewportContainer(): React.ReactElement {
                         code={state.currentLevel.code}
                         animate={true}
                         disable={shouldDisableCodeView}
+                        isFinished={state.currentLevel.isFinished}
                         onClick={handleCodeClick}
                     />
                 </div>

@@ -128,9 +128,23 @@ The main game interface is divided into two key areas:
 
 **Interactivity Cues**
 
-- The code editor is intentionally **devoid of hover or clickable hints**  
-- There is **no cursor change** and **no highlight on hover**  
-- The mouse cursor remains the standard **arrow pointer**, reinforcing the need to read and reason, not guess or hover-hunt
+No visual clues needed. The mouse cursor remains **hand pointer** over the whole code preventing hover-hunt!
+
+## UX Requirements and decisions:
+
+1. After clicking, the player clearly sees what and how something has changed.
+2. For non-obvious changes, an explanation appears that draws attention.
+3. At the beginning of the level, the player notices Buddy’s starting comments.
+4. After fixing the last error, it’s obvious to the player that the level is complete.
+5. At the end of the level, if new wisdoms appear, the player pays attention to their wording.
+
+Decisions:
+
+1. TOO-COMPLEX Typing animation for code changes.
+2. Typing animation for chat messages with explanations (non-blocking, doesn’t require a response).
+3. Same as above.
+4. Editor theme smoothly changes to a lighter one.
+5. Typing animation with a list of wisdoms in the chat and a “Next!” button.
 
 
 ## 5. Technical Architecture & Deployment Plan

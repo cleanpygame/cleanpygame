@@ -258,7 +258,7 @@ Each level is compiled into a single JSON object with the following structure:
       "text": "print(foo())",
       "replacement": "print(describe_user())",
       "event": "rename-function"
-    },
+    }
   ]
 }
 ```
