@@ -165,14 +165,12 @@ export function readReplaceOn(args: string[], context: ParseContext): LevelBlock
 
     const replacement = collectBlockUntil(context, 'end');
 
-    const block: LevelBlock = {
+    return {
         type: 'replace-on',
         text,
         replacement,
         event
     };
-
-    return block;
 }
 
 export function readAddOn(args: string[], context: ParseContext): LevelBlock {
@@ -185,14 +183,12 @@ export function readAddOn(args: string[], context: ParseContext): LevelBlock {
 
     const lines = collectBlockUntil(context, 'end');
 
-    const block: LevelBlock = {
+    return {
         type: 'replace-on',
         event,
         text: '',
         replacement: lines
     };
-
-    return block;
 }
 
 export function readRemoveOn(args: string[], context: ParseContext): LevelBlock {
@@ -205,14 +201,12 @@ export function readRemoveOn(args: string[], context: ParseContext): LevelBlock 
 
     const lines = collectBlockUntil(context, 'end');
 
-    const block: LevelBlock = {
+    return {
         type: 'replace-on',
         event,
         text: lines,
         replacement: ''
     };
-
-    return block;
 }
 
 export function readExplain(args: string[], context: ParseContext): string {
@@ -250,12 +244,10 @@ export function readNeutral(args: string[], context: ParseContext): LevelBlock {
     }
 
     context.idx++;
-    const block: LevelBlock = {
+    return {
         type: 'neutral',
         text: cleanArg(args[0])
     };
-
-    return block;
 }
 
 export function readFilename(args: string[], context: ParseContext): string {
