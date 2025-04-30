@@ -17,18 +17,18 @@ export function BuddyChat(): React.ReactElement {
 
     const {state, dispatch} = context;
 
-    const handleGetHint = (): void => {
+    const handleGetHint = (text: string): void => {
         dispatch({
             type: POST_BUDDY_MESSAGE,
-            payload: {message: {type: "me", text: 'I need help!'} as ChatMessage}
+            payload: {message: {type: "me", text} as ChatMessage}
         });
         setTimeout(() => dispatch({type: GET_HINT}), 300);
     };
 
-    const handleGotIt = (): void =>
+    const handleReply = (text: string): void =>
         dispatch({
             type: POST_BUDDY_MESSAGE,
-            payload: {message: {type: "me", text: 'Got it!'} as ChatMessage}
+            payload: {message: {type: "me", text} as ChatMessage}
         });
 
     const handleNextLevel = (): void =>
@@ -49,14 +49,14 @@ export function BuddyChat(): React.ReactElement {
 
         const lastMessage = state.chatMessages[state.chatMessages.length - 1];
         if (lastMessage && lastMessage.type === 'buddy-instruct') {
-            // Only show the reply button if level.chat.reply exists
-            if (state.currentLevel.level.chat.reply) {
+            const reply = state.currentLevel.level.chat.reply;
+            if (reply) {
                 return (
                     <button
                         className="px-4 py-2 bg-blue-600 text-white rounded-md mt-2 cursor-pointer"
-                        onClick={handleGotIt}
+                        onClick={() => handleReply(reply)}
                     >
-                        {state.currentLevel.level.chat.reply}
+                        {reply}
                     </button>
                 );
             }
@@ -66,7 +66,7 @@ export function BuddyChat(): React.ReactElement {
         return (
             <button
                 className="px-4 py-2 bg-gray-600 text-white rounded-md mt-2 cursor-pointer"
-                onClick={handleGetHint}
+                onClick={() => handleGetHint("I need help!")}
             >
                 I need help!
             </button>

@@ -11,5 +11,5 @@ def main():
     BaD_VAriABLE_NAME = "Hello!"
     print(BaD_VAriABLE_NAME)
 ##replace-span - BaD_VAriABLE_NAME greeting
-##explain "Names should be meaningfull"
+##explain "Yeh, exactly! Ready for some real work?"
 ##hint "Click on bad variable name!"

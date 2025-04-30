@@ -1,6 +1,5 @@
 import * as fs from 'fs';
 import type {LevelBlock, LevelData} from '../web/src/types.js'
-import {v4 as uuid_v4} from 'uuid'
 
 export interface ParseContext {
     filename: string;
@@ -11,7 +10,7 @@ export interface ParseContext {
 
 // Helper functions
 export function cleanArg(s: string): string {
-    // First remove surrounding quotes
+    // First, remove surrounding quotes
     const trimmed = s.trim().replace(/^"(.*)"$/, '$1');
     // Then replace escaped quotes with just quotes
     return trimmed.replace(/\\"/g, '"');
@@ -105,10 +104,11 @@ export function readReplaceSpan(args: string[], context: ParseContext): void {
         throw errorWithContext('##replace-span requires 3 arguments: event, clickable, replacement', context);
     }
 
-    const event = args[0] !== '-' ? args[0] : uuid_v4();
+    const clickable = cleanArg(args[1]);
+    const event = args[0] !== '-' ? args[0] : generateId(clickable);
     const block: LevelBlock = {
         type: 'replace-span',
-        clickable: cleanArg(args[1]),
+        clickable,
         replacement: cleanArg(args[2]),
         event
     };
@@ -122,8 +122,8 @@ export function readReplace(args: string[], context: ParseContext): void {
         throw errorWithContext('##replace requires zero, one or two arguments: event and clickable', context);
     }
 
-    const event = (args.length > 0 && args[0] !== '-') ? args[0] : uuid_v4();
     const clickable = args.length > 1 ? args[1] : undefined;
+    const event = (args.length > 0 && args[0] !== '-') ? args[0] : generateId(clickable);
 
     context.idx++;
     const text = collectBlockUntil(context, 'with');
@@ -352,6 +352,7 @@ function readOneBlock(context: ParseContext) {
 export function parseLevelFile(filePath: string): LevelData | undefined {
     const content = fs.readFileSync(filePath, 'utf-8');
     const lines = content.split(/\r?\n/);
+    resetIdGenerator();
 
     const outputLevel: LevelData = {
         filename: "",
@@ -375,3 +376,33 @@ export function parseLevelFile(filePath: string): LevelData | undefined {
     }
     return context.level;
 }
+
+
+let idCounter: Record<string, number> = {}
+
+function resetIdGenerator() {
+    idCounter = {}
+}
+
+function generateId(clickable: string | undefined) {
+    let id = makeIdFrom(clickable || "id");
+    if (!idCounter[id]) {
+        idCounter[id] = 0;
+    } else {
+        id = id + "-" + idCounter[id];
+    }
+    idCounter[id]++
+    return id;
+
+}
+
+/** remove all nonId Characters. If end with an empty string, then return 'id'*/
+function makeIdFrom(str: string) {
+    str = str.replace(/[^a-zA-Z_0-9]+/g, '');
+    if (str.length > 20) {
+        str = str.substring(0, 20);
+    }
+    return str ? str : "id";
+
+}
+
