@@ -1,11 +1,11 @@
-##level onboarding.py
-"""buddy
+##file onboarding.py
+"""start
 Hello, Junior!
 According to our team process, you are not yet allowed to write code. So, you can only review a code of your colleagues and fix some small and not significant details.
 
 Let's train you a little. Look at this terrible variable name. Click to fix it!
 """
-##reply "Ok"
+##start-reply "Ok"
 
 def main():
     BaD_VAriABLE_NAME = "Hello!"

@@ -1,5 +1,5 @@
-##level copy.py
-"""buddy
+##file copy.py
+"""start
 Huh, somebody wrote documentation for their code?! Weakling! Real coders don't read or write docs. They read and write CODE!
 """
 
@@ -31,3 +31,4 @@ def copy(xs, ys, j, k, n):
 ##replace-span - n count
 ##explain "Single-letter variable names are rarely descriptive"
 ##hint "What does this parameter represent?"
+

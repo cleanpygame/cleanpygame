@@ -74,9 +74,7 @@
               "hint": "42 = 6 * 8"
             }
           ],
-          "chat": {
-            "buddy": "This is a test level"
-          }
+          "startMessage": "This is a test level"
         }
       ]
     },
@@ -112,12 +110,14 @@
               "event": "BaD_VAriABLE_NAME",
               "explanation": "Yeh, exactly! Ready for some real work?",
               "hint": "Click on bad variable name!"
+            },
+            {
+              "type": "text",
+              "text": "\n"
             }
           ],
-          "chat": {
-            "buddy": "Hello, Junior!\nAccording to our team process, you are not yet allowed to write code. So, you can only review a code of your colleagues and fix some small and not significant details.\n\nLet's train you a little. Look at this terrible variable name. Click to fix it!",
-            "reply": "Ok"
-          }
+          "startMessage": "Hello, Junior!\nAccording to our team process, you are not yet allowed to write code. So, you can only review a code of your colleagues and fix some small and not significant details.\n\nLet's train you a little. Look at this terrible variable name. Click to fix it!",
+          "startReply": "Ok"
         },
         {
           "filename": "temperature.py",
@@ -163,9 +163,7 @@
               "hint": "$sign-is-doc"
             }
           ],
-          "chat": {
-            "buddy": "Okay, you are ready to some real work.\nCheck if this code is easy to understand."
-          }
+          "startMessage": "Okay, you are ready to some real work.\nCheck if this code is easy to understand."
         },
         {
           "filename": "cells.py",
@@ -209,12 +207,10 @@
             },
             {
               "type": "text",
-              "text": "\n"
+              "text": "\n\n"
             }
           ],
-          "chat": {
-            "buddy": "Nice work! After your fixes code becomes much more readable. \nAnd this piece of code is really short and simple.\nNot sure if it needs any changes."
-          }
+          "startMessage": "Nice work! After your fixes code becomes much more readable. \nAnd this piece of code is really short and simple.\nNot sure if it needs any changes."
         },
         {
           "filename": "views.py",
@@ -260,12 +256,10 @@
             },
             {
               "type": "text",
-              "text": "\n"
+              "text": "\n\n"
             }
           ],
-          "chat": {
-            "buddy": "Do not change any constants here! They are magically calculated.\nNobody knows how, but everything works perfectly."
-          }
+          "startMessage": "Do not change any constants here! They are magically calculated.\nNobody knows how, but everything works perfectly."
         },
         {
           "filename": "contains.py",
@@ -293,13 +287,11 @@
             },
             {
               "type": "text",
-              "text": "\n"
+              "text": "\n\n"
             }
           ],
-          "chat": {
-            "buddy": "Uhh.. Can't find a bug here... Can you help me a little?",
-            "reply": "Let's find it!"
-          }
+          "startMessage": "Uhh.. Can't find a bug here... Can you help me a little?",
+          "startReply": "Let's find it!"
         },
         {
           "filename": "unescape.py",
@@ -335,12 +327,10 @@
             },
             {
               "type": "text",
-              "text": "\n"
+              "text": "\n\n"
             }
           ],
-          "chat": {
-            "buddy": "1. If a variable stores string, it is 's'.\n2. If it stores a boolean, it is 'flag'.\n3. However, sometimes one also need 's1', 's2', etc.\n4. But I personally prefer 'ss', 'sss', etc. Brilliant, isn't it?"
-          }
+          "startMessage": "1. If a variable stores string, it is 's'.\n2. If it stores a boolean, it is 'flag'.\n3. However, sometimes one also need 's1', 's2', etc.\n4. But I personally prefer 'ss', 'sss', etc. Brilliant, isn't it?"
         },
         {
           "filename": "discount.py",
@@ -368,12 +358,10 @@
             },
             {
               "type": "text",
-              "text": "\n"
+              "text": "\n\n"
             }
           ],
-          "chat": {
-            "buddy": "If we have already 'flag' and we need the second one, how should we name it? flag1 or flag2? What is your favorite?"
-          }
+          "startMessage": "If we have already 'flag' and we need the second one, how should we name it? flag1 or flag2? What is your favorite?"
         },
         {
           "filename": "bigrams.py",
@@ -433,12 +421,10 @@
             },
             {
               "type": "text",
-              "text": "\n"
+              "text": "\n\n"
             }
           ],
-          "chat": {
-            "buddy": "Anders and Nicolaus wrote this code. Their naming style is a little bit non typical for python..."
-          }
+          "startMessage": "Anders and Nicolaus wrote this code. Their naming style is a little bit non typical for python..."
         },
         {
           "filename": "copy.py",
@@ -490,12 +476,10 @@
             },
             {
               "type": "text",
-              "text": "\n"
+              "text": "\n\n"
             }
           ],
-          "chat": {
-            "buddy": "Huh, somebody wrote documentation for their code?! Weakling! Real coders don't read or write docs. They read and write CODE!"
-          }
+          "startMessage": "Huh, somebody wrote documentation for their code?! Weakling! Real coders don't read or write docs. They read and write CODE!"
         },
         {
           "filename": "board.py",
@@ -539,12 +523,10 @@
             },
             {
               "type": "text",
-              "text": "\n"
+              "text": "\n\n"
             }
           ],
-          "chat": {
-            "buddy": "It is simple: \n'initialization' consists of 'creating a board' and filling it with the 'board_reader'!"
-          }
+          "startMessage": "It is simple: \n'initialization' consists of 'creating a board' and filling it with the 'board_reader'!"
         },
         {
           "filename": "final.py",
@@ -612,12 +594,10 @@
             },
             {
               "type": "text",
-              "text": "\n"
+              "text": "\n\n"
             }
           ],
-          "chat": {
-            "buddy": "Finally I finished a wonderful piece of the excellent code. However, according to our team process, somebody should review it.\n\nAs it is already perfect, don't lose your time, just approve it!"
-          }
+          "startMessage": "Finally I finished a wonderful piece of the excellent code. However, according to our team process, somebody should review it.\n\nAs it is already perfect, don't lose your time, just approve it!"
         }
       ]
     },
@@ -648,7 +628,7 @@
           "blocks": [
             {
               "type": "text",
-              "text": "\"\"\"\nLook at these goood ooold looops!\n\"\"\"\n\ndef print_sum_and_min(values):\n"
+              "text": "\ndef print_sum_and_min(values):\n"
             },
             {
               "type": "replace",
@@ -668,12 +648,10 @@
             },
             {
               "type": "text",
-              "text": "    print(f\"sum: {sum_all}, min: {min_value}\")\n"
+              "text": "    print(f\"sum: {sum_all}, min: {min_value}\")\n\n"
             }
           ],
-          "chat": {
-            "buddy": ""
-          }
+          "startMessage": "Look at these goood ooold looops!"
         },
         {
           "filename": "csv_processing.py",
@@ -681,7 +659,7 @@
           "blocks": [
             {
               "type": "text",
-              "text": "\"\"\"\nMeh... for, for, for... For what?!\n\"\"\"\ndef list_to_csv(nums):\n"
+              "text": "def list_to_csv(nums):\n"
             },
             {
               "type": "replace",
@@ -717,12 +695,10 @@
             },
             {
               "type": "text",
-              "text": "\n\n\n\n\n\n\n"
+              "text": "\n\n\n\n\n\n\n\n"
             }
           ],
-          "chat": {
-            "buddy": ""
-          }
+          "startMessage": "Meh... for, for, for... For what?!"
         },
         {
           "filename": "search.py",
@@ -730,7 +706,7 @@
           "blocks": [
             {
               "type": "text",
-              "text": "\"\"\"\nStop... `contains` again?! Haven't we already done this?\n\"\"\"\n\ndef contains(text, pattern):\n"
+              "text": "\ndef contains(text, pattern):\n"
             },
             {
               "type": "replace",
@@ -742,12 +718,10 @@
             },
             {
               "type": "text",
-              "text": "\n"
+              "text": "\n\n"
             }
           ],
-          "chat": {
-            "buddy": ""
-          }
+          "startMessage": "Stop... `contains` again?! Haven't we already done this?"
         },
         {
           "filename": "unescape.py",
@@ -755,7 +729,7 @@
           "blocks": [
             {
               "type": "text",
-              "text": "\"\"\"\nUnescape? Again?!\n\"\"\"\n\ndef unescape(text):\n"
+              "text": "\ndef unescape(text):\n"
             },
             {
               "type": "replace",
@@ -767,12 +741,10 @@
             },
             {
               "type": "text",
-              "text": "\n"
+              "text": "\n\n"
             }
           ],
-          "chat": {
-            "buddy": ""
-          }
+          "startMessage": "Unescape? Again?!"
         }
       ]
     }

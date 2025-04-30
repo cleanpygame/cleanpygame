@@ -1,5 +1,5 @@
-##level onboarding.py
-"""buddy
+##file onboarding.py
+"""start
 This is a test level
 """
 ##wisdoms 1 2
@@ -41,3 +41,4 @@ bar()
 greet_user()
 BAD_CODE()
 GOOD_CODE()
+

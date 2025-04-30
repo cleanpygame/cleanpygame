@@ -49,7 +49,7 @@ export function BuddyChat(): React.ReactElement {
 
         const lastMessage = state.chatMessages[state.chatMessages.length - 1];
         if (lastMessage && lastMessage.type === 'buddy-instruct') {
-            const reply = state.currentLevel.level.chat.reply;
+            const reply = state.currentLevel.level.startReply;
             if (reply) {
                 return (
                     <button

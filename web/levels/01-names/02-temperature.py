@@ -1,5 +1,5 @@
-##level temperature.py
-"""buddy
+##file temperature.py
+"""start
 Okay, you are ready to some real work.
 Check if this code is easy to understand.
 """
@@ -23,3 +23,4 @@ def fmt_temp(idx, tt):
 ##end
 
 print(fmt_temp(5, 20))
+

@@ -1,5 +1,5 @@
-##level bigrams.py
-"""buddy
+##file bigrams.py
+"""start
 Anders and Nicolaus wrote this code. Their naming style is a little bit non typical for python...
 """
 
@@ -32,3 +32,4 @@ def GetBigramsFrequency(ws):
 ##replace-span - bigramsfrequency bigrams_frequency
 ##explain "Python variables should use snake_case naming style"
 ##hint "Variable names in Python should be lowercase with underscores"
+

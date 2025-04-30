@@ -16,43 +16,54 @@ export function cleanArg(s: string): string {
     return trimmed.replace(/\\"/g, '"');
 }
 
-export function parseDirective(context: ParseContext): [string, string[]] {
-    const line = context.lines[context.idx].trim();
-    if (!line.startsWith('##')) {
-        throw errorWithContext(`Invalid directive format: ${line}`, context);
+function parseArgsList(argString: string) {
+    const args: string[] = [];
+    let currentArg = '';
+    let inQuotes = false;
+
+    for (let i = 0; i < argString.length; i++) {
+        const char = argString[i];
+
+        if (char === '"' && (i === 0 || argString[i - 1] !== '\\')) {
+            inQuotes = !inQuotes;
+        } else if (char === '"' && i > 0 && argString[i - 1] === '\\') {
+            // Handle escaped quotes by removing the backslash and adding just the quote
+            currentArg = currentArg.slice(0, -1) + '"';
+        } else if (char === ' ' && !inQuotes) {
+            if (currentArg) {
+                args.push(currentArg);
+                currentArg = '';
+            }
+        } else {
+            currentArg += char;
+        }
     }
 
+    if (currentArg) {
+        args.push(currentArg);
+    }
+    return args;
+}
+
+export function parseDirective(context: ParseContext): [string, string[]] {
+    const line = context.lines[context.idx].trim();
     try {
+        let content = undefined;
+        if (line.startsWith('"""') && line.length > 3) {
+            // multiline string block
+            content = line.substring(3);
+        } else if (line.startsWith('##')) {
+            content = line.substring(2);
+        }
+        if (content === undefined) {
+            // plain text block
+            return ["", []]
+        }
         // Split into directive and rest
-        const parts = line.split(/\s+/);
-        const cmd = parts[0].substring(2);
+        const parts = content.split(/\s+/);
+        const cmd = parts[0];
         const argString = parts.slice(1).join(' ');
-
-        const args: string[] = [];
-        let currentArg = '';
-        let inQuotes = false;
-
-        for (let i = 0; i < argString.length; i++) {
-            const char = argString[i];
-
-            if (char === '"' && (i === 0 || argString[i - 1] !== '\\')) {
-                inQuotes = !inQuotes;
-            } else if (char === '"' && i > 0 && argString[i - 1] === '\\') {
-                // Handle escaped quotes by removing the backslash and adding just the quote
-                currentArg = currentArg.slice(0, -1) + '"';
-            } else if (char === ' ' && !inQuotes) {
-                if (currentArg) {
-                    args.push(currentArg);
-                    currentArg = '';
-                }
-            } else {
-                currentArg += char;
-            }
-        }
-
-        if (currentArg) {
-            args.push(currentArg);
-        }
+        const args = parseArgsList(argString);
 
         return [cmd, args];
     } catch (e) {
@@ -79,27 +90,25 @@ export function collectBlockUntil(context: ParseContext, endDirective: string): 
 }
 
 // Directive handlers
-export function readWisdoms(args: string[], context: ParseContext): void {
-    context.level.wisdoms = args;
+export function readWisdoms(args: string[], context: ParseContext): string[] {
     context.idx++;
+    return args;
 }
 
-export function readTextBlock(context: ParseContext): void {
+export function readTextBlock(context: ParseContext): LevelBlock {
     const textBlock: string[] = [];
     while (context.idx < context.lines.length && !context.lines[context.idx].startsWith('##')) {
         textBlock.push(context.lines[context.idx].replace(/\r?\n$/, ''));
         context.idx++;
     }
 
-    if (textBlock.length > 0) {
-        context.level.blocks.push({
-            type: 'text',
-            text: textBlock.join('\n') + '\n'
-        });
-    }
+    return {
+        type: 'text',
+        text: textBlock.join('\n') + '\n'
+    };
 }
 
-export function readReplaceSpan(args: string[], context: ParseContext): void {
+export function readReplaceSpan(args: string[], context: ParseContext): LevelBlock {
     if (args.length !== 3) {
         throw errorWithContext('##replace-span requires 3 arguments: event, clickable, replacement', context);
     }
@@ -113,11 +122,11 @@ export function readReplaceSpan(args: string[], context: ParseContext): void {
         event
     };
 
-    context.level.blocks.push(block);
     context.idx++;
+    return block;
 }
 
-export function readReplace(args: string[], context: ParseContext): void {
+export function readReplace(args: string[], context: ParseContext): LevelBlock {
     if (args.length > 2) {
         throw errorWithContext('##replace requires zero, one or two arguments: event and clickable', context);
     }
@@ -141,10 +150,10 @@ export function readReplace(args: string[], context: ParseContext): void {
         block.clickable = cleanArg(clickable);
     }
 
-    context.level.blocks.push(block);
+    return block;
 }
 
-export function readReplaceOn(args: string[], context: ParseContext): void {
+export function readReplaceOn(args: string[], context: ParseContext): LevelBlock {
     if (args.length !== 1) {
         throw errorWithContext('##replace-on requires exactly one argument: event', context);
     }
@@ -163,10 +172,10 @@ export function readReplaceOn(args: string[], context: ParseContext): void {
         event
     };
 
-    context.level.blocks.push(block);
+    return block;
 }
 
-export function readAddOn(args: string[], context: ParseContext): void {
+export function readAddOn(args: string[], context: ParseContext): LevelBlock {
     if (args.length !== 1) {
         throw errorWithContext('##add-on requires exactly one argument: event', context);
     }
@@ -183,10 +192,10 @@ export function readAddOn(args: string[], context: ParseContext): void {
         replacement: lines
     };
 
-    context.level.blocks.push(block);
+    return block;
 }
 
-export function readRemoveOn(args: string[], context: ParseContext): void {
+export function readRemoveOn(args: string[], context: ParseContext): LevelBlock {
     if (args.length !== 1) {
         throw errorWithContext('##remove-on requires exactly one argument: event', context);
     }
@@ -203,142 +212,131 @@ export function readRemoveOn(args: string[], context: ParseContext): void {
         replacement: ''
     };
 
-    context.level.blocks.push(block);
+    return block;
 }
 
-export function readNeutral(args: string[], context: ParseContext): void {
-    if (args.length !== 1) {
-        throw errorWithContext('##neutral requires exactly one argument: clickable', context);
-    }
-
-    const block: LevelBlock = {
-        type: 'neutral',
-        clickable: cleanArg(args[0])
-    };
-
-    context.level.blocks.push(block);
-    context.idx++;
-}
-
-export function readExplain(args: string[], context: ParseContext): void {
+export function readExplain(args: string[], context: ParseContext): string {
     if (args.length !== 1) {
         throw errorWithContext('##explain requires exactly one argument: explanation', context);
     }
 
-    if (context.level.blocks.length === 0) {
-        throw errorWithContext('##explain must follow a block', context);
-    }
-
-    const prevBlock = context.level.blocks[context.level.blocks.length - 1];
-    if (prevBlock.type !== 'replace' && prevBlock.type !== 'replace-span' && prevBlock.type !== 'neutral') {
-        throw errorWithContext(`##explain cannot follow block of type: ${prevBlock.type}`, context);
-    }
-
-    prevBlock.explanation = cleanArg(args.join(' '));
     context.idx++;
+    return cleanArg(args.join(' '));
 }
 
-export function readHint(args: string[], context: ParseContext): void {
+export function readHint(args: string[], context: ParseContext): string {
     if (args.length !== 1) {
         throw errorWithContext('##hint requires exactly one argument: hint', context);
     }
 
-    if (context.level.blocks.length === 0) {
-        throw errorWithContext('##hint must follow a block', context);
-    }
-
-    const prevBlock = context.level.blocks[context.level.blocks.length - 1];
-    if (prevBlock.type !== 'replace' && prevBlock.type !== 'replace-span') {
-        throw errorWithContext(`##hint cannot follow block of type: ${prevBlock.type}`, context);
-    }
-
-    prevBlock.hint = cleanArg(args.join(' '));
     context.idx++;
+    return cleanArg(args.join(' '));
 }
 
-export function readReply(args: string[], context: ParseContext): void {
-    if (!args || args.length !== 1) {
-        throw errorWithContext('##reply requires exactly one argument: reply', context);
-    }
-
-    context.level.chat.reply = cleanArg(args.join(' '));
+export function readReply(args: string[], context: ParseContext): string {
+    if (args.length !== 1)
+        throw errorWithContext('##start-reply requires exactly one argument: reply', context);
     context.idx++;
+    return cleanArg(args.join(' '));
 }
 
 function errorWithContext(message: string, context: ParseContext): Error {
     return new Error(message + `. Line ${context.idx} in file ${context.filename}`);
 }
 
-export function readLevel(args: string[], context: ParseContext): void {
+export function readNeutral(args: string[], context: ParseContext): LevelBlock {
     if (args.length !== 1) {
-        throw errorWithContext('##level must have exactly one argument', context);
+        throw errorWithContext('##neutral requires exactly one argument: text', context);
     }
 
-    context.level.filename = args[0];
+    context.idx++;
+    const block: LevelBlock = {
+        type: 'neutral',
+        text: cleanArg(args[0])
+    };
+
+    return block;
+}
+
+export function readFilename(args: string[], context: ParseContext): string {
+    if (args.length !== 1) {
+        throw errorWithContext('##file must have exactly one argument', context);
+    }
+
+    context.idx++;
+    return args[0];
+}
+
+function readMessage(context: ParseContext): string {
+    const message: string[] = [];
     context.idx++;
 
-    if (context.idx < context.lines.length) {
-        const currentLine = context.lines[context.idx].trim();
-        const buddyPrefix = '"""buddy';
-
-        if (currentLine.startsWith(buddyPrefix)) {
-            const buddyMessage: string[] = [];
-            context.idx++;
-
-            while (context.idx < context.lines.length && !context.lines[context.idx].trim().endsWith('"""')) {
-                buddyMessage.push(context.lines[context.idx].replace(/\r?\n$/, ''));
-                context.idx++;
-            }
-
-            if (context.idx < context.lines.length) {
-                context.idx++;
-            }
-
-            context.level.chat.buddy = buddyMessage.join('\n').trim();
-        }
+    while (context.idx < context.lines.length && !context.lines[context.idx].trim().endsWith('"""')) {
+        message.push(context.lines[context.idx].replace(/\r?\n$/, ''));
+        context.idx++;
     }
+
+    if (context.idx < context.lines.length) {
+        context.idx++;
+    }
+    return message.join('\n').trim();
+}
+
+function getPrevBlock(context: ParseContext) {
+    if (context.level.blocks.length === 0) {
+        throw errorWithContext('previous block required!', context);
+    }
+    const prevBlockForExplain = context.level.blocks[context.level.blocks.length - 1];
+    if (!["replace", "replace-span"].includes(prevBlockForExplain.type)) {
+        throw errorWithContext(`previous block can't be ${prevBlockForExplain.type}`, context);
+    }
+    return prevBlockForExplain;
 }
 
 function readOneBlock(context: ParseContext) {
-    const line = context.lines[context.idx];
-    if (!line.startsWith('##')) {
-        readTextBlock(context);
-        return;
-    }
     const [cmd, args] = parseDirective(context);
     switch (cmd) {
-        case 'level':
-            readLevel(args, context);
+        case '':
+            context.level.blocks.push(readTextBlock(context));
+            break;
+        case 'file':
+            context.level.filename = readFilename(args, context);
+            break;
+        case 'start':
+            context.level.startMessage = readMessage(context);
+            break;
+        case 'final':
+            context.level.finalMessage = readMessage(context);
+            break;
+        case 'start-reply':
+            context.level.startReply = readReply(args, context);
+            break;
+        case 'final-reply':
+            context.level.endReply = readReply(args, context);
             break;
         case 'wisdoms':
-            readWisdoms(args, context);
+            context.level.wisdoms = readWisdoms(args, context);
             break;
         case 'replace-span':
-            readReplaceSpan(args, context);
+            context.level.blocks.push(readReplaceSpan(args, context));
             break;
         case 'replace':
-            readReplace(args, context);
+            context.level.blocks.push(readReplace(args, context));
             break;
         case 'replace-on':
-            readReplaceOn(args, context);
+            context.level.blocks.push(readReplaceOn(args, context));
             break;
         case 'add-on':
-            readAddOn(args, context);
+            context.level.blocks.push(readAddOn(args, context));
             break;
         case 'remove-on':
-            readRemoveOn(args, context);
-            break;
-        case 'neutral':
-            readNeutral(args, context);
+            context.level.blocks.push(readRemoveOn(args, context));
             break;
         case 'explain':
-            readExplain(args, context);
+            getPrevBlock(context).explanation = readExplain(args, context);
             break;
         case 'hint':
-            readHint(args, context);
-            break;
-        case 'reply':
-            readReply(args, context);
+            getPrevBlock(context).hint = readHint(args, context);
             break;
         case 'end':
             context.idx = context.lines.length;
@@ -357,11 +355,7 @@ export function parseLevelFile(filePath: string): LevelData | undefined {
     const outputLevel: LevelData = {
         filename: "",
         wisdoms: [],
-        blocks: [],
-        chat: {
-            buddy: "",
-            reply: undefined
-        }
+        blocks: []
     };
 
     const context: ParseContext = {
@@ -405,4 +399,3 @@ function makeIdFrom(str: string) {
     return str ? str : "id";
 
 }
-

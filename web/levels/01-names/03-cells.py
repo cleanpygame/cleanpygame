@@ -1,5 +1,5 @@
-##level cells.py
-"""buddy
+##file cells.py
+"""start
 Nice work! After your fixes code becomes much more readable. 
 And this piece of code is really short and simple.
 Not sure if it needs any changes.
@@ -26,3 +26,4 @@ print(get(lst))
 ##replace-span - c cell
 ##explain "Single-letter variable names are rarely descriptive"
 ##hint "What does each item in the list represent?"
+

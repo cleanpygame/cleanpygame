@@ -29,16 +29,16 @@ export function LevelViewportContainer(): React.ReactElement {
             return false; // Don't block editor when level is finished
         }
 
-        // Case 2: New level instructions are shown and reply is required
+        // Case 2: New level instructions are shown and a reply is required
         if (state.chatMessages.length > 0) {
             const lastMessage = state.chatMessages[state.chatMessages.length - 1];
-            if (lastMessage.type === 'buddy-instruct' && state.currentLevel?.level.chat.reply) {
+            if (lastMessage.type === 'buddy-instruct' && state.currentLevel?.level.startReply) {
                 return true;
             }
         }
 
         return false;
-    }, [state.currentLevel?.isFinished, state.chatMessages, state.currentLevel?.level.chat.reply]);
+    }, [state.currentLevel?.isFinished, state.chatMessages, state.currentLevel?.level.startReply]);
 
     if (!state.currentLevel) {
         return (

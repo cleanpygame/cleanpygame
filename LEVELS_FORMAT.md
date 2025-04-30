@@ -49,17 +49,23 @@ Levels file starts with header directives followed by sequence of blocks.
 #### 🔹 Header Directives
 
 ```text
-##level readable_title.py           # Required — used as display title in UI
+##file readable_title.py           # Required — used as display title in UI
 ##wisdoms id1 id2 ...               # Optional — wisdoms unlocked on level complete
 ```
 
 #### 🔹 Chat Messages
 
 ```text
-"""buddy
-Chat message from buddy
+"""start
+Chat message from buddy when level is started
 """
-##reply "Player's reply"            # Optional — player's response to buddy
+##start-reply "Player's reply"            
+"""final
+Chat message from buddy when level is completed
+"""
+##final-reply "Custom 'Next' button text"            
+
+
 ```
 
 ---

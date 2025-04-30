@@ -1,5 +1,5 @@
-##level discount.py
-"""buddy
+##file discount.py
+"""start
 If we have already 'flag' and we need the second one, how should we name it? flag1 or flag2? What is your favorite?
 """
 
@@ -19,3 +19,4 @@ def is_discount_hunter(customer):
 ##replace-span - flag2 has_discount
 ##explain "Numbered variables (flag2) are rarely descriptive"
 ##hint "What does this boolean flag indicate about the order?"
+

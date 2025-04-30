@@ -232,11 +232,11 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
             // Create messages for the chat
             const messages = [];
 
-            // Add a buddy message if it exists
-            if (levelData.chat && levelData.chat.buddy) {
+            // Add a start message if it exists
+            if (levelData.startMessage) {
                 messages.push({
                     type: 'buddy-instruct' as ChatMessageType,
-                    text: levelData.chat.buddy
+                    text: levelData.startMessage
                 });
             } else {
                 messages.push(getInstructionChatMessage(levelData));

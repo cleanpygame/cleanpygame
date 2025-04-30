@@ -1,5 +1,5 @@
-##level unescape.py
-"""buddy
+##file unescape.py
+"""start
 1. If a variable stores string, it is 's'.
 2. If it stores a boolean, it is 'flag'.
 3. However, sometimes one also need 's1', 's2', etc.
@@ -31,3 +31,4 @@ def unescape(s):
 ##replace-span - s escaped
 ##explain "Single-letter variable names are rarely descriptive"
 ##hint "What does this parameter represent?"
+

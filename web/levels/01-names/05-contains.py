@@ -1,8 +1,8 @@
-##level contains.py
-"""buddy
+##file contains.py
+"""start
 Uhh.. Can't find a bug here... Can you help me a little?
 """
-##reply "Let's find it!"
+##start-reply "Let's find it!"
 
 def contains(text, pattern):
     l = len(pattern)
@@ -17,3 +17,4 @@ def contains(text, pattern):
 ##replace-span - i+1 i+l
 ##explain "This is a bug! We need to use the pattern length, not just 1 character"
 ##hint "How many characters should we compare?"
+

@@ -1,5 +1,5 @@
-##level board.py
-"""buddy
+##file board.py
+"""start
 It is simple: 
 'initialization' consists of 'creating a board' and filling it with the 'board_reader'!
 """
@@ -23,3 +23,4 @@ def initialization(board_json):
 ##replace-span - board_reader read_board
 ##explain "Function names should be verbs"
 ##hint "What action does this function perform?"
+

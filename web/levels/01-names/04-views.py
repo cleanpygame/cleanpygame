@@ -1,5 +1,5 @@
-##level views.py
-"""buddy
+##file views.py
+"""start
 Do not change any constants here! They are magically calculated.
 Nobody knows how, but everything works perfectly.
 """
@@ -20,3 +20,4 @@ def get_views_per_second(views, date):
 ##replace-span - n seconds_in_24h
 ##explain "Variable names should be descriptive"
 ##hint "What does this variable represent?"
+

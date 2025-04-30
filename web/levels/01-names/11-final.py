@@ -1,5 +1,5 @@
-##level final.py
-"""buddy
+##file final.py
+"""start
 Finally I finished a wonderful piece of the excellent code. However, according to our team process, somebody should review it.
 
 As it is already perfect, don't lose your time, just approve it!
@@ -47,3 +47,4 @@ def InstructionParser(i):
 ##replace-span - 8: "len(\"replace \"):"
 ##explain "Magic numbers should be replaced with meaningful expressions"
 ##hint "What does this number represent?"
+
