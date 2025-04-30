@@ -47,9 +47,9 @@ function BuddyChatMessage({message, isNew = false}: BuddyChatMessageProps): Reac
             if (currentIndex < messageText.length) {
                 // Use substring instead of concatenating individual characters
                 // This ensures we don't miss any characters due to async state updates
-                const newText = messageText.substring(0, currentIndex + 1);
+                const newText = messageText.substring(0, Math.min(messageText.length, currentIndex + 1));
                 setDisplayedText(newText);
-                currentIndex++;
+                currentIndex += 2;
             } else {
                 clearInterval(typingInterval);
                 setIsTypingComplete(true);

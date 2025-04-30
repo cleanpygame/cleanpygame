@@ -51,7 +51,7 @@ export function LevelViewportContainer(): React.ReactElement {
     return (
         <div className="flex-1 flex flex-col overflow-auto relative bg-[#1e1e1e]">
             <div className={`p-2 border-b border-[#3c3c3c]`}>
-                <h1 className="font-normal">{state.currentLevel.level.filename}</h1>
+                <h1 className="font-normal">{state.currentLevel.level.filename} {state.currentLevel.isFinished ? "✅" : ""}</h1>
             </div>
 
             <div className="flex flex-1 overflow-hidden relative">

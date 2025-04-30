@@ -123,7 +123,7 @@ export function CodeView({
     }
 
     // Determine which theme to use
-    const theme = isFinished ? themes.dracula : themes.vsDark;
+    const theme = isFinished ? themes.oneDark : themes.vsDark;
 
     return (
         <Highlight code={visibleCode} theme={theme} language="python">

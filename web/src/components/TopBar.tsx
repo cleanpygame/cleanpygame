@@ -19,23 +19,14 @@ export function TopBar(): React.ReactElement {
             <div className="text-lg font-medium">Clean Code Game</div>
 
             <div className="flex gap-4">
-                <button
-                    onClick={() => dispatch({type: 'GET_HINT'})}
-                    className="px-3 py-1 flex items-center gap-2 rounded hover:bg-[#3c3c3c] transition-colors"
-                    title="Ask for Help"
-                >
-                    <span role="img" aria-label="help">🙏</span>
-                    <span>Ask for Help</span>
-                </button>
-
-                <button
-                    onClick={() => dispatch({type: 'TOGGLE_NOTEBOOK'})}
-                    className="px-3 py-1 flex items-center gap-2 rounded hover:bg-[#3c3c3c] transition-colors"
-                    title="Toggle Notebook"
-                >
-                    <span role="img" aria-label="notebook">📒</span>
-                    <span>Notebook</span>
-                </button>
+                {/*<button*/}
+                {/*    onClick={() => dispatch({type: 'TOGGLE_NOTEBOOK'})}*/}
+                {/*    className="px-3 py-1 flex items-center gap-2 rounded hover:bg-[#3c3c3c] transition-colors"*/}
+                {/*    title="Toggle Notebook"*/}
+                {/*>*/}
+                {/*    <span role="img" aria-label="notebook">📒</span>*/}
+                {/*    <span>Notebook</span>*/}
+                {/*</button>*/}
 
                 <button
                     onClick={() => dispatch({type: 'RESET_PROGRESS'})}
