@@ -57,7 +57,6 @@ export interface LevelState {
     level: LevelData;
     triggeredEvents: string[];
     pendingHintId: string | null;
-    autoHintAt: number | null;
     code: string;
     isFinished: boolean;
     regions: EventRegion[];
@@ -71,4 +70,5 @@ export interface GameState {
     discoveredWisdoms: string[];
     notebookOpen: boolean;
     chatMessages: ChatMessage[];
+    isTypingAnimationComplete: boolean;
 }

@@ -34,15 +34,20 @@ export function BuddyChat(): React.ReactElement {
     const handleNextLevel = (): void =>
         dispatch({type: NEXT_LEVEL});
 
-    // Render different button based on a message type
+    // Render different button based on a message type and typing animation status
     const renderButton = (): React.ReactNode => {
+        // Don't show any button if typing animation is not complete
+        if (!state.isTypingAnimationComplete) {
+            return null;
+        }
+
         if (state.currentLevel.isFinished) {
             return (
                 <button
                     className="px-4 py-2 bg-blue-600 text-white rounded-md mt-2 cursor-pointer"
                     onClick={handleNextLevel}
                 >
-                    Next task, please!
+                    {state.currentLevel.level.endReply || "Next task, please!"}
                 </button>
             );
         }

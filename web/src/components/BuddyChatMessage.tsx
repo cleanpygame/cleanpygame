@@ -1,5 +1,6 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {ChatMessage, ChatMessageType} from '../types';
+import {GameStateContext, SET_TYPING_ANIMATION_COMPLETE} from '../reducer';
 
 interface BuddyChatMessageProps {
     message: ChatMessage;
@@ -13,6 +14,14 @@ interface BuddyChatMessageProps {
 function BuddyChatMessage({message, isNew = false}: BuddyChatMessageProps): React.ReactElement {
     const [displayedText, setDisplayedText] = useState('');
     const [isTypingComplete, setIsTypingComplete] = useState(false);
+
+    const context = useContext(GameStateContext);
+
+    if (!context) {
+        throw new Error('BuddyChatMessage must be used within a GameStateContext Provider');
+    }
+
+    const {dispatch} = context;
 
     // Get text color based on a message type
     const getTextColor = (type: ChatMessageType): string => {
@@ -58,6 +67,16 @@ function BuddyChatMessage({message, isNew = false}: BuddyChatMessageProps): Reac
 
         return () => clearInterval(typingInterval);
     }, [message.text, isNew]);
+
+    // Update global state when typing animation completes
+    useEffect(() => {
+        if (isNew) {
+            dispatch({
+                type: SET_TYPING_ANIMATION_COMPLETE,
+                payload: {isComplete: isTypingComplete}
+            });
+        }
+    }, [isTypingComplete, isNew, dispatch]);
 
     return (
         <div className="flex items-start">

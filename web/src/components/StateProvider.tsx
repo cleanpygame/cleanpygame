@@ -40,23 +40,6 @@ export function StateProvider({children}: StateProviderProps): React.ReactElemen
         }
     }, [state.solvedLevels]);
 
-    // Check timer for an auto-hint
-    useEffect(() => {
-        if (!state.currentLevel || !state.currentLevel.autoHintAt) return;
-
-        const checkAutoHint = () => {
-            if (
-                state.currentLevel.autoHintAt &&
-                state.currentLevel.pendingHintId &&
-                Date.now() >= state.currentLevel.autoHintAt
-            ) {
-                dispatch({type: 'GET_HINT'});
-            }
-        };
-
-        const timerId = setInterval(checkAutoHint, 1000);
-        return () => clearInterval(timerId);
-    }, [state.currentLevel]);
 
     return (
         <GameStateContext.Provider value={{state, dispatch}}>

@@ -13,6 +13,7 @@ export const RESET_PROGRESS = 'RESET_PROGRESS';
 export const TOGGLE_NOTEBOOK = 'TOGGLE_NOTEBOOK';
 export const NEXT_LEVEL = 'NEXT_LEVEL';
 export const CODE_CLICK = 'CODE_CLICK';
+export const SET_TYPING_ANIMATION_COMPLETE = 'SET_TYPING_ANIMATION_COMPLETE';
 
 // Action interfaces
 interface LoadLevelAction {
@@ -73,6 +74,13 @@ interface CodeClickAction {
     };
 }
 
+interface SetTypingAnimationCompleteAction {
+    type: typeof SET_TYPING_ANIMATION_COMPLETE;
+    payload: {
+        isComplete: boolean;
+    };
+}
+
 type GameAction =
     | LoadLevelAction
     | ApplyFixAction
@@ -82,9 +90,9 @@ type GameAction =
     | ResetProgressAction
     | ToggleNotebookAction
     | NextLevelAction
-    | CodeClickAction;
+    | CodeClickAction
+    | SetTypingAnimationCompleteAction;
 
-const AUTO_HINT_DELAY = 20_000;
 
 /**
  * Find the next hint ID based on triggered events
@@ -112,7 +120,6 @@ const createInitialLevelState = (levelData: LevelData): LevelState => {
         level: levelData,
         triggeredEvents: [],
         pendingHintId: calculateNextHintId(levelData, []),
-        autoHintAt: Date.now() + AUTO_HINT_DELAY,
         code,
         regions,
         isFinished: false,
@@ -129,6 +136,7 @@ export const initialState: GameState = {
     discoveredWisdoms: [],
     notebookOpen: false,
     chatMessages: [],
+    isTypingAnimationComplete: true,
 };
 
 /**
@@ -246,7 +254,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
                 ...state,
                 currentLevelId: levelId,
                 currentLevel: newLevelState,
-                chatMessages: messages
+                chatMessages: messages,
+                isTypingAnimationComplete: false
             };
         }
 
@@ -299,7 +308,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
                 }).filter(Boolean);
 
                 // Create the message text
-                let messageText = 'Great job! You\'ve fixed all the issues in this level.';
+                let messageText = state.currentLevel.level.finalMessage || 'Great job! You\'ve fixed all the issues in this level.';
 
                 // Add wisdoms if there are any
                 if (wisdomEntries.length > 0) {
@@ -338,6 +347,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
                 ...state,
                 chatMessages: [...state.chatMessages, ...newMessages],
                 solvedLevels: solvedLevels,
+                isTypingAnimationComplete: false,
                 currentLevel: {
                     ...state.currentLevel,
                     code,
@@ -345,7 +355,6 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
                     triggeredEvents,
                     isFinished: allIssuesFixed,
                     pendingHintId: nextHintId,
-                    autoHintAt: Date.now() + AUTO_HINT_DELAY,
                 }
             };
         }
@@ -367,10 +376,10 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
             return {
                 ...state,
                 chatMessages: [...state.chatMessages, buddyHelpMessage],
+                isTypingAnimationComplete: false,
                 currentLevel: {
                     ...state.currentLevel,
-                    pendingHintId: null,
-                    autoHintAt: Date.now() + AUTO_HINT_DELAY
+                    pendingHintId: null
                 }
             };
         }
@@ -394,9 +403,9 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
             return {
                 ...state,
                 chatMessages: [...state.chatMessages, meMessage, buddyRejectMessage],
+                isTypingAnimationComplete: false,
                 currentLevel: {
-                    ...state.currentLevel,
-                    autoHintAt: Date.now() + AUTO_HINT_DELAY,
+                    ...state.currentLevel
                 }
             };
         }
@@ -404,9 +413,13 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         case POST_BUDDY_MESSAGE: {
             const {message} = action.payload;
 
+            // Set typing animation complete to false for buddy messages
+            const isTypingAnimationComplete = message.type === 'me';
+
             return {
                 ...state,
-                chatMessages: [...state.chatMessages, message]
+                chatMessages: [...state.chatMessages, message],
+                isTypingAnimationComplete
             };
         }
 
@@ -450,6 +463,14 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
                 type: LOAD_LEVEL,
                 payload: {levelId: nextLevelId}
             });
+        }
+
+        case SET_TYPING_ANIMATION_COMPLETE: {
+            const {isComplete} = action.payload;
+            return {
+                ...state,
+                isTypingAnimationComplete: isComplete
+            };
         }
 
         default:
