@@ -1,8 +1,10 @@
 ##file contains.py
 """start
-Uhh.. Can't find a bug here... Can you help me a little?
+Your colleague just pushed this "perfectly working" string search function to production. Customers are already complaining that the search doesn't work properly.
+
+The developer swears there's no bug: "It compiles, doesn't it?" Can you find what's lurking in this seemingly innocent code before the support team stages a revolt?
 """
-##start-reply "Let's find it!"
+##start-reply "Challenge accepted!"
 
 def contains(text, pattern):
     l = len(pattern)
@@ -12,9 +14,12 @@ def contains(text, pattern):
     return False
 
 ##replace-span - l pattern_len
-##explain "Hint for the future: never use lowercase 'l' as a variable name!"
-##hint "What does this variable represent?"
+##explain "Lowercase 'l' as a variable name? Are you trying to confuse it with the number '1' and the uppercase 'I'? This is how debugging nightmares begin! Always use descriptive names that don't require a cryptography degree to decipher."
+##hint "That variable name 'l' is playing a dangerous game of 'guess which character I am' with future developers. What information is it actually storing?"
 ##replace-span - i+1 i+l
-##explain "This is a bug! We need to use the pattern length, not just 1 character"
-##hint "How many characters should we compare?"
-
+##explain "Aha! The infamous off-by-everything bug! You're checking if a single character equals the entire pattern. That's like checking if a single brick is the same as an entire house. No wonder the search function wasn't working!"
+##hint "The code is comparing a single character to the entire pattern. Shouldn't it be comparing the same number of characters as the pattern length?"
+"""final
+Excellent debugging! You've fixed both a naming issue AND a logical bug. The original code was only checking if any single character matched the entire pattern (which would only work for single-character patterns). Your fix ensures it compares the right number of characters. This is why naming variables clearly is so important - it makes bugs like this much easier to spot!
+"""
+##final-reply "Bug squashed! What's next?"

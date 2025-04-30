@@ -1,7 +1,10 @@
 ##file bigrams.py
 """start
-Anders and Nicolaus wrote this code. Their naming style is a little bit non typical for python...
+Ah, the joys of cross-language developers! Anders and Nicolaus just transferred from the C# team and brought their naming conventions with them. They insist their style is "perfectly readable" and "who cares about PEP 8 anyway?"
+
+Their code works, but it's like showing up to a Python conference wearing a tuxedo - technically dressed, but clearly missed the memo about the dress code. Can you help them blend in with the Python community?
 """
+##start-reply "Time for a Python style makeover!"
 
 def GetBigramsFrequency(ws):
     bigramsCount = len(ws) - 1
@@ -15,21 +18,24 @@ def GetBigramsFrequency(ws):
     return bigramsfrequency
 
 ##replace-span - GetBigramsFrequency get_bigrams_frequency
-##explain "Python functions should use snake_case naming style"
-##hint "Function names in Python should be lowercase with underscores"
+##explain "CamelCase in Python? That's like wearing socks with sandals - technically functional but culturally questionable. Python has its own style guide (PEP 8) that recommends snake_case for functions. Consistency in style makes code more readable for the community."
+##hint "This function name is dressed in CamelCase, but Python functions prefer to slither in snake_case."
 ##replace-span - bigramsCount bigrams_count
-##explain "Python variables should use snake_case naming style"
-##hint "Variable names in Python should be lowercase with underscores"
+##explain "Another CamelCase refugee! In Python, we separate our words with underscores, not capital letters. It's not just pedantry - consistent style makes code easier to scan and understand."
+##hint "This variable is trying to blend in with the Python crowd, but its CamelCase is giving it away. How would a Pythonista name this?"
 ##replace-span - I i
-##explain "Single-letter variables should be lowercase"
-##hint "Loop counters are typically lowercase"
+##explain "A capital 'I' as a loop counter? That's just asking to be confused with the number 1 in many fonts! Single-letter variables should be lowercase, especially common ones like loop counters."
+##hint "This uppercase loop counter is shouting in a language that prefers to whisper. Lowercase would be more appropriate."
 ##replace-span - ws words
-##explain "Variable names should be descriptive"
-##hint "What does this parameter represent?"
+##explain "The mysterious 'ws'! Is it 'web services'? 'work sheets'? 'wild stallions'? Abbreviations save you 3 seconds typing and cost the next developer 3 minutes of confusion."
+##hint "This parameter name is playing hide-and-seek with its meaning. What data structure containing what type of elements is being passed here?"
 ##replace-span - bg bigram
-##explain "Avoid abbreviations unless they are well-known"
-##hint "What does this variable represent?"
+##explain "'bg' could be 'background', 'bodyguard', or 'Bulgarian'. In a function specifically about bigrams, using the full term 'bigram' makes the code instantly more readable."
+##hint "This abbreviated variable name could use a few more letters to clearly express what it's storing."
 ##replace-span - bigramsfrequency bigrams_frequency
-##explain "Python variables should use snake_case naming style"
-##hint "Variable names in Python should be lowercase with underscores"
-
+##explain "This variable name is having an identity crisis - it can't decide if it wants to be camelCase or snake_case, so it chose neither! Consistency in naming style makes code much easier to read."
+##hint "This variable name is missing some underscores to properly separate the words in Python style."
+"""final
+Excellent work! You've successfully converted this code to follow Python's naming conventions. While the code would work either way, following the established style guidelines for a language makes your code more readable and maintainable for other Python developers. It's like learning the local customs when you visit a new country - it shows respect for the community and helps you integrate better!
+"""
+##final-reply "Style guide conformance achieved!"

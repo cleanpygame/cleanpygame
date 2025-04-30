@@ -108,16 +108,18 @@
               "clickable": "BaD_VAriABLE_NAME",
               "replacement": "greeting",
               "event": "BaD_VAriABLE_NAME",
-              "explanation": "Yeh, exactly! Ready for some real work?",
-              "hint": "Click on bad variable name!"
+              "explanation": "Ah, much better! The code can finally breathe. Variable names should be readable by humans, not just compilers with low standards.",
+              "hint": "That variable name is practically begging for mercy. Put it out of its misery by clicking on it!"
             },
             {
               "type": "text",
               "text": "\n"
             }
           ],
-          "startMessage": "Hello, Junior!\nAccording to our team process, you are not yet allowed to write code. So, you can only review a code of your colleagues and fix some small and not significant details.\n\nLet's train you a little. Look at this terrible variable name. Click to fix it!",
-          "startReply": "Ok"
+          "startMessage": "Welcome to the coding trenches, Junior! \nAccording to our team's ancient traditions (and your manager's trust issues), you're not allowed to write actual code yet. Your sacred duty is to review your colleagues' masterpieces and fix \"small, insignificant details\" - you know, the ones that cause production outages at 3 AM.\n\nLet's start with something even you can't mess up. See that variable name that looks like someone fell asleep on their keyboard? Click to fix it before my eyes start bleeding!",
+          "startReply": "I'll save your eyes!",
+          "finalMessage": "Congratulations! You've successfully renamed a variable without breaking the universe. Your journey to becoming slightly less junior has begun!",
+          "endReply": "Bring on the next challenge!"
         },
         {
           "filename": "temperature.py",
@@ -135,35 +137,35 @@
               "clickable": "idx",
               "replacement": "day_of_week",
               "event": "idx",
-              "explanation": "Argument name is a part of code documentation. It is important to make it meaningful",
-              "hint": "$sign-is-doc"
+              "explanation": "Ah, 'idx'? Was saving those extra keystrokes really worth the confusion? Parameter names are like tiny documentation snippets - they should tell a story, not play hide and seek with meaning.",
+              "hint": "That first parameter is trying to tell you something about days, but it's been vowel-mugged. Help it speak clearly!"
             },
             {
               "type": "replace-span",
               "clickable": "tt",
               "replacement": "temperature",
               "event": "tt",
-              "explanation": "$no-abbr",
-              "hint": "$sign-is-doc"
+              "explanation": "Life's too short for deciphering 'tt'. Is it 'total time'? 'tiny turtles'? 'terrible typo'? Abbreviations save you 2 seconds typing and cost your teammates 10 minutes of head-scratching.",
+              "hint": "This parameter is feeling a bit chilly with only two letters. Maybe warm it up with its full name?"
             },
             {
               "type": "replace-span",
               "clickable": "dnms",
               "replacement": "day_names",
               "event": "dnms",
-              "explanation": "Vowels are happy now!",
-              "hint": "Do you wnt hnts? yrwlcm!"
+              "explanation": "Vowels aren't just decorative - they help make words recognizable! 'dnms' looks like a typo, 'day_names' looks like English. Your future self will thank you at 2 AM when debugging.",
+              "hint": "This variable name seems to have lost its vowels in a tragic accident. Perform vowel-donation surgery immediately!"
             },
             {
               "type": "replace-span",
               "clickable": "fmt_temp",
               "replacement": "format_temperature",
               "event": "fmt_temp",
-              "explanation": "Is temp for temporary?",
-              "hint": "$sign-is-doc"
+              "explanation": "When you name a function 'fmt_temp', you're basically saying 'I dare you to figure out what this does'. Is it formatting templates? Fermenting tempeh? Fumigating temptations? Be specific!",
+              "hint": "This function name is playing hard to get with its meaning. Help it express itself more fully!"
             }
           ],
-          "startMessage": "Okay, you are ready to some real work.\nCheck if this code is easy to understand."
+          "startMessage": "Alright hotshot, time for some real work! Your colleague wrote this temperature formatting code and - surprise! - it's about as clear as mud on a foggy day.\n\nTake a look at this cryptic masterpiece and see if you can decipher what's happening without consulting ancient scrolls or summoning a code whisperer."
         },
         {
           "filename": "cells.py",
@@ -178,39 +180,41 @@
               "clickable": "get",
               "replacement": "get_empty_positions",
               "event": "get",
-              "explanation": "Function name should describe what it does",
-              "hint": "What does this function actually return?"
+              "explanation": "Ah, the mysterious 'get' function! Get what exactly? Milk from the store? The joke? The function name 'get_empty_positions' actually tells us what it returns - a revolutionary concept in programming!",
+              "hint": "This function name is about as descriptive as calling a hammer 'hit_thing'. What specific data is it actually retrieving?"
             },
             {
               "type": "replace-span",
               "clickable": "lst1",
               "replacement": "empty_positions",
               "event": "lst1",
-              "explanation": "Use descriptive variable names",
-              "hint": "What does this list store?"
+              "explanation": "lst1? Is this a sequel to lst? Coming soon to theaters near you! Variable names should tell a story about their purpose, not just be numbered placeholders.",
+              "hint": "This variable is collecting specific positions. Maybe its name could reflect that instead of sounding like a temporary variable that overstayed its welcome?"
             },
             {
               "type": "replace-span",
               "clickable": "lst",
               "replacement": "cells",
               "event": "lst",
-              "explanation": "Use descriptive variable names",
-              "hint": "What does this list contain?"
+              "explanation": "When you name a list of cells 'lst', you're basically saying 'I want the next developer to play a guessing game'. Descriptive names save brain cycles for actual problem-solving!",
+              "hint": "This parameter contains specific objects with properties like 'is_empty'. What might those objects be? Certainly not just any old list items..."
             },
             {
               "type": "replace-span",
               "clickable": "c",
               "replacement": "cell",
               "event": "c",
-              "explanation": "Single-letter variable names are rarely descriptive",
-              "hint": "What does each item in the list represent?"
+              "explanation": "Single-letter variable names in loops are like mysterious characters in a novel who are never properly introduced. In a short loop it might be clear, but clarity always beats brevity.",
+              "hint": "This loop variable represents one item from your collection. What is each item in this collection? Naming it properly helps readers understand the code at a glance."
             },
             {
               "type": "text",
-              "text": "\n\n"
+              "text": "\n"
             }
           ],
-          "startMessage": "Nice work! After your fixes code becomes much more readable. \nAnd this piece of code is really short and simple.\nNot sure if it needs any changes."
+          "startMessage": "Well done on your previous fixes! Now your colleague has sent you this \"masterpiece\" of clarity. \n\n\"It's short and simple,\" they said. \"Probably doesn't need any changes,\" they said. Let's see about that... I spy with my little eye some variables that are playing hide-and-seek with their meanings!",
+          "finalMessage": "Excellent work! You've transformed this cryptic code into something self-documenting. Now anyone reading it can understand what it does without having to trace through the execution in their head. Remember: code is written once but read many times, so optimizing for readability is always worth the extra keystrokes!",
+          "endReply": "Ready for the next naming challenge!"
         },
         {
           "filename": "views.py",
@@ -235,31 +239,33 @@
               "clickable": "86400",
               "replacement": "(24*60*60)",
               "event": "86400",
-              "explanation": "Magic numbers make code harder to understand",
-              "hint": "What does this number represent?"
+              "explanation": "Ah yes, the mysterious 86400! Is it a secret code? The combination to the office safe? Or perhaps... the number of seconds in a day? 'Magic numbers' are like inside jokes - hilarious if you're in on it, confusing for everyone else.",
+              "hint": "This suspiciously specific number is lurking in your code without explanation. What cosmic significance might it hold? (Hint: Check your watch)"
             },
             {
               "type": "replace-span",
               "clickable": "(24*60*60)",
               "replacement": "n",
               "event": "MAGIC",
-              "explanation": "Constant should have name",
-              "hint": "Why stop here?!"
+              "explanation": "Great, you've replaced one magic number with... another magic number! But at least now it's calculated. It's like showing your work on a math test - you still might be wrong, but at least we can see your reasoning.",
+              "hint": "You've made progress, but that variable 'n' is about as descriptive as calling your pet 'animal'. What does this number actually represent?"
             },
             {
               "type": "replace-span",
               "clickable": "n",
               "replacement": "seconds_in_24h",
               "event": "n",
-              "explanation": "Variable names should be descriptive",
-              "hint": "What does this variable represent?"
+              "explanation": "Finally! A variable name that actually explains what the value represents. Future developers (including future you) won't have to reverse-engineer your thought process to understand this code.",
+              "hint": "The variable 'n' could use a more descriptive name. What exactly are you calculating with 24*60*60?"
             },
             {
               "type": "text",
-              "text": "\n\n"
+              "text": "\n"
             }
           ],
-          "startMessage": "Do not change any constants here! They are magically calculated.\nNobody knows how, but everything works perfectly."
+          "startMessage": "⚠️ IMPORTANT NOTICE ⚠️\nDo NOT change any constants here! They are magically calculated by our resident wizard who refuses to document anything.\n\nThe code works perfectly through some arcane sorcery. Touching it might summon demons or worse - break production. Proceed with extreme caution!",
+          "finalMessage": "Congratulations on defying the \"don't touch the magic constants\" warning! Sometimes the most important rules to break are the ones that lead to unmaintainable code. By replacing magic numbers with clear, calculated constants, you've made this code significantly more readable and less prone to mysterious bugs. Your future self thanks you!",
+          "endReply": "Magic dispelled! Next challenge please!"
         },
         {
           "filename": "contains.py",
@@ -274,24 +280,26 @@
               "clickable": "l",
               "replacement": "pattern_len",
               "event": "l",
-              "explanation": "Hint for the future: never use lowercase 'l' as a variable name!",
-              "hint": "What does this variable represent?"
+              "explanation": "Lowercase 'l' as a variable name? Are you trying to confuse it with the number '1' and the uppercase 'I'? This is how debugging nightmares begin! Always use descriptive names that don't require a cryptography degree to decipher.",
+              "hint": "That variable name 'l' is playing a dangerous game of 'guess which character I am' with future developers. What information is it actually storing?"
             },
             {
               "type": "replace-span",
               "clickable": "i+1",
               "replacement": "i+l",
               "event": "i1",
-              "explanation": "This is a bug! We need to use the pattern length, not just 1 character",
-              "hint": "How many characters should we compare?"
+              "explanation": "Aha! The infamous off-by-everything bug! You're checking if a single character equals the entire pattern. That's like checking if a single brick is the same as an entire house. No wonder the search function wasn't working!",
+              "hint": "The code is comparing a single character to the entire pattern. Shouldn't it be comparing the same number of characters as the pattern length?"
             },
             {
               "type": "text",
-              "text": "\n\n"
+              "text": "\n"
             }
           ],
-          "startMessage": "Uhh.. Can't find a bug here... Can you help me a little?",
-          "startReply": "Let's find it!"
+          "startMessage": "Your colleague just pushed this \"perfectly working\" string search function to production. Customers are already complaining that the search doesn't work properly.\n\nThe developer swears there's no bug: \"It compiles, doesn't it?\" Can you find what's lurking in this seemingly innocent code before the support team stages a revolt?",
+          "startReply": "Challenge accepted!",
+          "finalMessage": "Excellent debugging! You've fixed both a naming issue AND a logical bug. The original code was only checking if any single character matched the entire pattern (which would only work for single-character patterns). Your fix ensures it compares the right number of characters. This is why naming variables clearly is so important - it makes bugs like this much easier to spot!",
+          "endReply": "Bug squashed! What's next?"
         },
         {
           "filename": "unescape.py",
@@ -306,31 +314,34 @@
               "clickable": "flag",
               "replacement": "after_slash",
               "event": "flag",
-              "explanation": "Variable names should describe their purpose, not just their type",
-              "hint": "What does this boolean flag actually indicate?"
+              "explanation": "Ah, the mysterious 'flag'! Flag for what? A country? A ship? A variable named 'after_slash' actually tells us what it's tracking. Remember: code is read far more often than it's written, so those extra keystrokes save hours of confusion.",
+              "hint": "This boolean is tracking a specific condition related to the previous character. What state is it actually remembering?"
             },
             {
               "type": "replace-span",
               "clickable": "ss",
               "replacement": "unescaped",
               "event": "ss",
-              "explanation": "Single-letter variable names (or duplicates like 'ss') are rarely descriptive",
-              "hint": "What does this string contain?"
+              "explanation": "'ss'? Is that a snake hissing? A boat's distress call? Variable names should tell a story about their purpose, not just be lazy duplications of other variable names.",
+              "hint": "This string is accumulating characters, but with a specific transformation applied. What's happening to the content as it's being built?"
             },
             {
               "type": "replace-span",
               "clickable": "s",
               "replacement": "escaped",
               "event": "s",
-              "explanation": "Single-letter variable names are rarely descriptive",
-              "hint": "What does this parameter represent?"
+              "explanation": "Single-letter variable names are like mysterious characters in a novel who are never properly introduced. In some contexts (like 'i' in a short loop) they're acceptable, but parameters deserve their full identity.",
+              "hint": "This parameter contains text with a specific characteristic. What kind of string is being passed to this function?"
             },
             {
               "type": "text",
-              "text": "\n\n"
+              "text": "\n"
             }
           ],
-          "startMessage": "1. If a variable stores string, it is 's'.\n2. If it stores a boolean, it is 'flag'.\n3. However, sometimes one also need 's1', 's2', etc.\n4. But I personally prefer 'ss', 'sss', etc. Brilliant, isn't it?"
+          "startMessage": "Behold! The revolutionary naming convention from our senior developer, who insists it's \"optimized for typing efficiency\":\n\n1. If a variable stores a string, name it 's' (saves 5 keystrokes over 'string'!)\n2. If it stores a boolean, always name it 'flag' (what the flag means is an exciting mystery!)\n3. Need multiple strings? Use 's1', 's2', etc. (sequential brilliance!)\n4. But wait, there's more! For true elegance, use 'ss', 'sss', etc. (because who needs meaning when you can have repetition?)\n\nThis code works perfectly, so clearly these naming conventions are superior. Right?",
+          "startReply": "Let me fix this naming disaster...",
+          "finalMessage": "Excellent work! You've transformed this code from a cryptic puzzle into self-documenting code. Now anyone reading it can immediately understand what each variable represents without having to trace through the execution. Remember: the goal of variable naming isn't to save keystrokes while typing - it's to save brain cycles while reading!",
+          "endReply": "Names fixed! On to the next challenge!"
         },
         {
           "filename": "discount.py",
@@ -345,23 +356,26 @@
               "clickable": "flag",
               "replacement": "every_order_has_discounted_item",
               "event": "flag",
-              "explanation": "Variable names should describe their purpose, not just their type",
-              "hint": "What does this boolean flag actually track?"
+              "explanation": "Ah, the mysterious 'flag'! What does it represent? Peace? Surrender? The boolean 'every_order_has_discounted_item' actually tells us what we're tracking. Imagine if traffic lights were just labeled 'light1', 'light2', and 'light3' instead of red, yellow, and green!",
+              "hint": "This variable is tracking something about ALL orders. What condition must be true for EVERY order to make this function return true?"
             },
             {
               "type": "replace-span",
               "clickable": "flag2",
               "replacement": "has_discount",
               "event": "flag2",
-              "explanation": "Numbered variables (flag2) are rarely descriptive",
-              "hint": "What does this boolean flag indicate about the order?"
+              "explanation": "flag2? Is that the sequel to flag1? Coming soon to theaters near you! Numbered variables are like mystery boxes - exciting until you realize you have to open them to know what's inside.",
+              "hint": "This inner flag is checking a property of each individual order. What specific condition about discounts is it verifying?"
             },
             {
               "type": "text",
-              "text": "\n\n"
+              "text": "\n"
             }
           ],
-          "startMessage": "If we have already 'flag' and we need the second one, how should we name it? flag1 or flag2? What is your favorite?"
+          "startMessage": "The Great Boolean Naming Dilemma of our time:\n\nWhen you already have a variable called 'flag' and need another one, do you go with:\nA) flag1 and flag2 (for that sequential thrill)\nB) flag and flag_too (for the rhyming enthusiasts)\nC) flag and THE_OTHER_FLAG (for shouting clarity)\nD) Actually name them according to what they represent (but where's the mystery in that?)\n\nOur developer chose option A. Let's see how that's working out...",
+          "startReply": "Option D, obviously!",
+          "finalMessage": "Excellent! You've transformed this code from a boolean guessing game into something self-explanatory. Now anyone reading this function can understand its purpose at a glance: it checks if a customer only buys orders that contain at least one discounted item. Descriptive variable names make code tell a story, not pose a riddle!",
+          "endReply": "Boolean mystery solved! Next challenge!"
         },
         {
           "filename": "bigrams.py",
@@ -376,55 +390,58 @@
               "clickable": "GetBigramsFrequency",
               "replacement": "get_bigrams_frequency",
               "event": "GetBigramsFrequency",
-              "explanation": "Python functions should use snake_case naming style",
-              "hint": "Function names in Python should be lowercase with underscores"
+              "explanation": "CamelCase in Python? That's like wearing socks with sandals - technically functional but culturally questionable. Python has its own style guide (PEP 8) that recommends snake_case for functions. Consistency in style makes code more readable for the community.",
+              "hint": "This function name is dressed in CamelCase, but Python functions prefer to slither in snake_case."
             },
             {
               "type": "replace-span",
               "clickable": "bigramsCount",
               "replacement": "bigrams_count",
               "event": "bigramsCount",
-              "explanation": "Python variables should use snake_case naming style",
-              "hint": "Variable names in Python should be lowercase with underscores"
+              "explanation": "Another CamelCase refugee! In Python, we separate our words with underscores, not capital letters. It's not just pedantry - consistent style makes code easier to scan and understand.",
+              "hint": "This variable is trying to blend in with the Python crowd, but its CamelCase is giving it away. How would a Pythonista name this?"
             },
             {
               "type": "replace-span",
               "clickable": "I",
               "replacement": "i",
               "event": "I",
-              "explanation": "Single-letter variables should be lowercase",
-              "hint": "Loop counters are typically lowercase"
+              "explanation": "A capital 'I' as a loop counter? That's just asking to be confused with the number 1 in many fonts! Single-letter variables should be lowercase, especially common ones like loop counters.",
+              "hint": "This uppercase loop counter is shouting in a language that prefers to whisper. Lowercase would be more appropriate."
             },
             {
               "type": "replace-span",
               "clickable": "ws",
               "replacement": "words",
               "event": "ws",
-              "explanation": "Variable names should be descriptive",
-              "hint": "What does this parameter represent?"
+              "explanation": "The mysterious 'ws'! Is it 'web services'? 'work sheets'? 'wild stallions'? Abbreviations save you 3 seconds typing and cost the next developer 3 minutes of confusion.",
+              "hint": "This parameter name is playing hide-and-seek with its meaning. What data structure containing what type of elements is being passed here?"
             },
             {
               "type": "replace-span",
               "clickable": "bg",
               "replacement": "bigram",
               "event": "bg",
-              "explanation": "Avoid abbreviations unless they are well-known",
-              "hint": "What does this variable represent?"
+              "explanation": "'bg' could be 'background', 'bodyguard', or 'Bulgarian'. In a function specifically about bigrams, using the full term 'bigram' makes the code instantly more readable.",
+              "hint": "This abbreviated variable name could use a few more letters to clearly express what it's storing."
             },
             {
               "type": "replace-span",
               "clickable": "bigramsfrequency",
               "replacement": "bigrams_frequency",
               "event": "bigramsfrequency",
-              "explanation": "Python variables should use snake_case naming style",
-              "hint": "Variable names in Python should be lowercase with underscores"
+              "explanation": "This variable name is having an identity crisis - it can't decide if it wants to be camelCase or snake_case, so it chose neither! Consistency in naming style makes code much easier to read.",
+              "hint": "This variable name is missing some underscores to properly separate the words in Python style."
             },
             {
               "type": "text",
-              "text": "\n\n"
+              "text": "\n"
             }
           ],
-          "startMessage": "Anders and Nicolaus wrote this code. Their naming style is a little bit non typical for python..."
+          "startMessage": "Ah, the joys of cross-language developers! Anders and Nicolaus just transferred from the C# team and brought their naming conventions with them. They insist their style is \"perfectly readable\" and \"who cares about PEP 8 anyway?\"\n\nTheir code works, but it's like showing up to a Python conference wearing a tuxedo - technically dressed, but clearly missed the memo about the dress code. Can you help them blend in with the Python community?",
+          "startReply": "Time for a Python style makeover!",
+          "finalMessage": "Excellent work! You've successfully converted this code to follow Python's naming conventions. While the code would work either way, following the established style guidelines for a language makes your code more readable and maintainable for other Python developers. It's like learning the local customs when you visit a new country - it shows respect for the community and helps you integrate better!",
+          "endReply": "Style guide conformance achieved!"
         },
         {
           "filename": "copy.py",
@@ -439,47 +456,50 @@
               "clickable": "xs",
               "replacement": "destination",
               "event": "xs",
-              "explanation": "Variable names should be descriptive",
-              "hint": "What does this parameter represent?"
+              "explanation": "Ah, 'xs'! Is that a clothing size? An abbreviation for 'excess'? The documentation already calls it 'destination' - why not use that in the code too? Consistency between docs and code prevents confusion.",
+              "hint": "The documentation already gives this parameter a better name. What does the docstring call this list?"
             },
             {
               "type": "replace-span",
               "clickable": "ys",
               "replacement": "source",
               "event": "ys",
-              "explanation": "Variable names should be descriptive",
-              "hint": "What does this parameter represent?"
+              "explanation": "'ys'? Are we playing a game of 'Name That Variable: Vowel-Free Edition'? Again, the documentation already has a perfectly good name for this parameter.",
+              "hint": "Check the docstring - it already suggests a much clearer name for this parameter."
             },
             {
               "type": "replace-span",
               "clickable": "j",
               "replacement": "dest_start",
               "event": "j",
-              "explanation": "Single-letter variable names are rarely descriptive",
-              "hint": "What does this parameter represent?"
+              "explanation": "Single-letter variables like 'j' are perfect when you want your code to be as mysterious as possible. For everyone else, descriptive names like 'dest_start' make the code self-documenting.",
+              "hint": "This parameter represents a starting position in a specific array. The docstring explains which one."
             },
             {
               "type": "replace-span",
               "clickable": "k",
               "replacement": "src_start",
               "event": "k",
-              "explanation": "Single-letter variable names are rarely descriptive",
-              "hint": "What does this parameter represent?"
+              "explanation": "The letter 'k' - saving valuable keystrokes since the invention of programming! But at what cost to readability? The few extra characters in 'src_start' make the code instantly more understandable.",
+              "hint": "Similar to 'j', this parameter is also a starting position, but for a different array. Which one?"
             },
             {
               "type": "replace-span",
               "clickable": "n",
               "replacement": "count",
               "event": "n",
-              "explanation": "Single-letter variable names are rarely descriptive",
-              "hint": "What does this parameter represent?"
+              "explanation": "'n' could stand for 'number', 'node', 'noodle'... The documentation says 'number of elements to copy', so why not use a name that actually conveys that meaning?",
+              "hint": "This parameter determines how many items get copied. What would be a clearer name than just 'n'?"
             },
             {
               "type": "text",
-              "text": "\n\n"
+              "text": "\n"
             }
           ],
-          "startMessage": "Huh, somebody wrote documentation for their code?! Weakling! Real coders don't read or write docs. They read and write CODE!"
+          "startMessage": "Well, well, well... someone actually wrote documentation for their code! How quaint! \n\nBut wait - they used clear, descriptive terms in the docs, then proceeded to name their actual parameters like they were rationing letters during a keyboard shortage. It's like writing a detailed restaurant menu in beautiful prose, then serving the food in unmarked paper bags.\n\nLet's see if we can make the code as descriptive as its documentation, shall we?",
+          "startReply": "Code should be as clear as its docs!",
+          "finalMessage": "Excellent! You've transformed this function from cryptic to crystal clear. Now the code matches the quality of its documentation, making it immediately obvious what each parameter does without having to refer to the docstring. \n\nRemember: Good code is self-documenting. While comments and docstrings are valuable, they shouldn't be a crutch for poorly named variables. When your variable names tell the story clearly, your code becomes much easier to understand and maintain!",
+          "endReply": "Documentation and code now in harmony!"
         },
         {
           "filename": "board.py",
@@ -487,46 +507,49 @@
           "blocks": [
             {
               "type": "text",
-              "text": "\ndef initialization(board_json):\n    n = board_json['size']\n    board = creating_board(n, n)\n    board_reader(board_json, board)\n\n# Hint for the future: functions = verbs, variables = nouns.\n\n"
+              "text": "\ndef initialization(board_json):\n    n = board_json['size']\n    board = creating_board(n, n)\n    board_reader(board_json, board)\n\n"
             },
             {
               "type": "replace-span",
               "clickable": "n",
               "replacement": "board_size",
               "event": "n",
-              "explanation": "Variable names should be descriptive",
-              "hint": "What does this variable represent?"
+              "explanation": "Ah, the mysterious 'n'! Is it a secret agent? The 14th letter of the alphabet? Or perhaps... the size of the board? Single-letter variables are like secret codes that only the original developer understands.",
+              "hint": "This variable holds a specific dimension from the JSON. What dimension is it extracting from 'size'?"
             },
             {
               "type": "replace-span",
               "clickable": "initialization",
               "replacement": "initialize_board",
               "event": "initialization",
-              "explanation": "Function names should be verbs",
-              "hint": "What action does this function perform?"
+              "explanation": "Functions should be verbs because they DO things! 'initialization' is the noun form - like saying 'swimming' instead of 'swim'. Your functions should sound like commands: 'create', 'calculate', 'destroy', not 'creation', 'calculation', 'destruction'.",
+              "hint": "This function is performing an action on a board. What action is it taking? Think imperative verb form."
             },
             {
               "type": "replace-span",
               "clickable": "creating_board",
               "replacement": "create_board",
               "event": "creating_board",
-              "explanation": "Function names should be verbs, not gerunds",
-              "hint": "Use the imperative form for function names"
+              "explanation": "'creating_board' sounds like you're narrating what you're doing: 'I am creating board now'. Function names should be direct commands: 'create_board!' It's more efficient and follows standard conventions.",
+              "hint": "This function name uses the -ing form (gerund), but function names should use the imperative form. How would you command someone to perform this action?"
             },
             {
               "type": "replace-span",
               "clickable": "board_reader",
               "replacement": "read_board",
               "event": "board_reader",
-              "explanation": "Function names should be verbs",
-              "hint": "What action does this function perform?"
+              "explanation": "'board_reader' sounds like a job title, not an action. Is it a person who reads boards professionally? Functions should be verbs that describe the action they perform.",
+              "hint": "This function is doing something with the board data. What specific action is it taking with the board_json?"
             },
             {
               "type": "text",
-              "text": "\n\n"
+              "text": "\n"
             }
           ],
-          "startMessage": "It is simple: \n'initialization' consists of 'creating a board' and filling it with the 'board_reader'!"
+          "startMessage": "Your colleague, who apparently skipped the \"Parts of Speech\" day in English class, has written some board game initialization code.\n\nThey proudly explained: \"It is simple! The 'initialization' consists of 'creating a board' and filling it with the 'board_reader'!\"\n\nYou nod politely while mentally correcting their grammar. Time to teach them the sacred rule of naming: functions do things (verbs), variables are things (nouns).",
+          "startReply": "Let me fix these names...",
+          "finalMessage": "Excellent work! You've transformed these function and variable names to follow proper naming conventions. Functions are now verbs (actions) and variables are nouns (things), making the code much more intuitive to read.\n\nThis naming pattern creates a natural language-like flow in your code: \"initialize_board takes a board_size and uses it to create_board and read_board.\" It reads almost like a sentence, which is exactly what good code should do!",
+          "endReply": "Grammar and naming fixed!"
         },
         {
           "filename": "final.py",
@@ -541,63 +564,66 @@
               "clickable": "InstructionParser",
               "replacement": "parse_instructions",
               "event": "InstructionParser",
-              "explanation": "Function names should be verbs and use snake_case in Python",
-              "hint": "What does this function actually do?"
+              "explanation": "CamelCase function names in Python? That's like wearing a tuxedo to a beach party. Python has its own dress code (PEP 8), and it strongly recommends snake_case for functions. Also, functions should be verbs because they DO things - they're not just sitting around being nouns.",
+              "hint": "This function is taking some text and converting it into structured data. What action is it performing on the instructions?"
             },
             {
               "type": "replace-span",
               "clickable": "Instructions",
               "replacement": "instructions",
               "event": "Instructions",
-              "explanation": "Variable names should use snake_case in Python",
-              "hint": "Consistent naming conventions make code more readable"
+              "explanation": "Why is 'Instructions' capitalized? Is it royalty? A proper noun? The beginning of a sentence? In Python, variable names should be snake_case and lowercase unless they're constants (which this definitely isn't).",
+              "hint": "This variable is breaking Python's naming convention. How would you write this in lowercase with the proper Python style?"
             },
             {
               "type": "replace-span",
               "clickable": "F",
               "replacement": "inside_begin_end",
               "event": "F",
-              "explanation": "Single-letter variable names are rarely descriptive",
-              "hint": "What does this boolean flag actually indicate?"
+              "explanation": "Ah, the enigmatic 'F'! Is it paying respects? A grade? The sixth letter of the alphabet? Single-letter variables are like secret codes that only the original developer understands - and sometimes not even them after a few months.",
+              "hint": "This boolean is tracking whether we're currently between specific markers in the text. What state is it actually representing?"
             },
             {
               "type": "replace-span",
               "clickable": "l",
               "replacement": "line",
               "event": "l",
-              "explanation": "Single-letter variable names are rarely descriptive",
-              "hint": "What does each item in the loop represent?"
+              "explanation": "The letter 'l' is particularly problematic as a variable name because in many fonts it looks identical to the number '1'. It's like setting a trap for the next developer (or yourself in 3 months).",
+              "hint": "This loop is iterating through something line by line. What exactly does each 'l' represent?"
             },
             {
               "type": "replace-span",
               "clickable": "i",
               "replacement": "instructions_text",
               "event": "i",
-              "explanation": "Single-letter variable names are rarely descriptive",
-              "hint": "What does this parameter represent?"
+              "explanation": "The lonely 'i' parameter! Is it an index? An iterator? An imaginary number? When parameters are the entry point to your function, they deserve names that clearly explain what they contain.",
+              "hint": "This parameter contains the raw text that needs to be parsed. What would be a more descriptive name?"
             },
             {
               "type": "replace-span",
               "clickable": "4:",
               "replacement": "len(\"add \"):",
               "event": "4",
-              "explanation": "Magic numbers should be replaced with meaningful expressions",
-              "hint": "What does this number represent?"
+              "explanation": "Magic numbers like '4' are like mysterious ingredients in a recipe. 'Add a pinch of 4' - but why 4? What does it represent? Using 'len(\"add \")' makes it immediately clear you're skipping past a command prefix.",
+              "hint": "This number represents the length of a specific command prefix. How could you make that explicit in the code?"
             },
             {
               "type": "replace-span",
               "clickable": "8:",
               "replacement": "len(\"replace \"):",
               "event": "8",
-              "explanation": "Magic numbers should be replaced with meaningful expressions",
-              "hint": "What does this number represent?"
+              "explanation": "Another magic number! '8' is the lucky number in some cultures, but in code, unexplained numbers are just bad luck waiting to happen. What if the command syntax changes? You'd have to hunt down all these hardcoded values.",
+              "hint": "Similar to the previous issue, this number is the length of a command string. How could you calculate this dynamically?"
             },
             {
               "type": "text",
-              "text": "\n\n"
+              "text": "\n"
             }
           ],
-          "startMessage": "Finally I finished a wonderful piece of the excellent code. However, according to our team process, somebody should review it.\n\nAs it is already perfect, don't lose your time, just approve it!"
+          "startMessage": "BEHOLD! I have crafted the most exquisite piece of code known to humanity! It's so perfect that it probably doesn't even need electricity to run - the sheer elegance of its logic could power a small city.\n\nAccording to our tedious team process, someone needs to review it. But let's be honest - this is just a formality. Simply approve it and we can all go home early!\n\n(Narrator: It was not, in fact, perfect.)",
+          "startReply": "Let me review this 'perfect' code...",
+          "finalMessage": "Congratulations! You've transformed this \"perfect\" code into something actually worthy of approval. \n\nYou've applied all the naming best practices we've covered:\n1. Using snake_case for Python functions and variables\n2. Making function names verbs that describe their action\n3. Using descriptive names instead of single letters or abbreviations\n4. Replacing magic numbers with self-documenting expressions\n\nRemember: Code isn't just for computers to execute - it's for humans to read, understand, and maintain. Good naming is the foundation of readable code, and readable code is the foundation of maintainable software.\n\nYou've completed the naming challenges! Your future teammates thank you in advance for your clear, descriptive naming practices.",
+          "endReply": "From 'perfect' to actually good!"
         }
       ]
     },
@@ -635,23 +661,29 @@
               "text": "    sum_all = 0\n    for i in values:\n        sum_all += i\n",
               "replacement": "    sum_all = sum(values)\n",
               "event": "sum_loop",
-              "explanation": "Use built-in sum() function instead of manual loop",
-              "hint": "Python has built-in functions for common operations"
+              "explanation": "Why write in five lines what you can write in one? This manual summation loop is like using a abacus when you have a calculator in your pocket. Python's built-in sum() function is not only more concise but also faster and less error-prone.",
+              "hint": "Python has a built-in function that can add up all values in an iterable. No need to reinvent the wheel (or the summer)!"
             },
             {
               "type": "replace",
               "text": "    min_value = values[0]\n    for v in values[1:]:\n        if v < min_value:\n            min_value = v\n",
               "replacement": "    min_value = min(values)\n",
               "event": "min_loop",
-              "explanation": "Use built-in min() function instead of manual loop",
-              "hint": "Python has built-in functions for common operations"
+              "explanation": "Another handcrafted loop bites the dust! This manual minimum-finding algorithm assumes the list isn't empty (dangerous!) and does in four lines what Python's min() function does in one. Work smarter, not harder!",
+              "hint": "Finding the smallest value in a collection is such a common operation that Python has a built-in function specifically for it. What might it be called?"
             },
             {
               "type": "text",
-              "text": "    print(f\"sum: {sum_all}, min: {min_value}\")\n\n"
+              "text": "    print(f\"sum: {sum_all}, min: {min_value}\")\n\"\"\"final\nExcellent! You've transformed verbose, manual loops into concise, Pythonic code. \n\nOne of Python's greatest strengths is its rich standard library of built-in functions. The Pythonic way is to leverage these built-ins rather than reinventing them. Not only does this make your code more readable and concise, but the built-in functions are often optimized for performance too!\n\nRemember: \"Flat is better than nested\" and \"Simple is better than complex\" - core principles from the Zen of Python that these built-in functions help you achieve.\n\"\"\"\n"
+            },
+            {
+              "type": "text",
+              "text": "\n"
             }
           ],
-          "startMessage": "Look at these goood ooold looops!"
+          "startMessage": "Ah, I see your colleague is a fan of \"artisanal, hand-crafted loops\" - painstakingly constructing each calculation from scratch like it's 1995!\n\nThey probably also churn their own butter and forge their own paperclips. How quaint! Let's introduce them to this revolutionary concept called \"built-in functions\" that Python has had since... forever.",
+          "startReply": "Time to modernize this code!",
+          "endReply": "Built-ins for the win!"
         },
         {
           "filename": "csv_processing.py",
@@ -659,15 +691,15 @@
           "blocks": [
             {
               "type": "text",
-              "text": "def list_to_csv(nums):\n"
+              "text": "\ndef list_to_csv(nums):\n"
             },
             {
               "type": "replace",
               "text": "    csv = \"\"\n    for n in nums:\n        csv += str(n) + \",\"\n    if csv.endswith(\",\"):\n        csv = csv[:-1]\n    return csv\n",
               "replacement": "    return \",\".join(str(n) for n in nums)\n",
               "event": "csv_join",
-              "explanation": "Use string join with generator expression instead of manual concatenation",
-              "hint": "String concatenation in loops is inefficient"
+              "explanation": "Six lines reduced to one! String concatenation in loops is like building a house by gluing one brick at a time - inefficient and error-prone. The join() method is specifically designed for this task and creates the string in one efficient operation. Plus, no need to handle that trailing comma!",
+              "hint": "Python strings have a method that can join all elements of an iterable with a specified delimiter. No manual concatenation required!"
             },
             {
               "type": "text",
@@ -678,8 +710,8 @@
               "text": "    count = 0\n    for v in values:\n        if v == 0:\n            count += 1\n    return count\n",
               "replacement": "    return sum(1 for v in values if v == 0)\n",
               "event": "count_zeros",
-              "explanation": "Generator expressions — a powerful tool for counting",
-              "hint": "Generator expressions. Heard of them?"
+              "explanation": "Generator expressions are Python's secret weapon! This one-liner creates a sequence of 1s for each zero in the values, then sums them up. It's like counting sheep, but for zeros, and without falling asleep at your keyboard.",
+              "hint": "Instead of manually incrementing a counter, you could generate a sequence of 1s for each matching item and then sum them. Think: generator expressions!"
             },
             {
               "type": "text",
@@ -690,15 +722,18 @@
               "text": "    file_obj = open(filename, 'r', encoding='utf-8')\n    big_text = file_obj.read().upper()\n    file_obj.close()\n    return big_text\n",
               "replacement": "    with open(filename, 'r', encoding='utf-8') as f:\n        return f.read().upper()\n",
               "event": "with_open",
-              "explanation": "Use `with` for file operations to ensure proper closure",
-              "hint": "what if an error occurs?"
+              "explanation": "Manually closing files is so last century! The 'with' statement is like a responsible parent - it cleans up after itself even if exceptions occur. No more forgotten file.close() calls or resource leaks!",
+              "hint": "What happens if an exception occurs between opening the file and closing it? The file might never get closed! Python has a construct that automatically handles resource cleanup..."
             },
             {
               "type": "text",
-              "text": "\n\n\n\n\n\n\n\n"
+              "text": "\n"
             }
           ],
-          "startMessage": "Meh... for, for, for... For what?!"
+          "startMessage": "Oh look, another \"for loop enthusiast\" who never met a loop they didn't like! \n\nThis code has more unnecessary loops than a roller coaster factory. It's like watching someone dig a hole with a spoon when there's a perfectly good shovel nearby. Let's introduce them to some Pythonic constructs that can save both keystrokes and sanity!",
+          "startReply": "Let's make this more Pythonic!",
+          "finalMessage": "Bravo! You've transformed verbose, error-prone code into elegant, Pythonic expressions.\n\nPython offers many powerful constructs that make your code more concise, readable, and efficient:\n1. String join() with generator expressions instead of manual concatenation\n2. Generator expressions with sum() for counting instead of manual counters\n3. Context managers (with statements) for automatic resource management\n\nThese aren't just shortcuts - they're the idiomatic way to write Python. They make your code more maintainable, often more efficient, and instantly recognizable to other Python developers. Remember: \"There should be one-- and preferably only one --obvious way to do it.\"",
+          "endReply": "Pythonic elegance achieved!"
         },
         {
           "filename": "search.py",
@@ -713,15 +748,18 @@
               "text": "    pattern_len = len(pattern)\n    for i in range(len(text)):\n        if text[i:i+pattern_len] == pattern:\n            return True\n    return False\n",
               "replacement": "    # Do we really need this function?!\n    return pattern in text\n",
               "event": "in_operator",
-              "explanation": "Use Python's 'in' operator instead of manual search",
-              "hint": "No need to invent the wheel"
+              "explanation": "Five lines of code versus one! This is like writing your own sorting algorithm when Python has sort() built in. The 'in' operator is not only more concise but also optimized for performance. Work smarter, not harder - that's the Python way!",
+              "hint": "Python has a built-in operator specifically designed to check if one string contains another. No loops required!"
             },
             {
               "type": "text",
-              "text": "\n\n"
+              "text": "\n"
             }
           ],
-          "startMessage": "Stop... `contains` again?! Haven't we already done this?"
+          "startMessage": "Wait a minute... didn't we just fix a 'contains' function in another file? \n\nOh, I see what happened. Your colleague fixed the bug in the previous version but still didn't realize that Python has this magical thing called the 'in' operator. It's like they fixed a leaky boat with duct tape when there was a perfectly good yacht available!\n\nLet's put this poor function out of its misery once and for all.",
+          "startReply": "Time to use Python's built-in features!",
+          "finalMessage": "Perfect! You've replaced a manual string search algorithm with Python's built-in 'in' operator.\n\nThis is a classic example of \"Pythonic\" code - using the language's built-in features instead of reinventing them. The 'in' operator is:\n1. More concise (1 line vs. 5)\n2. More readable (the intent is immediately clear)\n3. Likely more efficient (it's implemented in C)\n4. Less prone to bugs (no off-by-one errors or edge cases to worry about)\n\nRemember: Before implementing any common operation, check if Python already has a built-in way to do it. Chances are, it does!",
+          "endReply": "Built-in operators FTW!"
         },
         {
           "filename": "unescape.py",
@@ -736,15 +774,18 @@
               "text": "    result = \"\"\n    escaping = False\n    for char in text:\n        if escaping:\n            if char == 'n':\n                result += '\\n'\n            elif char == 't':\n                result += '\\t'\n            elif char == '\\\\':\n                result += '\\\\'\n            # ... other escape sequences here...\n            else:\n                result += '\\\\' + char  # unknown escape — keep as-is\n            escaping = False\n        elif char == '\\\\':\n            escaping = True\n        else:\n            result += char\n    return result\n",
               "replacement": "    # Python rule 101: everything is already implemented in some standard function!\n    return text.encode('utf-8').decode('unicode_escape')\n",
               "event": "encode_decode",
-              "explanation": "Built-in unicode_escape encoding handles unescaping! But first you need to convert the string to bytes",
-              "hint": "Escaping and unescaping string is a common task..."
+              "explanation": "20 lines of manual character parsing versus a single line of built-in functionality! This is like building your own calculator when there's one right there in your pocket. Python's encoding/decoding system already handles all escape sequences, including ones your manual version doesn't even support!",
+              "hint": "Unescaping strings is such a common operation that Python must have a built-in way to handle it. Think about string encoding and decoding..."
             },
             {
               "type": "text",
-              "text": "\n\n"
+              "text": "\n"
             }
           ],
-          "startMessage": "Unescape? Again?!"
+          "startMessage": "Unescape function? Again?! \n\nFirst we fixed the terrible variable names, and now we're back to fix the implementation itself. It's like your colleague is determined to solve problems that Python already solved years ago!\n\nThis manual character-by-character parsing is impressive in its thoroughness... and completely unnecessary. Let's see if we can replace this 20-line state machine with something more... Pythonic.",
+          "startReply": "There must be a built-in way to do this!",
+          "finalMessage": "Excellent! You've replaced a complex manual implementation with Python's built-in functionality.\n\nThis is a perfect example of the \"batteries included\" philosophy of Python. Before implementing any non-trivial functionality, it's always worth checking if Python's standard library already has a solution. In this case, the encode/decode approach:\n\n1. Is much more concise (1 line vs 20)\n2. Handles all standard escape sequences, not just the few explicitly coded\n3. Is likely more efficient as it's implemented in C\n4. Has been thoroughly tested by the Python community\n\nRemember: \"There should be one-- and preferably only one --obvious way to do it.\" In Python, the obvious way is usually the built-in way!",
+          "endReply": "Batteries included indeed!"
         }
       ]
     }

@@ -57,11 +57,11 @@ Levels file starts with header directives followed by sequence of blocks.
 
 ```text
 """start
-Chat message from buddy when level is started
+Smart and maybe sarcastic message from buddy commenting new level. Shown when level is started
 """
 ##start-reply "Player's reply"            
 """final
-Chat message from buddy when level is completed
+Smart and sarcastic comment about the finished level. Shown after all issues are fixed.
 """
 ##final-reply "Custom 'Next' button text"            
 
@@ -119,15 +119,6 @@ If `-` used for EVENT_ID or EVENT_ID is missing, then toolchain generates unique
 
 ---
 
-##### 4. Neutral feedback
-
-Neutral feedback for subjective issues. May appear anywhere.
-
-```text
-##neutral CLICKABLE_SUBSTRING
-```
-
----
 
 ##### 5. Explanations and Hints
 
@@ -137,12 +128,15 @@ Neutral feedback for subjective issues. May appear anywhere.
 
 Can appear only after blocks triggering events: `replace`, `replace-span` or `neutral` block. Add explanation to prev
 block.
+Contains sarcastic but educating comment on the issue. Shown after the issue was fixed.
 
 ```text
 ##hint EXPLANATION
 ```
 
-Can appear only after `replace-block` and `replace-span`. Add hint to prev block.
+Can appear only after `replace-block` and `replace-span`. Add a hint to prev block.
+
+Contains a smart and short hint that doesn't fully reveal the issue but rather gives a slight hint.
 
 ##### 6. Replace On
 
