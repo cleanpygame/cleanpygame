@@ -238,23 +238,10 @@ function errorWithContext(message: string, context: ParseContext): Error {
     return new Error(message + `. Line ${context.idx} in file ${context.filename}`);
 }
 
-export function readNeutral(args: string[], context: ParseContext): LevelBlock {
-    if (args.length !== 1) {
-        throw errorWithContext('##neutral requires exactly one argument: text', context);
-    }
-
-    context.idx++;
-    return {
-        type: 'neutral',
-        text: cleanArg(args[0])
-    };
-}
-
 export function readFilename(args: string[], context: ParseContext): string {
     if (args.length !== 1) {
         throw errorWithContext('##file must have exactly one argument', context);
     }
-
     context.idx++;
     return args[0];
 }
