@@ -66,7 +66,13 @@ function renderReplaceBlocks(blocks: LevelBlock[], events: string[], triggeredSp
     for (const block of blocks) {
         const processedText = block.text ? replaceAll(block.text, triggeredSpanBlocks) : block.text;
         const processedReplacement = block.replacement ? replaceAll(block.replacement, triggeredSpanBlocks) : block.replacement;
-        const processedBlock: LevelBlock = {...block, text: processedText, replacement: processedReplacement};
+        const processedClickable = block.clickable ? replaceAll(block.clickable, triggeredSpanBlocks) : block.clickable;
+        const processedBlock: LevelBlock = {
+            ...block,
+            clickable: processedClickable,
+            text: processedText,
+            replacement: processedReplacement
+        };
         const result = processBlock(processedBlock, events, lineOffset);
 
         finalCode += result.text;

@@ -628,7 +628,7 @@
       ]
     },
     {
-      "name": "Pythonic Code",
+      "name": "Pythonic",
       "wisdoms": [
         {
           "id": "built-in-functions",
@@ -674,15 +674,16 @@
             },
             {
               "type": "text",
-              "text": "    print(f\"sum: {sum_all}, min: {min_value}\")\n\"\"\"final\nExcellent! Pythonic code!\n\nPython's built-in functions make your code more readable, concise, and often faster.\nRemember: \"Flat is better than nested\" and \"Simple is better than complex\" - core principles from the Zen of Python.\n\"\"\"\n"
+              "text": "    print(f\"sum: {sum_all}, min: {min_value}\")\n"
             },
             {
               "type": "text",
               "text": "\n"
             }
           ],
-          "startMessage": "Ah, I see your colleague is a fan of \"artisanal, hand-crafted loops\" - painstakingly constructing each calculation from scratch like it's 1995!\n\nThey probably also churn their own butter and forge their own paperclips. How quaint! Let's introduce them to this revolutionary concept called \"built-in functions\" that Python has had since... forever.",
+          "startMessage": "Ah, I see your colleague is a fan of \"artisanal, hand-crafted loops\" - painstakingly constructing each calculation from scratch like it's 1995!\n\nThey probably also churn their own butter and forge their own paperclips. Let's introduce them to revolutionary concept of \"built-in functions\" that Python has had since... forever.",
           "startReply": "Let's modernize!",
+          "finalMessage": "Excellent! Pythonic code!\n\nPython's built-in functions make your code more readable, concise, and often faster.\nRemember: \"Flat is better than nested\" and \"Simple is better than complex\" - core principles from the Zen of Python.",
           "endReply": "Built-ins for the win!"
         },
         {
@@ -786,6 +787,336 @@
           "startReply": "There must be a built-in way to do this!",
           "finalMessage": "Excellent! You've replaced a complex manual implementation with Python's built-in functionality.\n\nThis is a perfect example of the \"batteries included\" philosophy of Python. Before implementing any non-trivial functionality, it's always worth checking if Python's standard library already has a solution. In this case, the encode/decode approach:\n\n1. Is much more concise (1 line vs 20)\n2. Handles all standard escape sequences, not just the few explicitly coded\n3. Is likely more efficient as it's implemented in C\n4. Has been thoroughly tested by the Python community\n\nRemember: \"There should be one-- and preferably only one --obvious way to do it.\" In Python, the obvious way is usually the built-in way!",
           "endReply": "Batteries included indeed!"
+        },
+        {
+          "filename": "dot_product.py",
+          "wisdoms": [],
+          "blocks": [
+            {
+              "type": "text",
+              "text": "\ndef dot_product(a, b):\n    result = 0\n"
+            },
+            {
+              "type": "replace",
+              "text": "    for i in range(len(a)):\n        result += a[i] * b[i]\n    return result\n",
+              "replacement": "    for x, y in zip(a, b):\n        result += x * y\n    return result\n",
+              "event": "iinrange",
+              "clickable": "i in range",
+              "explanation": "Avoid indexes! Use zip for parallel iteration.",
+              "hint": "Two lists walk into a bar… together."
+            },
+            {
+              "type": "replace-span",
+              "clickable": "a",
+              "replacement": "vector1",
+              "event": "a",
+              "hint": "a?",
+              "explanation": "Single letters in the function signature?"
+            },
+            {
+              "type": "replace-span",
+              "clickable": "b",
+              "replacement": "vector2",
+              "event": "b",
+              "hint": "b?",
+              "explanation": "dot_product of two vectors. Not it is perfectly clear!"
+            }
+          ],
+          "startMessage": "Rumour has it this function was ported from punch-card code in Fortran.",
+          "startReply": "Hold my coffee!",
+          "finalMessage": "Much cleaner! `zip` pairs elements safely, reads like English,\nand kicks index acrobatics to the curb. Keep loops simple and let Python do the heavy lifting.",
+          "endReply": "Zip-zap, done!"
+        },
+        {
+          "filename": "dot_product2.py",
+          "wisdoms": [],
+          "blocks": [
+            {
+              "type": "text",
+              "text": "\ndef dot_product(vector1, vector2):\n"
+            },
+            {
+              "type": "replace",
+              "text": "    result = 0\n    for x, y in zip(vector1, vector2):\n        result += x * y\n",
+              "replacement": "    return sum(x*y for (x, y) in zip(vector1, vector2))\n",
+              "event": "id",
+              "explanation": "Often you can avoid not only indexes but also for loops!",
+              "hint": "loop?"
+            }
+          ],
+          "startMessage": "We are not finished with it!",
+          "finalMessage": "Much cleaner! `zip` pairs elements safely, reads like English,\nand kicks index acrobatics to the curb. Keep loops simple and let Python do the heavy lifting.",
+          "endReply": "Zip-zap, done!"
+        },
+        {
+          "filename": "unique_words.py",
+          "wisdoms": [],
+          "blocks": [
+            {
+              "type": "text",
+              "text": "\ndef unique_words(text, seen=set()):\n    \"\"\"Return unique words we haven't seen before (case-insensitive).\"\"\"\n"
+            },
+            {
+              "type": "replace-on",
+              "event": "md",
+              "text": "",
+              "replacement": "    if seen is None:\n        seen = set()\n"
+            },
+            {
+              "type": "text",
+              "text": "    words = text.lower().split()\n    for word in words:\n        if list(seen).count(word) == 0:\n            seen.add(word)\n            yield word\n\n"
+            },
+            {
+              "type": "replace-span",
+              "clickable": "list(seen).count(word) == 0",
+              "replacement": "not (word in seen)",
+              "event": "listseencountword0"
+            },
+            {
+              "type": "replace-span",
+              "clickable": "not (word in seen)",
+              "replacement": "word not in seen",
+              "event": "notwordinseen"
+            },
+            {
+              "type": "replace-span",
+              "clickable": "seen=set()",
+              "replacement": "seen=None",
+              "event": "md",
+              "explanation": "Default arguments are evaluated once — so this cheerful little `set()` is shared across *every* call. Like a clingy ex, it never forgets.",
+              "hint": "If your function remembers things you didn't tell it to… it's haunted."
+            },
+            {
+              "type": "text",
+              "text": "\n"
+            }
+          ],
+          "startMessage": "Déjà-vu detection gone rogue!\nBecause the function’s default `set()` is shared across calls, words remembered from round #1 vanish in round #2.\nLet’s stop that silent memory leak before it confuses the next intern.",
+          "startReply": "Let’s make it truly unique!",
+          "finalMessage": "Now that we’ve exorcised the memory-leaking default,\n`unique_words` behaves like a normal function — not a long-term surveillance device.\nFresh state per call, zero ghosts in the machine.\nPythonic and private, just the way we like it.",
+          "endReply": "Fresh every time!"
+        },
+        {
+          "filename": "report_errors.py",
+          "wisdoms": [],
+          "blocks": [
+            {
+              "type": "text",
+              "text": "\ndef report_errors(lines):\n"
+            },
+            {
+              "type": "replace",
+              "text": "    for i in range(len(lines)):\n        line = lines[i]\n",
+              "replacement": "    for i, line in enumerate(lines):\n",
+              "event": "id",
+              "explanation": "Manual indexing is fragile and clunky. `enumerate()` gives you the index and the item in one clean shot.",
+              "hint": "Let Python count for you — it’s good at it."
+            },
+            {
+              "type": "text",
+              "text": "        if \"ERROR\" in line:\n"
+            },
+            {
+              "type": "replace",
+              "text": "            print(\"Line \" + str(i + 1) + \": \" + line)\n",
+              "replacement": "            print(f\"Line {i+1}: {line}\")\n",
+              "event": "Linestri1line",
+              "clickable": "Line \" + str(i + 1) + \": \" + line",
+              "explanation": "f-strings are faster, cleaner, and easier to read than string concatenation.",
+              "hint": "Why concatenate when you can interpolate?"
+            }
+          ],
+          "startMessage": "This function works... but feels like it time-traveled from 2002.\nLet’s give it a Pythonic glow-up!",
+          "startReply": "Hold my semicolon",
+          "finalMessage": "P-p-p... Pythonic!",
+          "endReply": "Formatted and fabulous."
+        },
+        {
+          "filename": "bag_of_words.py",
+          "wisdoms": [],
+          "blocks": [
+            {
+              "type": "text",
+              "text": "\ndef bag_of_words(text, stop_words=[]):\n"
+            },
+            {
+              "type": "replace-on",
+              "event": "md",
+              "text": "",
+              "replacement": "    if stop_words is None:\n        stop_words = []\n"
+            },
+            {
+              "type": "text",
+              "text": "    words = text.lower().split()\n    dict = {}\n"
+            },
+            {
+              "type": "replace",
+              "text": "    for i in range(len(words)):\n        word = words[i]\n",
+              "replacement": "    for word in words:\n",
+              "event": "loop",
+              "clickable": "i in range",
+              "explanation": "range(len()) is a 1990s dance move. Loop directly and stay readable.",
+              "hint": "Drop the index juggling act."
+            },
+            {
+              "type": "text",
+              "text": "        if word in stop_words:\n            continue\n        if word in dict:\n            dict[word] += 1\n        else:\n            dict[word] = 1\n"
+            },
+            {
+              "type": "replace",
+              "text": "    result = []\n    for k in dict.keys():\n        result.append((k, dict[k]))\n    return result\n",
+              "replacement": "    return list(dict.items())\n",
+              "event": "id"
+            },
+            {
+              "type": "replace-span",
+              "clickable": "stop_words=[]",
+              "replacement": "stop_words=None",
+              "event": "md",
+              "explanation": "Mutable defaults are time bombs. Much safer to avoid them totally",
+              "hint": "Look carefully at the first line!"
+            },
+            {
+              "type": "replace-span",
+              "clickable": "dict",
+              "replacement": "frequencies",
+              "event": "rename",
+              "explanation": "Shadowing built-ins starts turf wars. Give the poor `dict` its name back.",
+              "hint": "Why pick a fight with a core type?"
+            },
+            {
+              "type": "text",
+              "text": "\n"
+            }
+          ],
+          "startMessage": "Grab your hazmat suit, Junior — this function comes with its own built-in foot-guns:\nClick fast before someone deploys it to production Slack bots.",
+          "startReply": "Deploy the fixes!",
+          "finalMessage": "Boom! No more shared stop-word ghosts, no more hijacked `dict`, and the loop finally speaks Python.\nRemember: safe defaults, respect the built-ins, and iterate like a local — your future self will thank you.",
+          "endReply": "Clean and counting!"
+        },
+        {
+          "filename": "student_scores.py",
+          "wisdoms": [],
+          "blocks": [
+            {
+              "type": "text",
+              "text": "def analyze_scores(data):\n    result = {}\n"
+            },
+            {
+              "type": "replace",
+              "text": "    for i in range(0, len(data)):\n        name = data[i][0]\n        scores = data[i][1]\n",
+              "replacement": "    for name, scores in data:\n",
+              "event": "foriinrange0lendata",
+              "clickable": "for i in range(0, len(data))",
+              "explanation": "No indices! Let the data tell the story, not the loop counter.",
+              "hint": "Indices?"
+            },
+            {
+              "type": "replace",
+              "text": "        total = 0\n        for j in range(0, len(scores)):\n            total = total + scores[j]\n",
+              "replacement": "",
+              "event": "loop",
+              "clickable": "for j in range(0, len(scores))",
+              "explanation": "Let Python do the math.",
+              "hint": "Built-ins... Remember them?"
+            },
+            {
+              "type": "replace-on",
+              "text": "        avg = total / len(scores)\n",
+              "replacement": "        avg = sum(scores) / len(scores)\n",
+              "event": "loop"
+            },
+            {
+              "type": "text",
+              "text": "        result[name] = avg\n\n"
+            },
+            {
+              "type": "replace",
+              "text": "    keys = list(result.keys())\n    keys.sort()\n    for i in range(0, len(keys)):\n        name = keys[i]\n",
+              "replacement": "    for name in sorted(result):\n",
+              "event": "foriinrange0lenkeys",
+              "clickable": "for i in range(0, len(keys))",
+              "explanation": "for name in `sorted(result)` and -3 lines of code.",
+              "hint": "Sorted loops don’t require pre-sorting the keys."
+            },
+            {
+              "type": "text",
+              "text": "        avg = result[name]\n"
+            },
+            {
+              "type": "replace",
+              "text": "        print(name + \": \" + str(round(avg, 2)))\n",
+              "replacement": "        print(f\"{name}: {round(avg, 2)}\")\n",
+              "event": "namestr",
+              "clickable": "name + \": \" + str",
+              "explanation": "f-strings. Remember them?",
+              "hint": "a, b, c, d, e, ... What's next?"
+            },
+            {
+              "type": "text",
+              "text": "\n"
+            },
+            {
+              "type": "replace",
+              "text": "    top = None\n    top_score = -1\n    for k in result:\n        if result[k] > top_score:\n            top_score = result[k]\n            top = k\n",
+              "replacement": "    top, top_score = max(result.items(), key=lambda item: item[1])\n",
+              "event": "forkinresult",
+              "clickable": "for k in result:",
+              "explanation": "One more built-in! `max(..., key=...)` with lambda!",
+              "hint": "Stop reinventing wheels!"
+            },
+            {
+              "type": "text",
+              "text": "\n"
+            },
+            {
+              "type": "replace",
+              "text": "    print(\"Top student is \" + top + \" with score \" + str(top_score))\n",
+              "replacement": "    print(f\"Top student is {top} with score {top_score}\")\n",
+              "event": "Topstudentistopwiths",
+              "clickable": "Top student is \" + top + \" with score \" + str(top_score)",
+              "explanation": "f-strings again — they handle variables and formatting gracefully.",
+              "hint": "You’re better than chained string concatenation."
+            },
+            {
+              "type": "replace-span",
+              "clickable": "data",
+              "replacement": "student_scores",
+              "event": "data",
+              "explanation": "You say data, when you don't know what else to say",
+              "hint": "data is everywhere!"
+            }
+          ],
+          "startMessage": "This code technically works... but so does assembling IKEA furniture with your forehead.\nManual indexing, verbose accumulation, and enough string glue to open a kindergarten.\nLet’s apply some Pythonic polish before someone copy-pastes this into production.",
+          "startReply": "Sharpening the scalpel...",
+          "finalMessage": "Now *that* looks like Python. Almost...",
+          "endReply": "Almost?!"
+        },
+        {
+          "filename": "student_scores2.py",
+          "wisdoms": [],
+          "blocks": [
+            {
+              "type": "text",
+              "text": "def analyze_scores(student_scores):\n"
+            },
+            {
+              "type": "replace",
+              "text": "    result = {}\n    for name, scores in student_scores:\n        avg = sum(scores) / len(scores)\n        result[name] = avg\n",
+              "replacement": "    result = {\n        name: sum(scores) / len(scores)\n        for name, scores in data\n    }\n",
+              "event": "fornamescoresinstude",
+              "clickable": "for name, scores in student_scores",
+              "explanation": "This loop just builds a dictionary. A comprehension does the same job with less ceremony and more clarity.",
+              "hint": "Loops are COMPREHENSIVE! :winking:"
+            },
+            {
+              "type": "text",
+              "text": "    for name in sorted(result):\n        avg = result[name]\n        print(f\"{name}: {round(avg, 2)}\")\n\n    top, top_score = max(result.items(), key=lambda item: item[1])\n    print(f\"Top student is {top} with score {top_score}\")\n\n"
+            }
+          ],
+          "startMessage": "Maybe one more little fix",
+          "finalMessage": "No more index wrangling, no more glue gun print statements,\nand no more DIY loops. You turned clunky code into a clean, declarative joyride.",
+          "endReply": "I'm Pythonic guru!"
         }
       ]
     }

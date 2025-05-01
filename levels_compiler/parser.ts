@@ -95,9 +95,14 @@ export function readWisdoms(args: string[], context: ParseContext): string[] {
     return args;
 }
 
+function isDirectiveStart(context: ParseContext) {
+    let line = context.lines[context.idx];
+    return line.startsWith('##') || line.startsWith('"""') && line.length > 3;
+}
+
 export function readTextBlock(context: ParseContext): LevelBlock {
     const textBlock: string[] = [];
-    while (context.idx < context.lines.length && !context.lines[context.idx].startsWith('##')) {
+    while (context.idx < context.lines.length && !isDirectiveStart(context)) {
         textBlock.push(context.lines[context.idx].replace(/\r?\n$/, ''));
         context.idx++;
     }

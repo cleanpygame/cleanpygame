@@ -2,7 +2,7 @@
 """start
 Ah, I see your colleague is a fan of "artisanal, hand-crafted loops" - painstakingly constructing each calculation from scratch like it's 1995!
 
-They probably also churn their own butter and forge their own paperclips. How quaint! Let's introduce them to this revolutionary concept called "built-in functions" that Python has had since... forever.
+They probably also churn their own butter and forge their own paperclips. Let's introduce them to revolutionary concept of "built-in functions" that Python has had since... forever.
 """
 ##start-reply "Let's modernize!"
 
