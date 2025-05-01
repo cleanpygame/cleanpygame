@@ -22,19 +22,19 @@ def GetBigramsFrequency(ws):
 ##hint "This function name is dressed in CamelCase, but Python functions prefer to slither in snake_case."
 ##replace-span - bigramsCount bigrams_count
 ##explain "Another CamelCase refugee! In Python, we separate our words with underscores, not capital letters. It's not just pedantry - consistent style makes code easier to scan and understand."
-##hint "This variable is trying to blend in with the Python crowd, but its CamelCase is giving it away. How would a Pythonista name this?"
+##hint "CamelCase in Python? That's cultural appropriation!"
 ##replace-span - I i
 ##explain "A capital 'I' as a loop counter? That's just asking to be confused with the number 1 in many fonts! Single-letter variables should be lowercase, especially common ones like loop counters."
-##hint "This uppercase loop counter is shouting in a language that prefers to whisper. Lowercase would be more appropriate."
+##hint "Why is this loop counter SHOUTING at me?"
 ##replace-span - ws words
 ##explain "The mysterious 'ws'! Is it 'web services'? 'work sheets'? 'wild stallions'? Abbreviations save you 3 seconds typing and cost the next developer 3 minutes of confusion."
-##hint "This parameter name is playing hide-and-seek with its meaning. What data structure containing what type of elements is being passed here?"
+##hint "ws? Web Services? Weighted Sums? Wild Stallions?"
 ##replace-span - bg bigram
 ##explain "'bg' could be 'background', 'bodyguard', or 'Bulgarian'. In a function specifically about bigrams, using the full term 'bigram' makes the code instantly more readable."
-##hint "This abbreviated variable name could use a few more letters to clearly express what it's storing."
+##hint "bg = Bulgaria? Background? Bill Gates? Buy Gold?"
 ##replace-span - bigramsfrequency bigrams_frequency
 ##explain "This variable name is having an identity crisis - it can't decide if it wants to be camelCase or snake_case, so it chose neither! Consistency in naming style makes code much easier to read."
-##hint "This variable name is missing some underscores to properly separate the words in Python style."
+##hint "This name needs some snake_case surgery. Stat!"
 """final
 Excellent work! You've successfully converted this code to follow Python's naming conventions. While the code would work either way, following the established style guidelines for a language makes your code more readable and maintainable for other Python developers. It's like learning the local customs when you visit a new country - it shows respect for the community and helps you integrate better!
 """

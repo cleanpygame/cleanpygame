@@ -3,10 +3,8 @@
 BEHOLD! I have crafted the most exquisite piece of code known to humanity! It's so perfect that it probably doesn't even need electricity to run - the sheer elegance of its logic could power a small city.
 
 According to our tedious team process, someone needs to review it. But let's be honest - this is just a formality. Simply approve it and we can all go home early!
-
-(Narrator: It was not, in fact, perfect.)
 """
-##start-reply "Let me review this 'perfect' code..."
+##start-reply "Perfect!"
 
 def InstructionParser(i):
     Instructions = []
@@ -31,25 +29,25 @@ def InstructionParser(i):
 
 ##replace-span - InstructionParser parse_instructions
 ##explain "CamelCase function names in Python? That's like wearing a tuxedo to a beach party. Python has its own dress code (PEP 8), and it strongly recommends snake_case for functions. Also, functions should be verbs because they DO things - they're not just sitting around being nouns."
-##hint "This function is taking some text and converting it into structured data. What action is it performing on the instructions?"
+##hint "CamelCase in Python? And it's not even a verb! Double whammy!"
 ##replace-span - Instructions instructions
 ##explain "Why is 'Instructions' capitalized? Is it royalty? A proper noun? The beginning of a sentence? In Python, variable names should be snake_case and lowercase unless they're constants (which this definitely isn't)."
-##hint "This variable is breaking Python's naming convention. How would you write this in lowercase with the proper Python style?"
+##hint "Why is this variable SHOUTING its first letter? Royalty?"
 ##replace-span - F inside_begin_end
 ##explain "Ah, the enigmatic 'F'! Is it paying respects? A grade? The sixth letter of the alphabet? Single-letter variables are like secret codes that only the original developer understands - and sometimes not even them after a few months."
-##hint "This boolean is tracking whether we're currently between specific markers in the text. What state is it actually representing?"
+##hint "F = Fahrenheit? Failure? Friday? Press F to pay respects?"
 ##replace-span - l line
 ##explain "The letter 'l' is particularly problematic as a variable name because in many fonts it looks identical to the number '1'. It's like setting a trap for the next developer (or yourself in 3 months)."
-##hint "This loop is iterating through something line by line. What exactly does each 'l' represent?"
+##hint "Is that an 'l', a '1', or an 'I'? Font roulette!"
 ##replace-span - i instructions_text
 ##explain "The lonely 'i' parameter! Is it an index? An iterator? An imaginary number? When parameters are the entry point to your function, they deserve names that clearly explain what they contain."
-##hint "This parameter contains the raw text that needs to be parsed. What would be a more descriptive name?"
+##hint "i = index? iterator? imaginary number? iPhone?"
 ##replace-span - 4: "len(\"add \"):"
 ##explain "Magic numbers like '4' are like mysterious ingredients in a recipe. 'Add a pinch of 4' - but why 4? What does it represent? Using 'len(\"add \")' makes it immediately clear you're skipping past a command prefix."
-##hint "This number represents the length of a specific command prefix. How could you make that explicit in the code?"
+##hint "Why 4? The answer is right in front of you... literally!"
 ##replace-span - 8: "len(\"replace \"):"
 ##explain "Another magic number! '8' is the lucky number in some cultures, but in code, unexplained numbers are just bad luck waiting to happen. What if the command syntax changes? You'd have to hunt down all these hardcoded values."
-##hint "Similar to the previous issue, this number is the length of a command string. How could you calculate this dynamically?"
+##hint "8 is lucky in some cultures, unlucky in your code. Count the letters!"
 """final
 Congratulations! You've transformed this "perfect" code into something actually worthy of approval. 
 
@@ -63,4 +61,4 @@ Remember: Code isn't just for computers to execute - it's for humans to read, un
 
 You've completed the naming challenges! Your future teammates thank you in advance for your clear, descriptive naming practices.
 """
-##final-reply "From 'perfect' to actually good!"
+##final-reply "Is it a promotion?"

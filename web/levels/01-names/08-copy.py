@@ -23,19 +23,19 @@ def copy(xs, ys, j, k, n):
 
 ##replace-span - xs destination
 ##explain "Ah, 'xs'! Is that a clothing size? An abbreviation for 'excess'? The documentation already calls it 'destination' - why not use that in the code too? Consistency between docs and code prevents confusion."
-##hint "The documentation already gives this parameter a better name. What does the docstring call this list?"
+##hint "The docstring is practically screaming the answer at you!"
 ##replace-span - ys source
 ##explain "'ys'? Are we playing a game of 'Name That Variable: Vowel-Free Edition'? Again, the documentation already has a perfectly good name for this parameter."
-##hint "Check the docstring - it already suggests a much clearer name for this parameter."
+##hint "The answer is right above you. No, literally, look up!"
 ##replace-span - j dest_start
 ##explain "Single-letter variables like 'j' are perfect when you want your code to be as mysterious as possible. For everyone else, descriptive names like 'dest_start' make the code self-documenting."
-##hint "This parameter represents a starting position in a specific array. The docstring explains which one."
+##hint "j for... jumping? juggling? The docstring knows!"
 ##replace-span - k src_start
 ##explain "The letter 'k' - saving valuable keystrokes since the invention of programming! But at what cost to readability? The few extra characters in 'src_start' make the code instantly more understandable."
-##hint "Similar to 'j', this parameter is also a starting position, but for a different array. Which one?"
+##hint "k is for... konsult the docstring!"
 ##replace-span - n count
 ##explain "'n' could stand for 'number', 'node', 'noodle'... The documentation says 'number of elements to copy', so why not use a name that actually conveys that meaning?"
-##hint "This parameter determines how many items get copied. What would be a clearer name than just 'n'?"
+##hint "n = noodles? narwhals? The docstring has the scoop!"
 """final
 Excellent! You've transformed this function from cryptic to crystal clear. Now the code matches the quality of its documentation, making it immediately obvious what each parameter does without having to refer to the docstring. 
 

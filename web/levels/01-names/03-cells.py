@@ -15,18 +15,20 @@ lst = read_cells("cells.csv")
 print(get(lst))
 
 ##replace-span - get get_empty_positions
-##explain "Ah, the mysterious 'get' function! Get what exactly? Milk from the store? The joke? The function name 'get_empty_positions' actually tells us what it returns - a revolutionary concept in programming!"
-##hint "This function name is about as descriptive as calling a hammer 'hit_thing'. What specific data is it actually retrieving?"
+##explain "The mysterious 'get' function! Get what? The name 'get_empty_positions' actually tells us what it returns."
+##hint "get... what?!"
 ##replace-span - lst1 empty_positions
-##explain "lst1? Is this a sequel to lst? Coming soon to theaters near you! Variable names should tell a story about their purpose, not just be numbered placeholders."
-##hint "This variable is collecting specific positions. Maybe its name could reflect that instead of sounding like a temporary variable that overstayed its welcome?"
+##explain "lst1? Is this a sequel to lst? Variable names should tell a story, not just be numbered placeholders."
+##hint "List contains positions. Name it to reflect its purpose, not its sequence."
 ##replace-span - lst cells
-##explain "When you name a list of cells 'lst', you're basically saying 'I want the next developer to play a guessing game'. Descriptive names save brain cycles for actual problem-solving!"
-##hint "This parameter contains specific objects with properties like 'is_empty'. What might those objects be? Certainly not just any old list items..."
+##explain "Naming a list of cells 'lst' forces developers to guess. Descriptive names save brain cycles."
+##hint "This parameter has objects with 'is_empty' property. What are these objects?"
 ##replace-span - c cell
-##explain "Single-letter variable names in loops are like mysterious characters in a novel who are never properly introduced. In a short loop it might be clear, but clarity always beats brevity."
-##hint "This loop variable represents one item from your collection. What is each item in this collection? Naming it properly helps readers understand the code at a glance."
+##explain "Single-letter loop variables are mysterious characters never properly introduced. Clarity beats brevity."
+##hint "What is each item in this collection? Name it properly to aid understanding."
 """final
-Excellent work! You've transformed this cryptic code into something self-documenting. Now anyone reading it can understand what it does without having to trace through the execution in their head. Remember: code is written once but read many times, so optimizing for readability is always worth the extra keystrokes!
+Excellent work! You've transformed this cryptic code into something self-documenting.
+Now anyone reading it can understand what it does without having to trace through the execution in their head.
+Remember: code is written once but read many times, so optimizing for readability is always worth the extra keystrokes!
 """
-##final-reply "Ready for the next naming challenge!"
+##final-reply "Next challenge!"

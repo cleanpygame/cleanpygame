@@ -6,7 +6,7 @@ Oh, I see what happened. Your colleague fixed the bug in the previous version bu
 
 Let's put this poor function out of its misery once and for all.
 """
-##start-reply "Time to use Python's built-in features!"
+##start-reply "Use built-ins!"
 
 def contains(text, pattern):
 ##replace in_operator
@@ -19,17 +19,11 @@ def contains(text, pattern):
     # Do we really need this function?!
     return pattern in text
 ##end
-##explain "Five lines of code versus one! This is like writing your own sorting algorithm when Python has sort() built in. The 'in' operator is not only more concise but also optimized for performance. Work smarter, not harder - that's the Python way!"
-##hint "Python has a built-in operator specifically designed to check if one string contains another. No loops required!"
+##explain "Why reinvent the wheel? The 'in' operator is concise, optimized, and already built-in."
+##hint "Python has a built-in way to check string containment. No loops needed!"
 """final
-Perfect! You've replaced a manual string search algorithm with Python's built-in 'in' operator.
+Perfect! You've replaced a manual algorithm with Python's built-in 'in' operator.
 
-This is a classic example of "Pythonic" code - using the language's built-in features instead of reinventing them. The 'in' operator is:
-1. More concise (1 line vs. 5)
-2. More readable (the intent is immediately clear)
-3. Likely more efficient (it's implemented in C)
-4. Less prone to bugs (no off-by-one errors or edge cases to worry about)
-
-Remember: Before implementing any common operation, check if Python already has a built-in way to do it. Chances are, it does!
+This is classic Pythonic code - using built-in features instead of reinventing them. The 'in' operator is concise, readable, efficient, and less error-prone.
 """
 ##final-reply "Built-in operators FTW!"
