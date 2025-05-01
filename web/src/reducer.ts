@@ -126,16 +126,17 @@ const createInitialLevelState = (levelData: LevelData): LevelState => {
     };
 };
 
-let firstTopic = levelsData.topics[0];
+let firstTopic = levelsData.topics[1]; // skip testing
 // Initial state
+let firstLevel = firstTopic.levels[0];
 export const initialState: GameState = {
     topics: levelsData.topics as Topic[],
-    currentLevelId: {topic: firstTopic.name, levelId: firstTopic.levels[0].filename},
-    currentLevel: createInitialLevelState(firstTopic.levels[0]),
+    currentLevelId: {topic: firstTopic.name, levelId: firstLevel.filename},
+    currentLevel: createInitialLevelState(firstLevel),
     solvedLevels: [],
     discoveredWisdoms: [],
     notebookOpen: false,
-    chatMessages: [],
+    chatMessages: [getInstructionChatMessage(firstLevel)],
     isTypingAnimationComplete: true,
 };
 
@@ -192,7 +193,7 @@ const findLevelData = (topics: Topic[], levelId: LevelId): LevelData | null => {
 function getInstructionChatMessage(levelData: LevelData): ChatMessage {
     return {
         type: 'buddy-instruct' as ChatMessageType,
-        text: levelData.instructions || `Find and fix all the issues in this code.`
+        text: levelData.startMessage || `Find and fix all the issues in this code.`
     };
 }
 

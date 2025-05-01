@@ -24,7 +24,6 @@ def dot_product(a, b):
 ##hint b?
 ##explain "dot_product of two vectors. Not it is perfectly clear!"
 """final
-Much cleaner! `zip` pairs elements safely, reads like English,
-and kicks index acrobatics to the curb. Keep loops simple and let Python do the heavy lifting.
+Much cleaner now! But not enough...
 """
-##final-reply "Zip-zap, done!"
+##final-reply "Not enough?!"

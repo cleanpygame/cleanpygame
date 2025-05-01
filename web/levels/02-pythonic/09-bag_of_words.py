@@ -38,10 +38,10 @@ def bag_of_words(text, stop_words=[]):
 ##explain "Mutable defaults are time bombs. Much safer to avoid them totally"
 ##hint "Look carefully at the first line!"
 ##replace-span rename "dict" "frequencies"
-##explain "Shadowing built-ins starts turf wars. Give the poor `dict` its name back."
+##explain "Shadowing built-ins starts turf wars. Give the poor 'dict' its name back."
 ##hint "Why pick a fight with a core type?"
 """final
-Boom! No more shared stop-word ghosts, no more hijacked `dict`, and the loop finally speaks Python.
+Boom! No more shared stop-word ghosts, no more hijacked 'dict', and the loop finally speaks Python.
 Remember: safe defaults, respect the built-ins, and iterate like a local — your future self will thank you.
 """
 ##final-reply "Clean and counting!"

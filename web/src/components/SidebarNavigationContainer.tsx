@@ -34,7 +34,7 @@ export function SidebarNavigationContainer(): React.ReactElement {
                 <h1 className="text-m font-light">EXPLORER</h1>
             </div>
             <div className="text-sm">
-                {state.topics.map((topic) => (
+                {state.topics.filter(t => t.name != "Testing").map((topic) => (
                     <TopicItem
                         key={topic.name}
                         state={state}

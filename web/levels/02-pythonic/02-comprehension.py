@@ -17,7 +17,7 @@ def list_to_csv(nums):
 ##with
     return ",".join(str(n) for n in nums)
 ##end
-##explain "String concatenation in loops is inefficient. Join() is faster and handles edge cases."
+##explain "String concatenation in loops is inefficient. join() is faster and handles edge cases."
 ##hint "Concatenating strings in a loop? That's so 1990s!"
 
 def count_zeros(values):

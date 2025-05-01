@@ -1,6 +1,6 @@
 ##file dot_product2.py
 """start
-We are not finished with it!
+Maybe one final fix...
 """
 
 def dot_product(vector1, vector2):
@@ -14,8 +14,8 @@ def dot_product(vector1, vector2):
 ##explain "Often you can avoid not only indexes but also for loops!"
 ##hint "loop?"
 """final
-Much cleaner! `zip` pairs elements safely, reads like English,
-and kicks index acrobatics to the curb. Keep loops simple and let Python do the heavy lifting.
+Perfect! `zip` pairs elements safely, reads like English,
+and kicks index acrobatics to the curb.
 """
 ##final-reply "Zip-zap, done!"
 ##end

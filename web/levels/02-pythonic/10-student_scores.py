@@ -60,7 +60,7 @@ def analyze_scores(data):
 ##with
     top, top_score = max(result.items(), key=lambda item: item[1])
 ##end
-##explain "One more built-in! `max(..., key=...)` with lambda!"
+##explain "One more built-in! max(..., key=...) with lambda!"
 ##hint "Stop reinventing wheels!"
 
 ##replace - "Top student is \" + top + \" with score \" + str(top_score)"

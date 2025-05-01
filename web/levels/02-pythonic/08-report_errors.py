@@ -12,7 +12,7 @@ def report_errors(lines):
 ##with
     for i, line in enumerate(lines):
 ##end
-##explain "Manual indexing is fragile and clunky. `enumerate()` gives you the index and the item in one clean shot."
+##explain "Manual indexing is fragile and clunky. enumerate() gives you the index and the item in one clean shot."
 ##hint "Let Python count for you — it’s good at it."
         if "ERROR" in line:
 ##replace - "Line \" + str(i + 1) + \": \" + line"

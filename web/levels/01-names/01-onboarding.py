@@ -1,8 +1,7 @@
 ##file onboarding.py
 """start
-Welcome to the coding trenches, Junior! 
-According to our team traditions (and manager's trust issues), you're not allowed to write code yet.
-Your sacred duty is to review your colleagues' masterpieces and fix "small, insignificant details" - you know, the ones that cause production outages at 3 AM.
+Welcome to the coding trenches, Junior!
+According to our team traditions (and manager's trust issues), you're not allowed to write code yet. Your sacred duty is to review your colleagues' masterpieces and fix "small, insignificant issues".
 
 Let's start with something even you can't mess up. See that variable name that looks like someone fell asleep on their keyboard? Click to fix it before my eyes start bleeding!
 """

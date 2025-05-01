@@ -21,11 +21,11 @@ def unique_words(text, seen=set()):
 ##replace-span - "list(seen).count(word) == 0" "not (word in seen)"
 ##replace-span - "not (word in seen)" "word not in seen"
 ##replace-span md "seen=set()" "seen=None"
-##explain "Default arguments are evaluated once — so this cheerful little `set()` is shared across *every* call. Like a clingy ex, it never forgets."
+##explain "Default arguments are evaluated once — so this cheerful little set() is shared across *every* call. Like a clingy ex, it never forgets."
 ##hint "If your function remembers things you didn't tell it to… it's haunted."
 """final
 Now that we’ve exorcised the memory-leaking default,
-`unique_words` behaves like a normal function — not a long-term surveillance device.
+unique_words behaves like a normal function — not a long-term surveillance device.
 Fresh state per call, zero ghosts in the machine.
 Pythonic and private, just the way we like it.
 """
