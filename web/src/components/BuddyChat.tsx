@@ -4,6 +4,10 @@ import BuddyChatMessage from './BuddyChatMessage';
 import MyChatMessage from './MyChatMessage';
 import {ChatMessage} from '../types';
 
+// Constants
+const HINT_DELAY_MS = 300; // Delay before showing hint in milliseconds
+const CHAT_WIDTH_PERCENTAGE = 'w-1/3'; // Width of the chat panel (1/3 of screen)
+
 /**
  * BuddyChat component
  * Renders chat messages and provides a help button
@@ -22,7 +26,7 @@ export function BuddyChat(): React.ReactElement {
             type: POST_BUDDY_MESSAGE,
             payload: {message: {type: "me", text} as ChatMessage}
         });
-        setTimeout(() => dispatch({type: GET_HINT}), 300);
+        setTimeout(() => dispatch({type: GET_HINT}), HINT_DELAY_MS);
     };
 
     const handleReply = (text: string): void =>
@@ -81,7 +85,7 @@ export function BuddyChat(): React.ReactElement {
 
     return (
         <div
-            className="w-1/3 absolute bottom-0 right-0 flex flex-col bg-gray-800 border-l border-t border-gray-700 overflow-hidden"
+            className={`${CHAT_WIDTH_PERCENTAGE} absolute bottom-0 right-0 flex flex-col bg-gray-800 border-l border-t border-gray-700 overflow-hidden`}
         >
             <div className="p-2 border-b border-gray-700">
                 <h2 className="text-lg font-medium text-white">Buddy Chat</h2>

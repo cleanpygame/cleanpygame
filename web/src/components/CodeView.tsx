@@ -2,6 +2,10 @@ import React, {useEffect, useState} from 'react';
 import {Highlight, themes, Token} from 'prism-react-renderer';
 import './CodeView.css'; // Ensure CSS defines .code-line, .line-number, and .code-content
 
+// Animation speed constants
+const ANIMATION_INTERVAL_MS = 5; // Milliseconds between animation steps
+const FLASH_DURATION_MS = 50; // Duration of the flashing effect in milliseconds
+
 interface CodeViewProps {
     code: string;
     animate?: boolean;
@@ -43,7 +47,7 @@ export function CodeView({
                     }
                     return c + 2;
                 });
-            }, 5); // Slightly slower animation for better performance
+            }, ANIMATION_INTERVAL_MS); // Slightly slower animation for better performance
 
             return () => {
                 if (intervalRef !== null) {
@@ -63,7 +67,7 @@ export function CodeView({
         setTimeout(() => {
             setFlashingKey(null);
             onClick(lineIndex, colIndex, token.content);
-        }, 50);
+        }, FLASH_DURATION_MS);
     };
 
     function renderToken(
