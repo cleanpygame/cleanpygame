@@ -1,6 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {createPortal} from 'react-dom';
-import {GameStateContext} from '../reducer';
+import {GameStateContext} from '../reducers';
+import {toggleNotebook} from '../reducers/actionCreators';
 import {WisdomEntry} from '../types';
 
 /**
@@ -28,7 +29,7 @@ export function NotebookContainer(): React.ReactElement | null {
     }, []);
 
     const handleCloseNotebook = (): void => {
-        dispatch({type: 'TOGGLE_NOTEBOOK'});
+        dispatch(toggleNotebook());
     };
 
     // Get the current wisdoms for the notebook

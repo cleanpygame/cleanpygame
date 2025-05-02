@@ -1,5 +1,6 @@
 import React, {useContext, useState} from 'react';
-import {GameStateContext} from '../reducer';
+import {GameStateContext} from '../reducers';
+import {loadLevel} from '../reducers/actionCreators';
 import {TopicItem} from './TopicItem';
 
 /**
@@ -25,7 +26,7 @@ export function SidebarNavigationContainer(): React.ReactElement {
     };
 
     const handleLevelSelect = (topic: string, levelId: string): void => {
-        dispatch({type: 'LOAD_LEVEL', payload: {levelId: {topic, levelId}}});
+        dispatch(loadLevel({topic, levelId}));
     };
 
     return (

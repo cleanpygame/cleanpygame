@@ -1,5 +1,6 @@
 import React, {useContext} from 'react';
-import {GameStateContext, GET_HINT, NEXT_LEVEL, POST_BUDDY_MESSAGE} from '../reducer';
+import {GameStateContext} from '../reducers';
+import {getHint, nextLevel, postChatMessage} from '../reducers/actionCreators';
 import BuddyChatMessage from './BuddyChatMessage';
 import MyChatMessage from './MyChatMessage';
 import {ChatMessage} from '../types';
@@ -22,21 +23,15 @@ export function BuddyChat(): React.ReactElement {
     const {state, dispatch} = context;
 
     const handleGetHint = (text: string): void => {
-        dispatch({
-            type: POST_BUDDY_MESSAGE,
-            payload: {message: {type: "me", text} as ChatMessage}
-        });
-        setTimeout(() => dispatch({type: GET_HINT}), HINT_DELAY_MS);
+        dispatch(postChatMessage({type: "me", text} as ChatMessage));
+        setTimeout(() => dispatch(getHint()), HINT_DELAY_MS);
     };
 
     const handleReply = (text: string): void =>
-        dispatch({
-            type: POST_BUDDY_MESSAGE,
-            payload: {message: {type: "me", text} as ChatMessage}
-        });
+        dispatch(postChatMessage({type: "me", text} as ChatMessage));
 
     const handleNextLevel = (): void =>
-        dispatch({type: NEXT_LEVEL});
+        dispatch(nextLevel());
 
     // Render different button based on a message type and typing animation status
     const renderButton = (): React.ReactNode => {
@@ -69,7 +64,6 @@ export function BuddyChat(): React.ReactElement {
                     </button>
                 );
             }
-            return null;
         }
 
         return (

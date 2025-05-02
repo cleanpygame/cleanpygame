@@ -1,17 +1,16 @@
 import {describe, expect, test} from 'vitest';
+import {gameReducer, initialState} from '../reducers';
 import {
-    APPLY_FIX,
-    CODE_CLICK,
-    gameReducer,
-    GET_HINT,
-    initialState,
-    LOAD_LEVEL,
-    NEXT_LEVEL,
-    POST_BUDDY_MESSAGE,
-    RESET_PROGRESS,
-    TOGGLE_NOTEBOOK,
-    WRONG_CLICK
-} from '../reducer';
+    applyFix,
+    codeClick,
+    getHint,
+    loadLevel,
+    nextLevel,
+    postChatMessage,
+    resetProgress,
+    toggleNotebook,
+    wrongClick
+} from '../reducers/actionCreators';
 import {GameState, LevelId} from '../types';
 
 describe('Game Reducer', () => {
@@ -35,14 +34,11 @@ describe('Game Reducer', () => {
                 const region = state.currentLevel.regions?.find(r => r.eventId === eventId);
 
                 if (region) {
-                    state = gameReducer(state, {
-                        type: CODE_CLICK,
-                        payload: {
-                            lineIndex: region.startLine,
-                            colIndex: region.startCol,
-                            token: eventId
-                        }
-                    });
+                    state = gameReducer(state, codeClick(
+                        region.startLine,
+                        region.startCol,
+                        eventId
+                    ));
 
                     expect(state.currentLevel.triggeredEvents).toContain(eventId);
                 }
@@ -55,7 +51,7 @@ describe('Game Reducer', () => {
 
             solvedLevels.push(currentLevelId);
 
-            state = gameReducer(state, {type: NEXT_LEVEL});
+            state = gameReducer(state, nextLevel());
         }
 
         expect(solvedLevels.length).toBeGreaterThan(0);
@@ -76,10 +72,7 @@ describe('Game Reducer', () => {
             };
 
             // Load the level
-            state = gameReducer(state, {
-                type: LOAD_LEVEL,
-                payload: {levelId}
-            });
+            state = gameReducer(state, loadLevel(levelId));
 
             // Verify the level was loaded
             expect(state.currentLevelId.topic).toBe(levelId.topic);
@@ -98,14 +91,7 @@ describe('Game Reducer', () => {
         const initialChatLength = state.chatMessages.length;
 
         // Simulate a wrong click
-        state = gameReducer(state, {
-            type: WRONG_CLICK,
-            payload: {
-                lineIndex: 0,
-                colIndex: 0,
-                token: 'not-an-issue'
-            }
-        });
+        state = gameReducer(state, wrongClick(0, 0, 'not-an-issue'));
 
         // Verify chat messages were added
         expect(state.chatMessages.length).toBe(initialChatLength + 2); // Me message + buddy reject message
@@ -119,7 +105,7 @@ describe('Game Reducer', () => {
 
         expect(state.currentLevel.pendingHintId).toBeTruthy();
 
-        state = gameReducer(state, {type: GET_HINT});
+        state = gameReducer(state, getHint());
 
         // Verify a hint message was added
         expect(state.chatMessages.length).toBe(initialChatLength + 1);
@@ -133,10 +119,7 @@ describe('Game Reducer', () => {
         const testMessage = {type: 'buddy-test' as any, text: 'Test message'};
 
         // Post a message
-        state = gameReducer(state, {
-            type: POST_BUDDY_MESSAGE,
-            payload: {message: testMessage}
-        });
+        state = gameReducer(state, postChatMessage(testMessage));
 
         // Verify the message was added
         expect(state.chatMessages.length).toBe(initialChatLength + 1);
@@ -149,18 +132,15 @@ describe('Game Reducer', () => {
         // First, solve a level to change the state
         const region = state.currentLevel.regions?.[0];
         if (region) {
-            state = gameReducer(state, {
-                type: CODE_CLICK,
-                payload: {
-                    lineIndex: region.startLine,
-                    colIndex: region.startCol,
-                    token: region.eventId || ''
-                }
-            });
+            state = gameReducer(state, codeClick(
+                region.startLine,
+                region.startCol,
+                region.eventId || ''
+            ));
         }
 
         // Then reset progress
-        state = gameReducer(state, {type: RESET_PROGRESS});
+        state = gameReducer(state, resetProgress());
 
         // Verify the state was reset
         expect(state.solvedLevels).toEqual([]);
@@ -173,11 +153,11 @@ describe('Game Reducer', () => {
         const initialNotebookState = state.notebookOpen;
 
         // Toggle the notebook (should open it)
-        state = gameReducer(state, {type: TOGGLE_NOTEBOOK});
+        state = gameReducer(state, toggleNotebook());
         expect(state.notebookOpen).toBe(!initialNotebookState);
 
         // Toggle the notebook again (should close it)
-        state = gameReducer(state, {type: TOGGLE_NOTEBOOK});
+        state = gameReducer(state, toggleNotebook());
         expect(state.notebookOpen).toBe(initialNotebookState);
     });
 
@@ -193,23 +173,15 @@ describe('Game Reducer', () => {
 
             if (region) {
                 // Apply the fix directly
-                state = gameReducer(state, {
-                    type: APPLY_FIX,
-                    payload: {
-                        eventId: eventToTrigger,
-                        lineIndex: region.startLine,
-                        colIndex: region.startCol,
-                        token: 'test-token'
-                    }
-                });
+                state = gameReducer(state, applyFix(eventToTrigger));
 
                 // Verify the event was triggered
                 expect(state.currentLevel.triggeredEvents).toContain(eventToTrigger);
 
                 // Verify chat messages were added
                 expect(state.chatMessages.length).toBeGreaterThan(1);
-                expect(state.chatMessages[state.chatMessages.length - 2].type).toBe('me');
-                expect(state.chatMessages[state.chatMessages.length - 1].type).toBe('buddy-explain');
+                expect(state.chatMessages[state.chatMessages.length - 2].type).toBe('buddy-explain');
+                expect(state.chatMessages[state.chatMessages.length - 1].type).toBe('buddy-summarize');
             }
         }
     });

@@ -1,5 +1,6 @@
 import React, {useContext} from 'react';
-import {GameStateContext} from '../reducer';
+import {GameStateContext} from '../reducers';
+import {resetProgress} from '../reducers/actionCreators';
 
 /**
  * Top navigation bar component
@@ -29,7 +30,7 @@ export function TopBar(): React.ReactElement {
                 {/*</button>*/}
 
                 <button
-                    onClick={() => dispatch({type: 'RESET_PROGRESS'})}
+                    onClick={() => dispatch(resetProgress())}
                     className="px-3 py-1 flex items-center gap-2 rounded hover:bg-[#3c3c3c] transition-colors"
                     title="Reset Progress"
                 >

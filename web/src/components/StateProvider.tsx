@@ -1,5 +1,5 @@
 import React, {useEffect, useReducer} from 'react';
-import {gameReducer, GameStateContext, initialState} from '../reducer';
+import {gameReducer, GameStateContext, initialState} from '../reducers';
 import {LevelId} from '../types';
 
 interface StateProviderProps {

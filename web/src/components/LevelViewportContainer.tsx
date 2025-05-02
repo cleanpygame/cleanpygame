@@ -1,5 +1,6 @@
 import React, {useContext, useMemo} from 'react';
-import {GameStateContext} from '../reducer';
+import {GameStateContext} from '../reducers';
+import {codeClick} from '../reducers/actionCreators';
 import {CodeView} from './CodeView';
 import {BuddyChat} from './BuddyChat';
 
@@ -16,10 +17,7 @@ export function LevelViewportContainer(): React.ReactElement {
     const {state, dispatch} = context;
 
     const handleCodeClick = (lineIndex: number, colIndex: number, token: string): void => {
-        dispatch({
-            type: 'CODE_CLICK',
-            payload: {lineIndex, colIndex, token}
-        });
+        dispatch(codeClick(lineIndex, colIndex, token));
     };
 
     // Determine if the CodeView should be disabled

@@ -2,7 +2,7 @@ import {describe, expect, test, vi} from 'vitest';
 import React from 'react';
 import {render, screen} from '@testing-library/react';
 import {SidebarNavigationContainer} from '../components/SidebarNavigationContainer.jsx';
-import {GameStateContext} from '../reducer.js';
+import {GameStateContext} from '../reducers/index.ts';
 
 // Mock state for testing
 const mockState = {

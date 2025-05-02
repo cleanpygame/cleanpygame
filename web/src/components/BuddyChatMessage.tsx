@@ -1,6 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {ChatMessage, ChatMessageType} from '../types';
-import {GameStateContext, SET_TYPING_ANIMATION_COMPLETE} from '../reducer';
+import {GameStateContext} from '../reducers';
+import {SET_TYPING_ANIMATION_COMPLETE} from '../reducers/actionTypes';
 
 interface BuddyChatMessageProps {
     message: ChatMessage;
