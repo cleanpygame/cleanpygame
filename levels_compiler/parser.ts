@@ -16,7 +16,7 @@ export function cleanArg(s: string): string {
     return trimmed.replace(/\\"/g, '"');
 }
 
-function parseArgsList(argString: string) {
+function parseArgsList(argString: string): string[] {
     const args: string[] = [];
     let currentArg = '';
     let inQuotes = false;
@@ -95,7 +95,7 @@ export function readWisdoms(args: string[], context: ParseContext): string[] {
     return args;
 }
 
-function isDirectiveStart(context: ParseContext) {
+function isDirectiveStart(context: ParseContext): boolean {
     let line = context.lines[context.idx];
     return line.startsWith('##') || line.startsWith('"""') && line.length > 3;
 }
@@ -266,7 +266,7 @@ function readMessage(context: ParseContext): string {
     return message.join('\n').trim();
 }
 
-function getPrevBlock(context: ParseContext) {
+function getPrevBlock(context: ParseContext): LevelBlock {
     if (context.level.blocks.length === 0) {
         throw errorWithContext('previous block required!', context);
     }
@@ -277,7 +277,7 @@ function getPrevBlock(context: ParseContext) {
     return prevBlockForExplain;
 }
 
-function readOneBlock(context: ParseContext) {
+function readOneBlock(context: ParseContext): void {
     const [cmd, args] = parseDirective(context);
     switch (cmd) {
         case '':
@@ -358,11 +358,11 @@ export function parseLevelFile(filePath: string): LevelData | undefined {
 
 let idCounter: Record<string, number> = {}
 
-function resetIdGenerator() {
+function resetIdGenerator(): void {
     idCounter = {}
 }
 
-function generateId(clickable: string | undefined) {
+function generateId(clickable: string | undefined): string {
     let id = makeIdFrom(clickable || "id");
     if (!idCounter[id]) {
         idCounter[id] = 0;
@@ -375,7 +375,7 @@ function generateId(clickable: string | undefined) {
 }
 
 /** remove all nonId Characters. If end with an empty string, then return 'id'*/
-function makeIdFrom(str: string) {
+function makeIdFrom(str: string): string {
     str = str.replace(/[^a-zA-Z_0-9]+/g, '');
     if (str.length > 20) {
         str = str.substring(0, 20);

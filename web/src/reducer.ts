@@ -239,7 +239,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
             const newLevelState = createInitialLevelState(levelData);
 
             // Create messages for the chat
-            const messages = [];
+            const messages: ChatMessage[] = [];
 
             // Add a start message if it exists
             if (levelData.startMessage) {
@@ -309,7 +309,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
                 }).filter(Boolean);
 
                 // Create the message text
-                let messageText = state.currentLevel.level.finalMessage || 'Great job! You\'ve fixed all the issues in this level.';
+                let messageText: string = state.currentLevel.level.finalMessage || 'Great job! You\'ve fixed all the issues in this level.';
 
                 // Add wisdoms if there are any
                 if (wisdomEntries.length > 0) {
@@ -334,7 +334,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
             ];
 
             // Add the current level to solved levels if all issues are fixed
-            let solvedLevels = state.solvedLevels;
+            let solvedLevels: LevelId[] = state.solvedLevels;
             if (allIssuesFixed) {
                 solvedLevels = state.solvedLevels.some(
                     level => level.topic === state.currentLevelId.topic &&
@@ -447,12 +447,12 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
                 w => !state.discoveredWisdoms.includes(w)
             );
 
-            const discoveredWisdoms = [
+            const discoveredWisdoms: string[] = [
                 ...state.discoveredWisdoms,
                 ...newWisdoms
             ];
 
-            const newState = {
+            const newState: GameState = {
                 ...state,
                 discoveredWisdoms,
             };

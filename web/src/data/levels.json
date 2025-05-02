@@ -116,7 +116,7 @@
               "text": "\n"
             }
           ],
-          "startMessage": "Welcome to the coding trenches, Junior! \nAccording to our team traditions (and manager's trust issues), you're not allowed to write code yet.\nYour sacred duty is to review your colleagues' masterpieces and fix \"small, insignificant details\" - you know, the ones that cause production outages at 3 AM.\n\nLet's start with something even you can't mess up. See that variable name that looks like someone fell asleep on their keyboard? Click to fix it before my eyes start bleeding!",
+          "startMessage": "Welcome to the coding trenches, Junior!\nAccording to our team traditions (and manager's trust issues), you're not allowed to write code yet. Your sacred duty is to review your colleagues' masterpieces and fix \"small, insignificant issues\".\n\nLet's start with something even you can't mess up. See that variable name that looks like someone fell asleep on their keyboard? Click to fix it before my eyes start bleeding!",
           "startReply": "I'll save your eyes!",
           "finalMessage": "Well done! Your journey to becoming slightly less junior has begun!",
           "endReply": "Bring on the next challenge!"
@@ -699,7 +699,7 @@
               "text": "    csv = \"\"\n    for n in nums:\n        csv += str(n) + \",\"\n    if csv.endswith(\",\"):\n        csv = csv[:-1]\n    return csv\n",
               "replacement": "    return \",\".join(str(n) for n in nums)\n",
               "event": "csv_join",
-              "explanation": "String concatenation in loops is inefficient. Join() is faster and handles edge cases.",
+              "explanation": "String concatenation in loops is inefficient. join() is faster and handles edge cases.",
               "hint": "Concatenating strings in a loop? That's so 1990s!"
             },
             {
@@ -824,8 +824,8 @@
           ],
           "startMessage": "Rumour has it this function was ported from punch-card code in Fortran.",
           "startReply": "Hold my coffee!",
-          "finalMessage": "Much cleaner! `zip` pairs elements safely, reads like English,\nand kicks index acrobatics to the curb. Keep loops simple and let Python do the heavy lifting.",
-          "endReply": "Zip-zap, done!"
+          "finalMessage": "Much cleaner now! But not enough...",
+          "endReply": "Not enough?!"
         },
         {
           "filename": "dot_product2.py",
@@ -844,8 +844,8 @@
               "hint": "loop?"
             }
           ],
-          "startMessage": "We are not finished with it!",
-          "finalMessage": "Much cleaner! `zip` pairs elements safely, reads like English,\nand kicks index acrobatics to the curb. Keep loops simple and let Python do the heavy lifting.",
+          "startMessage": "Maybe one final fix...",
+          "finalMessage": "Perfect! `zip` pairs elements safely, reads like English,\nand kicks index acrobatics to the curb.",
           "endReply": "Zip-zap, done!"
         },
         {
@@ -883,7 +883,7 @@
               "clickable": "seen=set()",
               "replacement": "seen=None",
               "event": "md",
-              "explanation": "Default arguments are evaluated once — so this cheerful little `set()` is shared across *every* call. Like a clingy ex, it never forgets.",
+              "explanation": "Default arguments are evaluated once — so this cheerful little set() is shared across *every* call. Like a clingy ex, it never forgets.",
               "hint": "If your function remembers things you didn't tell it to… it's haunted."
             },
             {
@@ -893,7 +893,7 @@
           ],
           "startMessage": "Déjà-vu detection gone rogue!\nBecause the function’s default `set()` is shared across calls, words remembered from round #1 vanish in round #2.\nLet’s stop that silent memory leak before it confuses the next intern.",
           "startReply": "Let’s make it truly unique!",
-          "finalMessage": "Now that we’ve exorcised the memory-leaking default,\n`unique_words` behaves like a normal function — not a long-term surveillance device.\nFresh state per call, zero ghosts in the machine.\nPythonic and private, just the way we like it.",
+          "finalMessage": "Now that we’ve exorcised the memory-leaking default,\nunique_words behaves like a normal function — not a long-term surveillance device.\nFresh state per call, zero ghosts in the machine.\nPythonic and private, just the way we like it.",
           "endReply": "Fresh every time!"
         },
         {
@@ -909,7 +909,7 @@
               "text": "    for i in range(len(lines)):\n        line = lines[i]\n",
               "replacement": "    for i, line in enumerate(lines):\n",
               "event": "id",
-              "explanation": "Manual indexing is fragile and clunky. `enumerate()` gives you the index and the item in one clean shot.",
+              "explanation": "Manual indexing is fragile and clunky. enumerate() gives you the index and the item in one clean shot.",
               "hint": "Let Python count for you — it’s good at it."
             },
             {
@@ -981,7 +981,7 @@
               "clickable": "dict",
               "replacement": "frequencies",
               "event": "rename",
-              "explanation": "Shadowing built-ins starts turf wars. Give the poor `dict` its name back.",
+              "explanation": "Shadowing built-ins starts turf wars. Give the poor 'dict' its name back.",
               "hint": "Why pick a fight with a core type?"
             },
             {
@@ -991,7 +991,7 @@
           ],
           "startMessage": "Grab your hazmat suit, Junior — this function comes with its own built-in foot-guns:\nClick fast before someone deploys it to production Slack bots.",
           "startReply": "Deploy the fixes!",
-          "finalMessage": "Boom! No more shared stop-word ghosts, no more hijacked `dict`, and the loop finally speaks Python.\nRemember: safe defaults, respect the built-ins, and iterate like a local — your future self will thank you.",
+          "finalMessage": "Boom! No more shared stop-word ghosts, no more hijacked 'dict', and the loop finally speaks Python.\nRemember: safe defaults, respect the built-ins, and iterate like a local — your future self will thank you.",
           "endReply": "Clean and counting!"
         },
         {
@@ -1062,7 +1062,7 @@
               "replacement": "    top, top_score = max(result.items(), key=lambda item: item[1])\n",
               "event": "forkinresult",
               "clickable": "for k in result:",
-              "explanation": "One more built-in! `max(..., key=...)` with lambda!",
+              "explanation": "One more built-in! max(..., key=...) with lambda!",
               "hint": "Stop reinventing wheels!"
             },
             {
