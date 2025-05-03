@@ -3,7 +3,7 @@ import {GameAction} from './actionCreators';
 import {APPLY_FIX, GET_HINT, LOAD_LEVEL, POST_CHAT_MESSAGE, WRONG_CLICK,} from './actionTypes';
 
 export const DEFAULT_MESSAGE = 'Great job! You\'ve fixed all the issues in this level.';
-export const WISDOM_HEADER = '\n\nWisdoms unlocked:\n';
+export const WISDOM_HEADER = '\n\nWisdom unlocked:\n';
 export const DEFAULT_INSTRUCTION = 'Find and fix all the issues in this code.';
 export const WRONG_CLICK_RESPONSE = 'Nope, not an issue.';
 
