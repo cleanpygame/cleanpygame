@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {ChatMessage, ChatMessageType} from '../types';
 import {GameStateContext} from '../reducers';
-import {SET_TYPING_ANIMATION_COMPLETE} from '../reducers/actionTypes';
+import {setTypingAnimationComplete} from "../reducers/actionCreators.ts";
 
 interface BuddyChatMessageProps {
     message: ChatMessage;
@@ -69,13 +69,10 @@ function BuddyChatMessage({message, isNew = false}: BuddyChatMessageProps): Reac
         return () => clearInterval(typingInterval);
     }, [message.text, isNew]);
 
-    // Update global state when typing animation completes
+    // Update the global state when typing animation completes
     useEffect(() => {
         if (isNew) {
-            dispatch({
-                type: SET_TYPING_ANIMATION_COMPLETE,
-                payload: {isComplete: isTypingComplete}
-            });
+            dispatch(setTypingAnimationComplete(isTypingComplete));
         }
     }, [isTypingComplete, isNew, dispatch]);
 
