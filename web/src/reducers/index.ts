@@ -7,6 +7,10 @@ import {
     CODE_CLICK,
     GET_HINT,
     LOAD_LEVEL,
+    LOGIN_FAILURE,
+    LOGIN_REQUEST,
+    LOGIN_SUCCESS,
+    LOGOUT,
     NEXT_LEVEL,
     POST_CHAT_MESSAGE,
     RESET_PROGRESS,
@@ -31,6 +35,12 @@ export const initialState: GameState = {
     notebookOpen: false,
     chatMessages: [getInstructionChatMessage(firstLevel)],
     isTypingAnimationComplete: true,
+    auth: {
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
+        error: null
+    }
 };
 
 /**
@@ -283,6 +293,56 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
             return {
                 ...state,
                 isTypingAnimationComplete: isComplete
+            };
+        }
+
+        // Authentication action handlers
+        case LOGIN_REQUEST: {
+            return {
+                ...state,
+                auth: {
+                    ...state.auth,
+                    isLoading: true,
+                    error: null
+                }
+            };
+        }
+
+        case LOGIN_SUCCESS: {
+            const {user} = action.payload;
+            return {
+                ...state,
+                auth: {
+                    user,
+                    isAuthenticated: true,
+                    isLoading: false,
+                    error: null
+                }
+            };
+        }
+
+        case LOGIN_FAILURE: {
+            const {error} = action.payload;
+            return {
+                ...state,
+                auth: {
+                    ...state.auth,
+                    isLoading: false,
+                    error,
+                    isAuthenticated: false
+                }
+            };
+        }
+
+        case LOGOUT: {
+            return {
+                ...state,
+                auth: {
+                    user: null,
+                    isAuthenticated: false,
+                    isLoading: false,
+                    error: null
+                }
             };
         }
 

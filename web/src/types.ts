@@ -62,6 +62,20 @@ export interface LevelState {
     regions: EventRegion[];
 }
 
+export interface User {
+    uid: string;
+    displayName: string | null;
+    email: string | null;
+    photoURL: string | null;
+}
+
+export interface AuthState {
+    user: User | null;
+    isAuthenticated: boolean;
+    isLoading: boolean;
+    error: string | null;
+}
+
 export interface GameState {
     topics: Topic[];
     currentLevelId: LevelId;
@@ -71,4 +85,5 @@ export interface GameState {
     notebookOpen: boolean;
     chatMessages: ChatMessage[];
     isTypingAnimationComplete: boolean;
+    auth: AuthState;
 }

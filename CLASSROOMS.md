@@ -1,189 +1,158 @@
-### Scenario 1 — Create Classroom Group
+## Main scenario
 
-- **Trigger**: Teacher selects **“New Group”** in the classroom panel.
-- **Steps**
-    1. Enter a group name (e.g. “Spring 2025 CS101”).
-    2. Confirm.
-- **Outcome**
-    - Backend creates a unique `groupId` and `joinlink`
-    - Group appears in the teacher’s list with a ready-made join link.
+1. Teacher logins with a Google account to the game to get access to the GroupsPanel.
+2. Teacher opens the GroupsPanel and clicks "Create a group".
+3. Teacher sets a name of the group and confirms creation.
+4. Teacher copies a join-link and shares it with students via email, chats, LMS, etc.
+5. Student follows the join-link, goes through Google login process, and sees the invitation with the information about
+   the teacher (email, name) and decides to join the group.
+6. Student sets the display name and clicks a Join button. Now all the progress is visible for the teacher in a
+   dashboard.
+7. Student follows the join-link again to change their display name.
+8. Teacher opens the GroupPage from the GroupsPanel to control the group.
+9. Teacher on the GroupPage renames the group.
+10. Teacher on the GroupPage regenerates the JoinLink on the Group Page to prevent usage of the old link.
+11. Teacher on the GroupPage deletes the group to hide it from his groups list.
+12. Teacher on the GroupPage inspects the Group Dashboard to track student progress on each individual level.
 
-### Scenario 2 — Delete Classroom Group
+## UI Screens
 
-- **Trigger**: Teacher clicks **“Delete”** on a group card.
-- **Steps**
-    1. System shows warning with student count & last-activity date.
-    2. Press **“Delete”**.
-- **Outcome**
-    - Group record and all progress documents under that `groupId` are removed from Firestore.
+### GroupsPanel
 
-### Scenario 3 — Share Join Link
+Purpose: List of all teacher-created groups, each shown as a card.
 
-- **Trigger**: Teacher presses **“Copy Link”** next to a group.
-- **Steps**
-    1. Link of the form `https://game.dev/?group=abc123` is copied to clipboard.
-    2. Teacher sends it to students (mail, chat, LMS, QR on projector, etc.).
-- **Outcome**
-    - Any student opening the link joins anonymously; their progress is tagged with the group’s `groupId` and surfaces
-      on the teacher dashboard.
+Vertical list view with groups. Most recent at the top.
 
-### Scenario 4 — Regenerate Join Link
+Group Item Contents:
 
-- **Trigger**: Teacher presses **“Regenerate Link”** next to a group.
-- **Steps**
-    1. System shows warning.
-    2. Press "Regenerate".
-- **Outcome**
-    - Old link stops working. New starts working.
+- Group name (clickable — opens Group Page)
+- Number of students joined
 
-### Scenario 5 — Teacher Dashboard
+Top bar:
 
-- **Trigger**: Teacher opens a dashboard for a group.
-- **Progress grid** — list of students (anon IDs or names if signed-in) with level completion info.
-- Switch between modes: Misclicks, Time, Revisits.
-- Depending on the mode, cell contains: total number of misclicks, total time, or total number of completions of the
-  level.
-- **Outcome**
-    - Real-time snapshot pulled from Firestore; No auto-refresh needed.
-    - No personal data beyond the chosen display name; satisfies classroom privacy.
+- "Create Group" button
 
-### Scenario 5 — Export Progress
+### GroupPage
 
-- **Trigger**: Teacher clicks **“Export CSV”** in dashboard.
-- **Outcome**
-    - System streams a CSV (`group-abc123-2025-05-02.csv`) containing:  
-      `studentId, number of completed levels`.
-    - File lands in browser downloads for import into LMS or grade-sheet.
+Purpose: Manage group metadata and invite access.
 
-### Scenario 6 — Join Link
+- Group name (editable inline)
+- Join Link: read-only text field with copy button
+- Regenerate Join Link button
+- Link to open Group Dashboard on a new page.
+- Delete Group Button
+- Back to the GroupsPanel button
 
-- **Trigger**: Student follows the join link.
-- **Steps**:
-    1. System shows who is inviting, and what outcomes it has.
-    2. System suggests to login via Google to save progress. A student can skip this step.
-    3. System suggests to specify Display Name in the format "FirstName FamilyName".
-    4. Student hits "Join" button.
-- **Outcome**
-    - Progress is tracked under `groupId`.
+### GroupDashboardTable
 
-### Scenario 7 — Change Display Name
+Purpose: Show the progress of students across levels.
 
-- **Trigger**: Student clicks on their name (or anon ID) in UI.
-- **Steps**:
-    1. Enter a new display name.
-    2. Confirm
-- **Outcome**
-    - The display name is updated in the group dashboard and in the player UI
+Table View Mode selector (see below).
 
-# Firestore Specification for CLASSROOMS
+Table:
 
-## 1. `groups` Collection
+- Rows:
+  - Row per students
+  - Total row:
+    - Avg completed levels among all students
+    - Per level: number of students who solved this level.
+- Columns:
+  - LevelsCompleted
+  - One column per level (numbered {topic_number}.{level_number}) with full names in the column hint.
+- Value in cells: one of the values, depending on the selected mode:
+  - Total misclicks count.
+  - Total time spent on level
+  - Number of times level was completed.
+- Cell color: green, for solved levels. Dark green for level solved twice or more. Neutral for not solved levels.
 
-Each document is a teacher-created group.
+Buttons:
 
-```json
-/groups/{
-  groupId
-} => {
-  "name": "Spring 2025 CS101",
-  "ownerUid": "teacherUID",
-  "joinLinkId": "abc123",
-  "createdAt": "timestamp",
-  "lastActivity": "timestamp",
-  "studentCount": 17
-}
+- export full table to CSV (cell value: 1 for solved, 0 for not solved)
+- export only student names and total solved levels.
+
+### GroupJoinPage
+
+URL: Accessed via shared join link.
+
+First runs Google Login, then displays content:
+
+- Group name
+- Teacher name and email (read-only)
+- Input field: “Your display name” prefilled from Google Account
+- “Join” button
+
+# Database
+
+## Database Structure
+
+```
+users
+  {uid}
+    displayName            string
+    email                  string
 ```
 
-## 2. `joinLinks` Collection
-
-Maps public join links to internal group IDs.
-
-```json
-/joinLinks/{
-  joinLinkId
-} => {
-  "groupId": "groupXYZ",
-  "active": true,
-  "createdAt": "timestamp"
-}
+```
+groups
+  {groupId}
+    name             string
+    teacherUid       string
+    joinCode         string
+    members          array<string>
+    createdAt        timestamp
+    updatedAt        timestamp
+    deleted          boolean
+    deletedAt        timestamp?
+    
+  students                 (sub-collection)
+    {studentUid}
+      displayName          string
+      joinedAt             timestamp
+      totals:              map                  // kept in sync by cloud function
+        solvedLevels       number
+        totalTimeMs        number
+      levels:              map<levelId,map>     // one entry per level
+        <levelId>:
+          misclicks        number
+          hints            number
+          timeMs           number
+          completions      number
+          lastCompletedAt  timestamp
 ```
 
-## 3. `groupMemberships` Collection
-
-Links players to classroom groups.
-
-```json
-/groupMemberships/{
-  groupId
-}_{
-  playerId
-} => {
-  "groupId": "groupXYZ",
-  "playerId": "anon123",
-  "displayName": "Alice Bauer",
-  "joinedAt": "timestamp",
-  "signedIn": true
-}
+```
+joinCodes
+  {code}
+    groupId          string
+    createdAt        timestamp
+    active           boolean
+    deleted          boolean        // mirrors group.deleted
 ```
 
-## 4. `progress` Collection
+## Queries:
 
-Tracks player progress on each level.
-
-```json
-/progress/{
-  playerId
-}_{
-  levelId
-} => {
-  "playerId": "anon123",
-  "groupId": "groupXYZ",
-  "levelId": "naming/onboarding",
-  "finished": true,
-  "timestamp": "timestamp",
-  "unlockedWisdoms": [
-    "naming-descriptive"
-  ],
-  "misclicks": 2,
-  "timeSpent": 31.4,
-  "revisits": 1
-}
+### Teacher
+```
+createGroup(name)                    → groups.add({...})
+listTeacherGroups()                  → groups.where('teacherUid','==',uid').where('deleted','!=',true).orderBy('createdAt','desc')
+renameGroup(id,newName)              → groups.doc(id).update({name:newName,updatedAt:now})
+regenerateJoinLink(id)               → cloudFnRegenerateJoinLink(id)        // keeps code unique
+deleteGroup(id)                      → groups.doc(groupId).update({deleted: true, deletedAt: now})
+openDashboard(id)                    → groups.doc(id).collection('students').get()
 ```
 
-## 5. `players` Collection (optional)
+### Student
 
-Player profile info.
-
-```json
-/players/{
-  playerId
-} => {
-  "displayName": "Alice Bauer",
-  "signedIn": true,
-  "createdAt": "timestamp"
-}
+```
+resolveJoinLink(code)                → joinCodes.doc(code).get()
+joinGroup(id,displayName)            → groups.doc(id).collection('students').doc(uid).set({displayName,joinedAt:now})
+updateDisplayName(id,newName)        → same path, update
+writeLevelResult(id,levelId,delta)   → db.doc(`groups/${groupId}/students/${uid}`).update({ ... FieldValue.increment ... updatedAt: now })
 ```
 
-## 🔐 Firestore Security Rules (Outline)
+## Cloud functions
 
-- Students can write only their own data.
-- Teachers can read group-linked data for their groups.
-- Join links are public but scoped.
-
-## 🔁 Scenario Mapping
-
-| Scenario            | Collections Affected                                  | Notes                                |
-|---------------------|-------------------------------------------------------|--------------------------------------|
-| Create Group        | `groups`, `joinLinks`                                 | Generates `groupId` and `joinLinkId` |
-| Delete Group        | `groups`, `progress`, `groupMemberships`, `joinLinks` | Full cleanup                         |
-| Share Link          | `joinLinks`                                           | Uses `joinLinkId` for public URL     |
-| Regenerate Link     | `joinLinks`                                           | Deactivates old, creates new         |
-| Student Joins       | `groupMemberships`, `players`, `progress`             | Auto-created entries                 |
-| Update Display Name | `groupMemberships`, `players`                         | Depending on auth method             |
-| Teacher Dashboard   | `groupMemberships`, `progress`                        | Filtered by `groupId`                |
-| Export CSV          | `progress`, `groupMemberships`                        | Queried and formatted backend-side   |
-
-## 🌱 Recommended Indexes
-
-- `/progress` composite: `groupId + playerId + levelId`
-- `/groupMemberships` composite: `groupId + joinedAt`
+```
+cloudFnRegenerateJoinLink(groupId)
+- create unique code in joinCodes
+- update groups/{groupId}.joinCode

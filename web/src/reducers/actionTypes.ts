@@ -9,3 +9,9 @@ export const TOGGLE_NOTEBOOK = 'TOGGLE_NOTEBOOK';
 export const NEXT_LEVEL = 'NEXT_LEVEL';
 export const CODE_CLICK = 'CODE_CLICK';
 export const SET_TYPING_ANIMATION_COMPLETE = 'SET_TYPING_ANIMATION_COMPLETE';
+
+// Authentication action types
+export const LOGIN_REQUEST = 'LOGIN_REQUEST';
+export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
+export const LOGIN_FAILURE = 'LOGIN_FAILURE';
+export const LOGOUT = 'LOGOUT';
