@@ -10,7 +10,10 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "gen": "cd ../levels_compiler/ && npm start"
+    "gen": "cd ../levels_compiler/ && npm start",
+    "deploy": "npm run build && firebase deploy",
+    "deploy:hosting": "npm run build && firebase deploy --only hosting",
+    "deploy:firestore": "firebase deploy --only firestore:rules,firestore:indexes"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.4",
