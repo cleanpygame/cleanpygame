@@ -14,6 +14,7 @@ import {
     NEXT_LEVEL,
     POST_CHAT_MESSAGE,
     RESET_PROGRESS,
+    SET_SOLVED_LEVELS,
     SET_TYPING_ANIMATION_COMPLETE,
     TOGGLE_NOTEBOOK,
     WRONG_CLICK
@@ -343,6 +344,14 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
                     isLoading: false,
                     error: null
                 }
+            };
+        }
+
+        case SET_SOLVED_LEVELS: {
+            const {solvedLevels} = action.payload;
+            return {
+                ...state,
+                solvedLevels
             };
         }
 

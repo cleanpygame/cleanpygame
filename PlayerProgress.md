@@ -5,13 +5,6 @@
 This document outlines the design for implementing comprehensive player statistics tracking in the Clean Python Game.
 The system will support individual player progress tracking and detailed analytics for both students and teachers.
 
-## Core Design Principles
-
-1. **Player-Centric Statistics**: All detailed statistics are stored per player globally, not per group
-2. **Offline-First Approach**: Local statistics are maintained and synced to Firebase when available
-3. **Privacy by Design**: Students can only see their own detailed stats; teachers see summaries of their group members
-4. **Scalable Architecture**: Design supports future features like real-time updates and advanced analytics
-
 ## Data Organization and Storage
 
 ### Player Statistics Collection (`playerStats`)

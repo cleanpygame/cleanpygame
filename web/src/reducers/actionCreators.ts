@@ -10,6 +10,7 @@ import {
     NEXT_LEVEL,
     POST_CHAT_MESSAGE,
     RESET_PROGRESS,
+    SET_SOLVED_LEVELS,
     SET_TYPING_ANIMATION_COMPLETE,
     TOGGLE_NOTEBOOK,
     WRONG_CLICK
@@ -102,6 +103,13 @@ export interface LogoutAction {
     type: typeof LOGOUT;
 }
 
+export interface SetSolvedLevelsAction {
+    type: typeof SET_SOLVED_LEVELS;
+    payload: {
+        solvedLevels: LevelId[];
+    };
+}
+
 export type GameAction =
     | LoadLevelAction
     | ApplyFixAction
@@ -116,7 +124,8 @@ export type GameAction =
     | LoginRequestAction
     | LoginSuccessAction
     | LoginFailureAction
-    | LogoutAction;
+    | LogoutAction
+    | SetSolvedLevelsAction;
 
 // Action creators
 export const loadLevel = (levelId: LevelId): LoadLevelAction => ({
@@ -182,6 +191,11 @@ export const loginFailure = (error: string): LoginFailureAction => ({
 
 export const logout = (): LogoutAction => ({
     type: LOGOUT
+});
+
+export const setSolvedLevels = (solvedLevels: LevelId[]): SetSolvedLevelsAction => ({
+    type: SET_SOLVED_LEVELS,
+    payload: {solvedLevels}
 });
 
 // Thunk action creator for Google sign-in

@@ -1,5 +1,11 @@
 // Firebase authentication functions
-import {GoogleAuthProvider, signInWithPopup, signOut as firebaseSignOut, User} from 'firebase/auth';
+import {
+    GoogleAuthProvider,
+    onAuthStateChanged as firebaseOnAuthStateChanged,
+    signInWithPopup,
+    signOut as firebaseSignOut,
+    User
+} from 'firebase/auth';
 import {auth} from './index';
 
 // Create a Google Auth provider instance
@@ -37,4 +43,13 @@ export const signOut = async () => {
  */
 export const getCurrentUser = (): User | null => {
     return auth.currentUser;
+};
+
+/**
+ * Set up an auth state change listener
+ * @param callback - Function to call when auth state changes
+ * @returns Unsubscribe function
+ */
+export const onAuthStateChanged = (callback: (user: User | null) => void) => {
+    return firebaseOnAuthStateChanged(auth, callback);
 };

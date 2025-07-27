@@ -9,6 +9,7 @@ export const TOGGLE_NOTEBOOK = 'TOGGLE_NOTEBOOK';
 export const NEXT_LEVEL = 'NEXT_LEVEL';
 export const CODE_CLICK = 'CODE_CLICK';
 export const SET_TYPING_ANIMATION_COMPLETE = 'SET_TYPING_ANIMATION_COMPLETE';
+export const SET_SOLVED_LEVELS = 'SET_SOLVED_LEVELS';
 
 // Authentication action types
 export const LOGIN_REQUEST = 'LOGIN_REQUEST';

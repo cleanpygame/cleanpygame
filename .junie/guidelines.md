@@ -76,6 +76,23 @@ Key files:
    npm install
    ```
 
+### After each task
+
+1. Check that build is successfull:
+
+```cd web
+npm run build
+```
+
+2. Run all tests
+
+```
+cd web
+npm test
+```
+
+3. Add tests for reducers if you added new reducer logic
+
 ### Running the Development Server
 
 ```
