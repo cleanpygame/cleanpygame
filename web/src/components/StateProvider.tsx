@@ -1,8 +1,8 @@
 import React, {useEffect, useReducer} from 'react';
 import {gameReducer, GameStateContext, initialState} from '../reducers';
 import {onAuthStateChanged} from '../firebase/auth';
-import {loadSolvedLevels, saveSolvedLevels} from '../firebase/firestore';
-import {loginSuccess, setSolvedLevels} from '../reducers/actionCreators';
+import {loadPlayerStats, savePlayerStats} from '../firebase/firestore';
+import {loginSuccess, setPlayerStats} from '../reducers/actionCreators';
 
 interface StateProviderProps {
     children: React.ReactNode;
@@ -21,15 +21,13 @@ export function StateProvider({children}: StateProviderProps): React.ReactElemen
                 // User is signed in
                 dispatch(loginSuccess(user));
 
-                // Load solved levels from Firestore
                 try {
-                    const solvedLevels = await loadSolvedLevels(user);
-                    if (solvedLevels.length > 0) {
-                        // Update state with loaded solved levels
-                        dispatch(setSolvedLevels(solvedLevels));
-                    }
+                    // Load player statistics from Firestore
+                    const playerStats = await loadPlayerStats(user);
+                    // Update state with loaded player statistics
+                    dispatch(setPlayerStats(playerStats));
                 } catch (error) {
-                    console.error('Error loading solved levels:', error);
+                    console.error('Error loading player data:', error);
                 }
             }
         });
@@ -38,14 +36,14 @@ export function StateProvider({children}: StateProviderProps): React.ReactElemen
         return () => unsubscribe();
     }, []);
 
-    // Save solvedLevels to Firestore whenever it changes
+    // Save player statistics to Firestore whenever they change
     useEffect(() => {
         const {user} = state.auth;
-        if (user && state.solvedLevels.length > 0) {
-            saveSolvedLevels(user, state.solvedLevels)
-                .catch(error => console.error('Error saving solved levels:', error));
+        if (user) {
+            savePlayerStats(user, state.playerStats)
+                .catch(error => console.error('Error saving player statistics:', error));
         }
-    }, [state.solvedLevels, state.auth.user]);
+    }, [state.playerStats, state.auth.user]);
 
     return (
         <GameStateContext.Provider value={{state, dispatch}}>

@@ -10,12 +10,13 @@ import {
     NEXT_LEVEL,
     POST_CHAT_MESSAGE,
     RESET_PROGRESS,
-    SET_SOLVED_LEVELS,
+    SET_PLAYER_STATS,
     SET_TYPING_ANIMATION_COMPLETE,
     TOGGLE_NOTEBOOK,
+    UPDATE_LEVEL_STATS,
     WRONG_CLICK
 } from './actionTypes';
-import {ChatMessage, LevelId, User} from '../types';
+import {ChatMessage, LevelId, PlayerLevelStats, PlayerStatsState, User} from '../types';
 
 // Action interfaces
 export interface LoadLevelAction {
@@ -103,10 +104,23 @@ export interface LogoutAction {
     type: typeof LOGOUT;
 }
 
-export interface SetSolvedLevelsAction {
-    type: typeof SET_SOLVED_LEVELS;
+
+export interface UpdateLevelStatsAction {
+    type: typeof UPDATE_LEVEL_STATS;
     payload: {
-        solvedLevels: LevelId[];
+        levelKey: string;
+        stats: Partial<PlayerLevelStats>;
+        timeSpent?: number;
+        isCompleted?: boolean;
+        hintsUsed?: number;
+        mistakesMade?: number;
+    };
+}
+
+export interface SetPlayerStatsAction {
+    type: typeof SET_PLAYER_STATS;
+    payload: {
+        playerStats: PlayerStatsState;
     };
 }
 
@@ -125,7 +139,8 @@ export type GameAction =
     | LoginSuccessAction
     | LoginFailureAction
     | LogoutAction
-    | SetSolvedLevelsAction;
+    | UpdateLevelStatsAction
+    | SetPlayerStatsAction;
 
 // Action creators
 export const loadLevel = (levelId: LevelId): LoadLevelAction => ({
@@ -193,9 +208,44 @@ export const logout = (): LogoutAction => ({
     type: LOGOUT
 });
 
-export const setSolvedLevels = (solvedLevels: LevelId[]): SetSolvedLevelsAction => ({
-    type: SET_SOLVED_LEVELS,
-    payload: {solvedLevels}
+
+/**
+ * Update statistics for a specific level
+ * @param levelKey - Level key in format topic__levelFilenameWithoutExtension
+ * @param stats - Partial level statistics to update
+ * @param timeSpent - Time spent on the level in this session
+ * @param isCompleted - Whether the level was completed in this session
+ * @param hintsUsed - Number of hints used in this session
+ * @param mistakesMade - Number of mistakes made in this session
+ * @returns Action to update level statistics
+ */
+export const updateLevelStats = (
+    levelKey: string,
+    stats: Partial<PlayerLevelStats> = {},
+    timeSpent?: number,
+    isCompleted?: boolean,
+    hintsUsed?: number,
+    mistakesMade?: number
+): UpdateLevelStatsAction => ({
+    type: UPDATE_LEVEL_STATS,
+    payload: {
+        levelKey,
+        stats,
+        timeSpent,
+        isCompleted,
+        hintsUsed,
+        mistakesMade
+    }
+});
+
+/**
+ * Set the entire player statistics state
+ * @param playerStats - Player statistics state
+ * @returns Action to set player statistics
+ */
+export const setPlayerStats = (playerStats: PlayerStatsState): SetPlayerStatsAction => ({
+    type: SET_PLAYER_STATS,
+    payload: {playerStats}
 });
 
 // Thunk action creator for Google sign-in

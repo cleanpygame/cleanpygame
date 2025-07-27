@@ -5,6 +5,25 @@
 import {GameState} from '../types';
 
 /**
+ * Creates a level key in format topic__levelFilenameWithoutExtension
+ * @param topic - The topic name
+ * @param levelId - The level ID
+ * @returns The level key
+ */
+export const getLevelKey = (topic: string, levelId: string): string => {
+    return `${topic}__${levelId.replace('.py', '')}`;
+};
+
+/**
+ * Creates a level key from the current level ID in the game state
+ * @param state - The game state
+ * @returns The level key for the current level
+ */
+export const getCurrentLevelKey = (state: GameState): string => {
+    return getLevelKey(state.currentLevelId.topic, state.currentLevelId.levelId);
+};
+
+/**
  * Checks if a level is solved
  * @param state - The game state
  * @param topic - The topic name
@@ -12,9 +31,11 @@ import {GameState} from '../types';
  * @returns Whether the level is solved
  */
 export const isLevelSolved = (state: GameState, topic: string, levelId: string): boolean => {
-    return state.solvedLevels.some(
-        level => level.topic === topic && level.levelId === levelId
-    );
+    // Create level key in format topic__levelFilenameWithoutExtension
+    const levelKey = getLevelKey(topic, levelId);
+
+    // Check if the level exists in playerStats.levels and has been completed at least once
+    return state.playerStats.levels[levelKey]?.timesCompleted > 0;
 };
 
 /**

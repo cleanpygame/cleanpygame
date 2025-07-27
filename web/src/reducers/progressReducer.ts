@@ -3,55 +3,24 @@ import {GameAction} from './actionCreators';
 import {APPLY_FIX, NEXT_LEVEL, RESET_PROGRESS} from './actionTypes';
 
 /**
- * Check if a level is already solved
- * @param solvedLevels - List of solved levels
- * @param currentLevelId - Current level ID
- * @returns True if the level is already solved
- */
-const isLevelSolved = (solvedLevels: LevelId[], currentLevelId: LevelId): boolean => {
-    return solvedLevels.some(
-        level => level.topic === currentLevelId.topic && level.levelId === currentLevelId.levelId
-    );
-};
-
-/**
- * Reducer for progress-related state (solved levels and discovered wisdoms)
+ * Reducer for progress-related state (discovered wisdoms)
  * @param state - Current progress state
  * @param action - Action to perform
  * @param fullState - Full game state (for context)
  * @returns New progress state
  */
 export function progressReducer(
-    state: { solvedLevels: LevelId[], discoveredWisdoms: string[] } = {solvedLevels: [], discoveredWisdoms: []},
+    state: { discoveredWisdoms: string[] } = {discoveredWisdoms: []},
     action: GameAction,
     fullState: Partial<{
         currentLevel: LevelState | null;
         currentLevelId: LevelId;
     }> = {}
-): { solvedLevels: LevelId[], discoveredWisdoms: string[] } {
+): { discoveredWisdoms: string[] } {
     switch (action.type) {
         case APPLY_FIX: {
-            const {currentLevel, currentLevelId} = fullState;
-
-            if (!currentLevel || !currentLevelId) return state;
-
-            // Check if all issues are fixed
-            const allIssuesFixed = currentLevel.isFinished;
-
-            // Add the current level to solved levels if all issues are fixed
-            if (allIssuesFixed) {
-                // Check if the level is already solved
-                if (isLevelSolved(state.solvedLevels, currentLevelId)) {
-                    return state;
-                }
-
-                // Add the level to solved levels
-                return {
-                    ...state,
-                    solvedLevels: [...state.solvedLevels, currentLevelId]
-                };
-            }
-
+            // We no longer need to update solvedLevels here
+            // Level completion is tracked in playerStats.levels
             return state;
         }
 
@@ -70,7 +39,6 @@ export function progressReducer(
             }
 
             return {
-                ...state,
                 discoveredWisdoms: [
                     ...state.discoveredWisdoms,
                     ...newWisdoms
@@ -79,9 +47,8 @@ export function progressReducer(
         }
 
         case RESET_PROGRESS: {
-            // Reset progress
+            // Reset progress - only discoveredWisdoms now
             return {
-                solvedLevels: [],
                 discoveredWisdoms: []
             };
         }

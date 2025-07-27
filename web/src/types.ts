@@ -60,6 +60,9 @@ export interface LevelState {
     code: string;
     isFinished: boolean;
     regions: EventRegion[];
+    startTime: number;           // timestamp when the level was started
+    sessionHintsUsed: number;    // number of hints used in the current session
+    sessionMistakesMade: number; // number of mistakes made in the current session
 }
 
 export interface User {
@@ -76,14 +79,46 @@ export interface AuthState {
     error: string | null;
 }
 
+/**
+ * Player summary statistics
+ */
+export interface PlayerSummaryStats {
+    totalTimeSpent: number;         // total time spent in the game
+    totalLevelsSolved: number;      // number of unique levels completed at least once
+    totalLevelCompletions: number;  // total number of level completion (including repeats)
+    totalHintsUsed: number;         // total number of hints used
+    totalMistakesMade: number;      // total number of mistakes made
+}
+
+/**
+ * Player statistics for a specific level
+ */
+export interface PlayerLevelStats {
+    timesCompleted: number;         // number of times this level was completed
+    totalTimeSpent: number;         // total time spent on this level
+    totalHintsUsed: number;         // total number of hints used on this level
+    totalMistakesMade: number;      // total number of mistakes made on this level
+    minTimeSpent: number;           // shortest successful completion time for this level
+    minHintsUsed: number;           // minimum hints used in a successful run
+    minMistakesMade: number;        // minimum mistakes made in a successful run
+}
+
+/**
+ * Player statistics state
+ */
+export interface PlayerStatsState {
+    summary: PlayerSummaryStats;
+    levels: Record<string, PlayerLevelStats>; // key format: topic__levelFilenameWithoutExtension
+}
+
 export interface GameState {
     topics: Topic[];
     currentLevelId: LevelId;
     currentLevel: LevelState;
-    solvedLevels: LevelId[];
     discoveredWisdoms: string[];
     notebookOpen: boolean;
     chatMessages: ChatMessage[];
     isTypingAnimationComplete: boolean;
     auth: AuthState;
+    playerStats: PlayerStatsState;
 }

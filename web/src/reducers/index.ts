@@ -1,7 +1,8 @@
 import React, {createContext} from 'react';
 import levelsData from '../data/levels.json';
 import {GameState, LevelId, Topic} from '../types.ts';
-import {applyFix, GameAction, loadLevel, wrongClick} from './actionCreators.ts';
+import {applyFix, GameAction, loadLevel, updateLevelStats, wrongClick} from './actionCreators.ts';
+import {getCurrentLevelKey} from '../utils/levelUtils';
 import {
     APPLY_FIX,
     CODE_CLICK,
@@ -14,7 +15,7 @@ import {
     NEXT_LEVEL,
     POST_CHAT_MESSAGE,
     RESET_PROGRESS,
-    SET_SOLVED_LEVELS,
+    SET_PLAYER_STATS,
     SET_TYPING_ANIMATION_COMPLETE,
     TOGGLE_NOTEBOOK,
     WRONG_CLICK
@@ -22,6 +23,7 @@ import {
 import {createInitialLevelState, levelReducer} from './levelReducer.ts';
 import {chatReducer, getInstructionChatMessage} from './chatReducer.ts';
 import {progressReducer} from './progressReducer.ts';
+import {createDefaultPlayerStats, statsReducer} from './statsReducer.ts';
 
 
 let firstTopic = levelsData.topics[1]; // skip testing
@@ -31,7 +33,6 @@ export const initialState: GameState = {
     topics: levelsData.topics as Topic[],
     currentLevelId: {topic: firstTopic.name, levelId: firstLevel.filename},
     currentLevel: createInitialLevelState(firstLevel),
-    solvedLevels: [],
     discoveredWisdoms: [],
     notebookOpen: false,
     chatMessages: [getInstructionChatMessage(firstLevel)],
@@ -41,6 +42,16 @@ export const initialState: GameState = {
         isAuthenticated: false,
         isLoading: false,
         error: null
+    },
+    playerStats: {
+        summary: {
+            totalTimeSpent: 0,
+            totalLevelsSolved: 0,
+            totalLevelCompletions: 0,
+            totalHintsUsed: 0,
+            totalMistakesMade: 0
+        },
+        levels: {}
     }
 };
 
@@ -148,10 +159,9 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
                 }
             );
 
-            // Use progressReducer to handle the progress state
-            const {solvedLevels, discoveredWisdoms} = progressReducer(
+            // Use progressReducer to handle the progress state (only discoveredWisdoms now)
+            const {discoveredWisdoms} = progressReducer(
                 {
-                    solvedLevels: state.solvedLevels,
                     discoveredWisdoms: state.discoveredWisdoms
                 },
                 action,
@@ -163,12 +173,37 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
 
             if (!newLevelState) return state;
 
+            // Check if the level is now finished
+            const isLevelCompleted = newLevelState.isFinished && !state.currentLevel.isFinished;
+
+            // Get level key for the current level
+            const levelKey = getCurrentLevelKey(state);
+
+            // Calculate time spent if level is completed
+            let timeSpent;
+            if (isLevelCompleted) {
+                timeSpent = Math.floor((Date.now() - state.currentLevel.startTime) / 1000); // Convert to seconds
+            }
+
+            // Use statsReducer to handle player statistics
+            const playerStats = statsReducer(
+                state.playerStats,
+                updateLevelStats(
+                    levelKey,
+                    {},
+                    timeSpent, // Time spent in seconds
+                    isLevelCompleted,
+                    isLevelCompleted ? state.currentLevel.sessionHintsUsed : 0, // Use tracked hints if completed
+                    isLevelCompleted ? state.currentLevel.sessionMistakesMade : 0 // Use tracked mistakes if completed
+                )
+            );
+
             return {
                 ...state,
                 currentLevel: newLevelState,
                 chatMessages: newChatMessages,
-                solvedLevels,
                 discoveredWisdoms,
+                playerStats,
                 isTypingAnimationComplete: false
             };
         }
@@ -188,10 +223,27 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
 
             if (!newLevelState) return state;
 
+            // Get level key for the current level
+            const levelKey = getCurrentLevelKey(state);
+
+            // Use statsReducer to handle player statistics - increment hints used
+            const playerStats = statsReducer(
+                state.playerStats,
+                updateLevelStats(
+                    levelKey,
+                    {},
+                    undefined, // timeSpent
+                    false,     // isCompleted
+                    1,         // hintsUsed - increment by 1 (already incremented in levelReducer)
+                    0          // mistakesMade
+                )
+            );
+
             return {
                 ...state,
                 currentLevel: newLevelState,
                 chatMessages: newChatMessages,
+                playerStats,
                 isTypingAnimationComplete: false
             };
         }
@@ -207,10 +259,27 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
 
             if (!newLevelState) return state;
 
+            // Get level key for the current level
+            const levelKey = getCurrentLevelKey(state);
+
+            // Use statsReducer to handle player statistics - increment mistakes made
+            const playerStats = statsReducer(
+                state.playerStats,
+                updateLevelStats(
+                    levelKey,
+                    {},
+                    undefined, // timeSpent
+                    false,     // isCompleted
+                    0,         // hintsUsed
+                    1          // mistakesMade - increment by 1 (already incremented in levelReducer)
+                )
+            );
+
             return {
                 ...state,
                 currentLevel: newLevelState,
                 chatMessages: newChatMessages,
+                playerStats,
                 isTypingAnimationComplete: false
             };
         }
@@ -232,21 +301,30 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
         }
 
         case RESET_PROGRESS: {
-            // Use progressReducer to handle the progress state
-            const {solvedLevels, discoveredWisdoms} = progressReducer(
+            // Use progressReducer to handle the progress state (only discoveredWisdoms now)
+            const {discoveredWisdoms} = progressReducer(
                 {
-                    solvedLevels: state.solvedLevels,
                     discoveredWisdoms: state.discoveredWisdoms
                 },
                 action
             );
 
+            // Reset player statistics
+            const playerStats = createDefaultPlayerStats();
+
             // Reset to the initial state but keep the topics loaded
             return {
                 ...initialState,
                 topics: state.topics,
-                solvedLevels,
-                discoveredWisdoms
+                discoveredWisdoms,
+                playerStats
+            };
+        }
+
+        case SET_PLAYER_STATS: {
+            return {
+                ...state,
+                playerStats: action.payload.playerStats
             };
         }
 
@@ -260,10 +338,9 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
         case NEXT_LEVEL: {
             if (!state.currentLevel || !state.currentLevelId) return state;
 
-            // Use progressReducer to handle the progress state
-            const {solvedLevels, discoveredWisdoms} = progressReducer(
+            // Use progressReducer to handle the progress state (only discoveredWisdoms now)
+            const {discoveredWisdoms} = progressReducer(
                 {
-                    solvedLevels: state.solvedLevels,
                     discoveredWisdoms: state.discoveredWisdoms
                 },
                 action,
@@ -282,7 +359,6 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
             return gameReducer(
                 {
                     ...state,
-                    solvedLevels,
                     discoveredWisdoms
                 },
                 loadLevel(nextLevelId)
@@ -347,13 +423,6 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
             };
         }
 
-        case SET_SOLVED_LEVELS: {
-            const {solvedLevels} = action.payload;
-            return {
-                ...state,
-                solvedLevels
-            };
-        }
 
         default:
             return state;

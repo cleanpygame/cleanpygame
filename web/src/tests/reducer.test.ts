@@ -12,6 +12,7 @@ import {
     wrongClick
 } from '../reducers/actionCreators';
 import {GameState, LevelId} from '../types';
+import {getCurrentLevelKey} from '../utils/levelUtils';
 
 describe('Game Reducer', () => {
     test('all levels can be solved one by one', () => {
@@ -44,10 +45,11 @@ describe('Game Reducer', () => {
                 }
             }
 
-            expect(state.solvedLevels.some(level =>
-                level.topic === state.currentLevelId.topic &&
-                level.levelId === state.currentLevelId.levelId
-            )).toBe(true);
+            // Get level key for the current level
+            const levelKey = getCurrentLevelKey(state);
+
+            // Check if the level exists in playerStats.levels and has been completed at least once
+            expect(state.playerStats.levels[levelKey]?.timesCompleted).toBeGreaterThan(0);
 
             solvedLevels.push(currentLevelId);
 
@@ -143,7 +145,7 @@ describe('Game Reducer', () => {
         state = gameReducer(state, resetProgress());
 
         // Verify the state was reset
-        expect(state.solvedLevels).toEqual([]);
+        expect(state.playerStats.levels).toEqual({});
         expect(state.currentLevelId).toEqual(initialState.currentLevelId);
         expect(state.currentLevel.triggeredEvents).toEqual([]);
     });

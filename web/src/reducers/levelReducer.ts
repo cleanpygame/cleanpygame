@@ -102,15 +102,19 @@ export function levelReducer(
 
             return {
                 ...state,
-                pendingHintId: null
+                pendingHintId: null,
+                sessionHintsUsed: state.sessionHintsUsed + 1 // Increment hints used in this session
             };
         }
 
         case WRONG_CLICK: {
             if (!state) return null;
 
-            // No changes to the level state for wrong clicks
-            return state;
+            // Increment mistakes made in this session
+            return {
+                ...state,
+                sessionMistakesMade: state.sessionMistakesMade + 1
+            };
         }
 
         default:
@@ -147,5 +151,8 @@ export const createInitialLevelState = (levelData: LevelData): LevelState => {
         code,
         regions,
         isFinished: false,
+        startTime: Date.now(),           // Initialize with current timestamp
+        sessionHintsUsed: 0,             // Initialize with zero hints used
+        sessionMistakesMade: 0,          // Initialize with zero mistakes made
     };
 };

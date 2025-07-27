@@ -1,6 +1,8 @@
 import React, {useContext} from 'react';
 import {GameStateContext} from '../reducers';
 import {loginFailure, loginRequest, loginSuccess, logout, resetProgress} from '../reducers/actionCreators';
+import {savePlayerStats} from '../firebase/firestore';
+import {createDefaultPlayerStats} from '../reducers/statsReducer';
 
 /**
  * Top navigation bar component
@@ -67,7 +69,24 @@ export function TopBar(): React.ReactElement {
     function renderResetProgressButton() {
         return (
             <button
-                onClick={() => dispatch(resetProgress())}
+                onClick={async () => {
+                    if (window.confirm('Are you sure you want to reset all your progress? This will reset all level completions and statistics.')) {
+                        // Reset state through reducer
+                        dispatch(resetProgress());
+
+                        // Directly update Firestore with reset stats
+                        const {user} = state.auth;
+                        if (user) {
+                            try {
+                                // Save default stats to Firestore
+                                await savePlayerStats(user, createDefaultPlayerStats());
+                                console.log('Player statistics reset in Firestore');
+                            } catch (error) {
+                                console.error('Error resetting player statistics in Firestore:', error);
+                            }
+                        }
+                    }
+                }}
                 className="px-3 py-1 flex items-center gap-2 rounded hover:bg-[#3c3c3c] transition-colors"
                 title="Reset Progress">
                 <span>Reset Progress</span>

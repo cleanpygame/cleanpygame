@@ -1,7 +1,8 @@
 // Firestore functions for player progress
 import {doc, DocumentReference, getDoc, serverTimestamp, setDoc, updateDoc} from 'firebase/firestore';
 import {db} from './index';
-import {LevelId, User} from '../types';
+import {PlayerStatsState, User} from '../types';
+import {createDefaultPlayerStats} from '../reducers/statsReducer';
 
 /**
  * Get the player document reference
@@ -13,12 +14,12 @@ export const getPlayerDocRef = (userId: string): DocumentReference => {
 };
 
 /**
- * Save solved levels to Firestore
+ * Save player statistics to Firestore
  * @param user - Firebase user
- * @param solvedLevels - Array of solved level IDs
+ * @param playerStats - Player statistics state
  * @returns Promise that resolves when the operation is complete
  */
-export const saveSolvedLevels = async (user: User, solvedLevels: LevelId[]): Promise<void> => {
+export const savePlayerStats = async (user: User, playerStats: PlayerStatsState): Promise<void> => {
     if (!user) return;
 
     const playerDocRef = getPlayerDocRef(user.uid);
@@ -30,7 +31,8 @@ export const saveSolvedLevels = async (user: User, solvedLevels: LevelId[]): Pro
         if (docSnap.exists()) {
             // Update existing document
             await updateDoc(playerDocRef, {
-                'levels': solvedLevels,
+                'summary': playerStats.summary,
+                'levels': playerStats.levels,
                 'updatedAt': serverTimestamp()
             });
         } else {
@@ -39,24 +41,26 @@ export const saveSolvedLevels = async (user: User, solvedLevels: LevelId[]): Pro
                 playerId: user.uid,
                 displayName: user.displayName,
                 email: user.email,
-                levels: solvedLevels,
+                summary: playerStats.summary,
+                levels: playerStats.levels,
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp()
             });
         }
     } catch (error) {
-        console.error('Error saving solved levels:', error);
+        console.error('Error saving player statistics:', error);
         throw error;
     }
 };
 
+
 /**
- * Load solved levels from Firestore
+ * Load player statistics from Firestore
  * @param user - Firebase user
- * @returns Promise that resolves with the solved levels array
+ * @returns Promise that resolves with the player statistics state
  */
-export const loadSolvedLevels = async (user: User): Promise<LevelId[]> => {
-    if (!user) return [];
+export const loadPlayerStats = async (user: User): Promise<PlayerStatsState> => {
+    if (!user) return createDefaultPlayerStats();
 
     const playerDocRef = getPlayerDocRef(user.uid);
 
@@ -65,12 +69,24 @@ export const loadSolvedLevels = async (user: User): Promise<LevelId[]> => {
 
         if (docSnap.exists()) {
             const data = docSnap.data();
-            return data.levels || [];
+
+            // Check if the document has the expected structure
+            if (data.summary && data.levels) {
+                return {
+                    summary: data.summary,
+                    levels: data.levels
+                };
+            } else {
+                // If the document doesn't have the expected structure, return default stats
+                console.warn('Player document does not have the expected structure, using default stats');
+                return createDefaultPlayerStats();
+            }
         }
 
-        return [];
+        // If the document doesn't exist, return default stats
+        return createDefaultPlayerStats();
     } catch (error) {
-        console.error('Error loading solved levels:', error);
-        return [];
+        console.error('Error loading player statistics:', error);
+        return createDefaultPlayerStats();
     }
 };
