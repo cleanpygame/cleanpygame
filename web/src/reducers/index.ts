@@ -6,6 +6,12 @@ import {getCurrentLevelKey} from '../utils/levelUtils';
 import {
     APPLY_FIX,
     CODE_CLICK,
+    CREATE_GROUP_FAILURE,
+    CREATE_GROUP_REQUEST,
+    CREATE_GROUP_SUCCESS,
+    FETCH_GROUPS_FAILURE,
+    FETCH_GROUPS_REQUEST,
+    FETCH_GROUPS_SUCCESS,
     GET_HINT,
     LOAD_LEVEL,
     LOGIN_FAILURE,
@@ -15,6 +21,7 @@ import {
     NEXT_LEVEL,
     POST_CHAT_MESSAGE,
     RESET_PROGRESS,
+    SELECT_GROUP,
     SET_PLAYER_STATS,
     SET_TYPING_ANIMATION_COMPLETE,
     TOGGLE_NOTEBOOK,
@@ -52,7 +59,11 @@ export const initialState: GameState = {
             totalMistakesMade: 0
         },
         levels: {}
-    }
+    },
+    ownedGroups: [],
+    joinedGroups: [],
+    isGroupsLoading: false,
+    groupsError: undefined
 };
 
 /**
@@ -396,6 +407,70 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
             };
         }
 
+        // Group management action handlers
+        case CREATE_GROUP_REQUEST: {
+            return {
+                ...state,
+                isGroupsLoading: true,
+                groupsError: undefined
+            };
+        }
+
+        case CREATE_GROUP_SUCCESS: {
+            const {group} = action.payload;
+            return {
+                ...state,
+                ownedGroups: [...state.ownedGroups, group],
+                selectedGroup: group,
+                isGroupsLoading: false,
+                groupsError: undefined
+            };
+        }
+
+        case CREATE_GROUP_FAILURE: {
+            const {error} = action.payload;
+            return {
+                ...state,
+                isGroupsLoading: false,
+                groupsError: error
+            };
+        }
+
+        case FETCH_GROUPS_REQUEST: {
+            return {
+                ...state,
+                isGroupsLoading: true,
+                groupsError: undefined
+            };
+        }
+
+        case FETCH_GROUPS_SUCCESS: {
+            const {ownedGroups, joinedGroups} = action.payload;
+            return {
+                ...state,
+                ownedGroups,
+                joinedGroups,
+                isGroupsLoading: false,
+                groupsError: undefined
+            };
+        }
+
+        case FETCH_GROUPS_FAILURE: {
+            const {error} = action.payload;
+            return {
+                ...state,
+                isGroupsLoading: false,
+                groupsError: error
+            };
+        }
+
+        case SELECT_GROUP: {
+            const {group} = action.payload;
+            return {
+                ...state,
+                selectedGroup: group
+            };
+        }
 
         default:
             return state;

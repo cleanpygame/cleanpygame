@@ -19,3 +19,12 @@ export const LOGOUT = 'LOGOUT';
 // Player statistics action types
 export const UPDATE_LEVEL_STATS = 'UPDATE_LEVEL_STATS';
 export const SET_PLAYER_STATS = 'SET_PLAYER_STATS';
+
+// Group management action types
+export const CREATE_GROUP_REQUEST = 'CREATE_GROUP_REQUEST';
+export const CREATE_GROUP_SUCCESS = 'CREATE_GROUP_SUCCESS';
+export const CREATE_GROUP_FAILURE = 'CREATE_GROUP_FAILURE';
+export const FETCH_GROUPS_REQUEST = 'FETCH_GROUPS_REQUEST';
+export const FETCH_GROUPS_SUCCESS = 'FETCH_GROUPS_SUCCESS';
+export const FETCH_GROUPS_FAILURE = 'FETCH_GROUPS_FAILURE';
+export const SELECT_GROUP = 'SELECT_GROUP';

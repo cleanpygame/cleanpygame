@@ -1,0 +1,69 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isGroupOwner(groupData) {
+      return isAuthenticated() && request.auth.uid == groupData.ownerUid;
+    }
+    
+    function isGroupMember(groupData) {
+      return isAuthenticated() && (
+        request.auth.uid == groupData.ownerUid || 
+        groupData.memberIds.hasAny([request.auth.uid])
+      );
+    }
+    
+    // Player Statistics Rules
+    match /playerStats/{userId} {
+      // Players can read and write their own stats
+      allow read, write: if isOwner(userId);
+      
+      // Teachers can read stats of their group members
+      // This is implemented by checking if the current user's UID is in the teacherIds array
+      allow read: if isAuthenticated() && resource.data.teacherIds.hasAny([request.auth.uid]);
+    }
+    
+    // Groups Rules
+    match /groups/{groupId} {
+      // Group owners have full access
+      allow read, write: if isGroupOwner(resource.data);
+      
+      // Group members can read basic group info (but not full details)
+      allow read: if isGroupMember(resource.data);
+      
+      // Any authenticated user can create a group (as a teacher)
+      allow create: if isAuthenticated() && request.resource.data.ownerUid == request.auth.uid;
+      
+      // Students can add themselves to memberIds (join a group)
+      allow update: if isAuthenticated() && 
+                     resource.data.memberIds.hasAll(request.resource.data.memberIds.removeAll([request.auth.uid])) &&
+                     request.resource.data.memberIds.hasAll(resource.data.memberIds) &&
+                     request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds']);
+    }
+    
+    // Join Codes Rules
+    match /joinCodes/{code} {
+      // Anyone can read join codes (required for join links)
+      allow read: if true;
+      
+      // Only authenticated users can create join codes
+      allow create: if isAuthenticated() && request.resource.data.ownerUid == request.auth.uid;
+      
+      // Only the group owner can update or delete join codes
+      allow update, delete: if isAuthenticated() && resource.data.ownerUid == request.auth.uid;
+    }
+    
+    // Default deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

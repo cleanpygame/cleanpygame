@@ -1,6 +1,12 @@
 import {
     APPLY_FIX,
     CODE_CLICK,
+    CREATE_GROUP_FAILURE,
+    CREATE_GROUP_REQUEST,
+    CREATE_GROUP_SUCCESS,
+    FETCH_GROUPS_FAILURE,
+    FETCH_GROUPS_REQUEST,
+    FETCH_GROUPS_SUCCESS,
     GET_HINT,
     LOAD_LEVEL,
     LOGIN_FAILURE,
@@ -10,13 +16,14 @@ import {
     NEXT_LEVEL,
     POST_CHAT_MESSAGE,
     RESET_PROGRESS,
+    SELECT_GROUP,
     SET_PLAYER_STATS,
     SET_TYPING_ANIMATION_COMPLETE,
     TOGGLE_NOTEBOOK,
     UPDATE_LEVEL_STATS,
     WRONG_CLICK
 } from './actionTypes';
-import {ChatMessage, LevelId, PlayerLevelStats, PlayerStatsState, User} from '../types';
+import {ChatMessage, Group, LevelId, PlayerLevelStats, PlayerStatsState, User} from '../types';
 
 // Action interfaces
 export interface LoadLevelAction {
@@ -124,6 +131,51 @@ export interface SetPlayerStatsAction {
     };
 }
 
+// Group management action interfaces
+export interface CreateGroupRequestAction {
+    type: typeof CREATE_GROUP_REQUEST;
+}
+
+export interface CreateGroupSuccessAction {
+    type: typeof CREATE_GROUP_SUCCESS;
+    payload: {
+        group: Group;
+    };
+}
+
+export interface CreateGroupFailureAction {
+    type: typeof CREATE_GROUP_FAILURE;
+    payload: {
+        error: string;
+    };
+}
+
+export interface FetchGroupsRequestAction {
+    type: typeof FETCH_GROUPS_REQUEST;
+}
+
+export interface FetchGroupsSuccessAction {
+    type: typeof FETCH_GROUPS_SUCCESS;
+    payload: {
+        ownedGroups: Group[];
+        joinedGroups: Group[];
+    };
+}
+
+export interface FetchGroupsFailureAction {
+    type: typeof FETCH_GROUPS_FAILURE;
+    payload: {
+        error: string;
+    };
+}
+
+export interface SelectGroupAction {
+    type: typeof SELECT_GROUP;
+    payload: {
+        group: Group;
+    };
+}
+
 export type GameAction =
     | LoadLevelAction
     | ApplyFixAction
@@ -140,7 +192,14 @@ export type GameAction =
     | LoginFailureAction
     | LogoutAction
     | UpdateLevelStatsAction
-    | SetPlayerStatsAction;
+    | SetPlayerStatsAction
+    | CreateGroupRequestAction
+    | CreateGroupSuccessAction
+    | CreateGroupFailureAction
+    | FetchGroupsRequestAction
+    | FetchGroupsSuccessAction
+    | FetchGroupsFailureAction
+    | SelectGroupAction;
 
 // Action creators
 export const loadLevel = (levelId: LevelId): LoadLevelAction => ({
@@ -281,6 +340,95 @@ export const signOut = () => {
             dispatch(logout());
         } catch (error) {
             console.error('Error signing out:', error);
+        }
+    };
+};
+
+// Group management action creators
+export const createGroupRequest = (): CreateGroupRequestAction => ({
+    type: CREATE_GROUP_REQUEST
+});
+
+export const createGroupSuccess = (group: Group): CreateGroupSuccessAction => ({
+    type: CREATE_GROUP_SUCCESS,
+    payload: {group}
+});
+
+export const createGroupFailure = (error: string): CreateGroupFailureAction => ({
+    type: CREATE_GROUP_FAILURE,
+    payload: {error}
+});
+
+export const fetchGroupsRequest = (): FetchGroupsRequestAction => ({
+    type: FETCH_GROUPS_REQUEST
+});
+
+export const fetchGroupsSuccess = (ownedGroups: Group[], joinedGroups: Group[]): FetchGroupsSuccessAction => ({
+    type: FETCH_GROUPS_SUCCESS,
+    payload: {ownedGroups, joinedGroups}
+});
+
+export const fetchGroupsFailure = (error: string): FetchGroupsFailureAction => ({
+    type: FETCH_GROUPS_FAILURE,
+    payload: {error}
+});
+
+export const selectGroup = (group: Group): SelectGroupAction => ({
+    type: SELECT_GROUP,
+    payload: {group}
+});
+
+// Thunk action creator for creating a group
+export const createGroupThunk = (groupName: string) => {
+    return async (dispatch: React.Dispatch<GameAction>, getState: () => any) => {
+        try {
+            dispatch(createGroupRequest());
+
+            const state = getState();
+            const {user} = state.auth;
+
+            if (!user) {
+                throw new Error('User must be authenticated to create a group');
+            }
+
+            const {createGroup} = await import('../firebase/firestore');
+            const group = await createGroup(user, groupName);
+
+            dispatch(createGroupSuccess(group));
+            return group;
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+            dispatch(createGroupFailure(errorMessage));
+            throw error;
+        }
+    };
+};
+
+// Thunk action creator for fetching groups
+export const fetchGroupsThunk = () => {
+    return async (dispatch: React.Dispatch<GameAction>, getState: () => any) => {
+        try {
+            dispatch(fetchGroupsRequest());
+
+            const state = getState();
+            const {user} = state.auth;
+
+            if (!user) {
+                throw new Error('User must be authenticated to fetch groups');
+            }
+
+            const {fetchOwnedGroups, fetchJoinedGroups} = await import('../firebase/firestore');
+            const [ownedGroups, joinedGroups] = await Promise.all([
+                fetchOwnedGroups(user.uid),
+                fetchJoinedGroups(user.uid)
+            ]);
+
+            dispatch(fetchGroupsSuccess(ownedGroups, joinedGroups));
+            return {ownedGroups, joinedGroups};
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+            dispatch(fetchGroupsFailure(errorMessage));
+            throw error;
         }
     };
 };

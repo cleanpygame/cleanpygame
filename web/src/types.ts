@@ -111,6 +111,51 @@ export interface PlayerStatsState {
     levels: Record<string, PlayerLevelStats>; // key format: topic__levelFilenameWithoutExtension
 }
 
+/**
+ * Group member summary statistics
+ */
+export interface GroupMemberSummary {
+    displayName: string;
+    levelsCompleted: number;
+    totalLevelsPlayed: number;
+    totalMisclicks: number;
+    totalTimeSpent: number;
+    totalHintsUsed: number;
+    totalWrongClicks: number;
+    lastPlayedAt: string;
+    joinedAt: string;
+}
+
+/**
+ * Group data structure
+ */
+export interface Group {
+    id: string;
+    name: string;
+    ownerUid: string;
+    ownerName: string;
+    ownerEmail?: string;
+    joinCode: string;
+    memberIds: string[];
+    memberSummaries: Record<string, GroupMemberSummary>;
+    createdAt: string;
+    updatedAt: string;
+    deleted: boolean;
+    deletedAt?: string;
+    joinedAt?: string;
+}
+
+/**
+ * Join code data structure
+ */
+export interface JoinCode {
+    groupId: string;
+    ownerUid: string;
+    createdAt: string;
+    active: boolean;
+    deleted: boolean;
+}
+
 export interface GameState {
     topics: Topic[];
     currentLevelId: LevelId;
@@ -121,4 +166,9 @@ export interface GameState {
     isTypingAnimationComplete: boolean;
     auth: AuthState;
     playerStats: PlayerStatsState;
+    ownedGroups: Group[];
+    joinedGroups: Group[];
+    selectedGroup?: Group;
+    isGroupsLoading: boolean;
+    groupsError?: string;
 }

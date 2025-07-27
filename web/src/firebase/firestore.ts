@@ -1,7 +1,18 @@
-// Firestore functions for player progress
-import {doc, DocumentReference, getDoc, serverTimestamp, setDoc, updateDoc} from 'firebase/firestore';
+// Firestore functions for player progress and group management
+import {
+    collection,
+    doc,
+    DocumentReference,
+    getDoc,
+    getDocs,
+    query,
+    serverTimestamp,
+    setDoc,
+    updateDoc,
+    where
+} from 'firebase/firestore';
 import {db} from './index';
-import {PlayerStatsState, User} from '../types';
+import {Group, JoinCode, PlayerStatsState, User} from '../types';
 import {createDefaultPlayerStats} from '../reducers/statsReducer';
 
 /**
@@ -88,5 +99,146 @@ export const loadPlayerStats = async (user: User): Promise<PlayerStatsState> => 
     } catch (error) {
         console.error('Error loading player statistics:', error);
         return createDefaultPlayerStats();
+    }
+};
+
+/**
+ * Generate a random join code
+ * @returns A random 8-character alphanumeric code
+ */
+export const generateJoinCode = (): string => {
+    const characters = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Removed similar looking characters
+    let result = '';
+    for (let i = 0; i < 8; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return result;
+};
+
+/**
+ * Create a new group in Firestore
+ * @param user - Firebase user (owner)
+ * @param name - Group name
+ * @returns Promise that resolves with the created group
+ */
+export const createGroup = async (user: User, name: string): Promise<Group> => {
+    if (!user) throw new Error('User must be authenticated to create a group');
+
+    // Generate a unique join code
+    const joinCode = generateJoinCode();
+
+    // Create the group document
+    const groupsCollection = collection(db, 'groups');
+    const groupDoc = doc(groupsCollection);
+    const groupId = groupDoc.id;
+
+    const now = new Date().toISOString();
+
+    // Create the group object
+    const group: Group = {
+        id: groupId,
+        name,
+        ownerUid: user.uid,
+        ownerName: user.displayName || 'Unknown',
+        ownerEmail: user.email || undefined,
+        joinCode,
+        memberIds: [],
+        memberSummaries: {},
+        createdAt: now,
+        updatedAt: now,
+        deleted: false
+    };
+
+    try {
+        // Save the group to Firestore
+        await setDoc(groupDoc, {
+            ...group,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+        });
+
+        // Create the join code document
+        const joinCodeDoc = doc(db, 'joinCodes', joinCode);
+        const joinCodeData: JoinCode = {
+            groupId,
+            ownerUid: user.uid,
+            createdAt: now,
+            active: true,
+            deleted: false
+        };
+
+        await setDoc(joinCodeDoc, {
+            ...joinCodeData,
+            createdAt: serverTimestamp()
+        });
+
+        return group;
+    } catch (error) {
+        console.error('Error creating group:', error);
+        throw error;
+    }
+};
+
+/**
+ * Fetch groups owned by the user
+ * @param userId - User ID
+ * @returns Promise that resolves with an array of groups
+ */
+export const fetchOwnedGroups = async (userId: string): Promise<Group[]> => {
+    try {
+        const groupsCollection = collection(db, 'groups');
+        const q = query(
+            groupsCollection,
+            where('ownerUid', '==', userId),
+            where('deleted', '==', false)
+        );
+
+        const querySnapshot = await getDocs(q);
+        const groups: Group[] = [];
+
+        querySnapshot.forEach((doc) => {
+            const data = doc.data() as Group;
+            groups.push({
+                ...data,
+                id: doc.id
+            });
+        });
+
+        return groups;
+    } catch (error) {
+        console.error('Error fetching owned groups:', error);
+        throw error;
+    }
+};
+
+/**
+ * Fetch groups joined by the user
+ * @param userId - User ID
+ * @returns Promise that resolves with an array of groups
+ */
+export const fetchJoinedGroups = async (userId: string): Promise<Group[]> => {
+    try {
+        const groupsCollection = collection(db, 'groups');
+        const q = query(
+            groupsCollection,
+            where('memberIds', 'array-contains', userId),
+            where('deleted', '==', false)
+        );
+
+        const querySnapshot = await getDocs(q);
+        const groups: Group[] = [];
+
+        querySnapshot.forEach((doc) => {
+            const data = doc.data() as Group;
+            groups.push({
+                ...data,
+                id: doc.id
+            });
+        });
+
+        return groups;
+    } catch (error) {
+        console.error('Error fetching joined groups:', error);
+        throw error;
     }
 };

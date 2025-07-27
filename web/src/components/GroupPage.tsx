@@ -1,6 +1,7 @@
 import React, {useContext} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import {GameStateContext} from '../reducers';
+import {formatDate} from '../utils/dateUtils';
 
 /**
  * Group page component
@@ -134,7 +135,7 @@ export function GroupPage(): React.ReactElement {
                         <h2 className="text-lg font-semibold mb-3">Group Info</h2>
                         <div className="mb-2">
                             <p className="text-sm text-gray-400">Created</p>
-                            <p>{new Date(group.createdAt).toLocaleDateString()}</p>
+                            <p>{formatDate(group.createdAt)}</p>
                         </div>
                         <div className="mb-4">
                             <p className="text-sm text-gray-400">Members</p>
@@ -239,8 +240,8 @@ export function GroupPage(): React.ReactElement {
                                             <td className="p-2">{member.stats?.totalTimeSpent || 0}s</td>
                                             <td className="p-2">{member.stats?.hintsUsed || 0}</td>
                                             <td className="p-2">{member.stats?.mistakesMade || 0}</td>
-                                            <td className="p-2">{member.lastActive ? new Date(member.lastActive).toLocaleDateString() : 'Never'}</td>
-                                            <td className="p-2">{new Date(member.joinedAt).toLocaleDateString()}</td>
+                                            <td className="p-2">{member.lastActive ? formatDate(member.lastActive) : 'Never'}</td>
+                                            <td className="p-2">{formatDate(member.joinedAt)}</td>
                                         </tr>
                                     ))}
                                     </tbody>
