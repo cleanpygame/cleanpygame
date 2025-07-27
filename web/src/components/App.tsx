@@ -1,30 +1,29 @@
-import React, {useEffect} from 'react';
-import {BrowserRouter, Route, Routes, useLocation} from 'react-router-dom';
+import React, {ReactElement} from 'react';
+import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import {StateProvider} from './StateProvider';
 import {IdeLayout} from './IdeLayout';
-import {GameStateContext} from '../reducers';
-import {toggleStatsPage} from '../reducers/actionCreators';
+import {GroupPage} from './GroupPage';
+import {GroupsPage} from './GroupsPage';
+import {PlayerStatsPage} from './PlayerStatsPage';
+import {TopBar} from './TopBar';
 
 /**
- * Router component to handle URL changes
+ * Generic page wrapper component
+ * This component is used to render any page component with the correct layout
  */
-function RouterHandler(): React.ReactElement {
-    const location = useLocation();
-    const context = React.useContext(GameStateContext);
+interface PageWrapperProps {
+    Component: React.ComponentType<any>;
+}
 
-    useEffect(() => {
-        if (!context) return;
-
-        const {state, dispatch} = context;
-        const isStatsPage = location.pathname === '/stats';
-
-        // Only toggle if the state doesn't match the URL
-        if (isStatsPage !== state.statsPageVisible) {
-            dispatch(toggleStatsPage());
-        }
-    }, [location.pathname, context]);
-
-    return null;
+export function TopBarPageWrapper({Component}: PageWrapperProps): ReactElement {
+    return (
+        <div className="flex flex-col h-screen bg-[#2d2d2d] text-[#d4d4d4]">
+            <TopBar/>
+            <div className="flex-1 overflow-auto">
+                <Component/>
+            </div>
+        </div>
+    );
 }
 
 /**
@@ -34,8 +33,10 @@ export function App(): React.ReactElement {
     return (
         <BrowserRouter>
             <StateProvider>
-                <RouterHandler/>
                 <Routes>
+                    <Route path="/stats" element={<TopBarPageWrapper Component={PlayerStatsPage}/>}/>
+                    <Route path="/groups" element={<TopBarPageWrapper Component={GroupsPage}/>}/>
+                    <Route path="/groups/:groupId" element={<TopBarPageWrapper Component={GroupPage}/>}/>
                     <Route path="*" element={<IdeLayout/>}/>
                 </Routes>
             </StateProvider>

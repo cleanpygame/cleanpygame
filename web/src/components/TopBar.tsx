@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import {useNavigate} from 'react-router-dom';
+import {useLocation, useNavigate} from 'react-router-dom';
 import {GameStateContext} from '../reducers';
 import {loginFailure, loginRequest, loginSuccess, logout, resetProgress} from '../reducers/actionCreators';
 import {savePlayerStats} from '../firebase/firestore';
@@ -12,6 +12,7 @@ import {createDefaultPlayerStats} from '../reducers/statsReducer';
 export function TopBar(): React.ReactElement {
     const context = useContext(GameStateContext);
     const navigate = useNavigate();
+    const location = useLocation();
 
     if (!context) {
         throw new Error('TopBar must be used within a GameStateContext Provider');
@@ -19,6 +20,10 @@ export function TopBar(): React.ReactElement {
 
     const {dispatch, state} = context;
     const {auth} = state;
+
+    // Determine current page based on route
+    const currentPath = location.pathname;
+    const isMainPage = currentPath === '/';
 
     function renderLogoutButton() {
         return <button
@@ -98,11 +103,32 @@ export function TopBar(): React.ReactElement {
     function renderStatsButton() {
         return (
             <button
-                onClick={() => navigate(state.statsPageVisible ? '/' : '/stats')}
+                onClick={() => navigate('/stats')}
                 className="px-3 py-1 flex items-center gap-2 rounded hover:bg-[#3c3c3c] transition-colors"
-                title={state.statsPageVisible ? "Back to Game" : "View Statistics"}>
-                <span>{state.statsPageVisible ? "Back to Game" : "Stats"}</span>
+                title="View Statistics">
+                <span>Stats</span>
             </button>
+        );
+    }
+
+    function renderGroupsButton() {
+        return (
+            <button
+                onClick={() => navigate('/groups')}
+                className="px-3 py-1 flex items-center gap-2 rounded hover:bg-[#3c3c3c] transition-colors"
+                title="Manage Groups">
+                <span>Groups</span>
+            </button>
+        );
+    }
+
+    function renderNavigationButtons() {
+        return (
+            <>
+                {renderStatsButton()}
+                {renderGroupsButton()}
+                {renderResetProgressButton()}
+            </>
         );
     }
 
@@ -110,8 +136,7 @@ export function TopBar(): React.ReactElement {
         <div className="flex items-center justify-between h-12 px-4 bg-[#252526] border-b border-[#3c3c3c]">
             <div className="text-lg font-medium">Clean Code Game</div>
             <div className="flex gap-4">
-                {renderStatsButton()}
-                {renderResetProgressButton()}
+                {isMainPage && renderNavigationButtons()}
                 {auth.isAuthenticated ? renderLogoutButton() : renderLoginButton()}
             </div>
         </div>

@@ -1,4 +1,5 @@
 import React, {useContext} from 'react';
+import {useNavigate} from 'react-router-dom';
 import {GameStateContext} from '../reducers';
 import {PlayerLevelStats} from '../types';
 import {getLevelKey} from '../utils/levelUtils';
@@ -8,6 +9,7 @@ import {getLevelKey} from '../utils/levelUtils';
  */
 export function PlayerStatsPage(): React.ReactElement {
     const context = useContext(GameStateContext);
+    const navigate = useNavigate();
 
     if (!context) {
         throw new Error('PlayerStatsPage must be used within a GameStateContext Provider');
@@ -67,7 +69,15 @@ export function PlayerStatsPage(): React.ReactElement {
 
     return (
         <div className="h-full overflow-y-auto p-6 bg-[#1e1e1e] text-white">
-            <h1 className="text-2xl font-bold mb-6">Player Statistics</h1>
+            <div className="flex items-center mb-6">
+                <button
+                    onClick={() => navigate('/')}
+                    className="mr-4 px-3 py-1 rounded hover:bg-[#3c3c3c] transition-colors"
+                >
+                    ← Back to Game
+                </button>
+                <h1 className="text-2xl font-bold">Player Statistics</h1>
+            </div>
 
             {/* Summary Section */}
             <div className="bg-[#252526] p-4 rounded mb-6">

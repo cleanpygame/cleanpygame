@@ -19,4 +19,3 @@ export const LOGOUT = 'LOGOUT';
 // Player statistics action types
 export const UPDATE_LEVEL_STATS = 'UPDATE_LEVEL_STATS';
 export const SET_PLAYER_STATS = 'SET_PLAYER_STATS';
-export const TOGGLE_STATS_PAGE = 'TOGGLE_STATS_PAGE';
