@@ -122,7 +122,11 @@ PlayerLevelStats
 
 ### Page Designs
 
-#### Student Profile
+#### Top Bar in IDE Layout
+
+- add link to Stats page.
+
+#### Student Stats
 
 - **Overview**: Personal statistics summary
 - **Level Progress**: Grid showing completion status per level with all stats

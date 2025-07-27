@@ -183,6 +183,10 @@ ClassroomState
 
 ### Page Designs
 
+#### 0. Top Bar in IDE Layout
+
+- add a link to the Groups page.
+
 #### 1. Groups page
 
 - **Header**: Back to Game navigation, create group button
