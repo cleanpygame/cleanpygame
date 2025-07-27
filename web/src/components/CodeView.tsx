@@ -28,6 +28,7 @@ export function CodeView({
                          }: CodeViewProps): React.ReactElement {
     const [cursor, setCursor] = useState<number>(0);
     const [flashingKey, setFlashingKey] = useState<string | null>(null);
+    const [isProcessingClick, setIsProcessingClick] = useState<boolean>(false);
 
     useEffect(() => {
         if (!animate) {
@@ -60,13 +61,16 @@ export function CodeView({
     const visibleCode = animate ? code.substring(0, Math.min(code.length, cursor)) : code;
 
     const handleClick = (lineIndex: number, colIndex: number, token: Token): void => {
-        if (disable || isFinished) return;
+        if (disable || isFinished || isProcessingClick) return;
 
+        setIsProcessingClick(true);
         const key = `${lineIndex} ${colIndex}`;
         setFlashingKey(key);
+
         setTimeout(() => {
             setFlashingKey(null);
             onClick(lineIndex, colIndex, token.content);
+            setIsProcessingClick(false);
         }, FLASH_DURATION_MS);
     };
 

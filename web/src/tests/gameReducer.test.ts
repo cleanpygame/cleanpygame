@@ -110,48 +110,54 @@ describe('Game Reducer - Statistics Integration', () => {
         expect(state.playerStats.summary.totalLevelsSolved).toBe(0);
     });
 
-    test('GET_HINT updates hint statistics', () => {
+    test('GET_HINT updates session hint count but not global statistics', () => {
         let state: GameState = initialState;
 
         // Use a hint
         state = gameReducer(state, getHint());
 
-        // Get level key for the current level
-        const levelKey = getCurrentLevelKey(state);
+        // Check that session hint count is updated
+        expect(state.currentLevel.sessionHintsUsed).toBe(1);
 
-        // Check that hint statistics are updated
-        expect(state.playerStats.levels[levelKey]).toBeDefined();
-        expect(state.playerStats.levels[levelKey].totalHintsUsed).toBe(1);
-        expect(state.playerStats.summary.totalHintsUsed).toBe(1);
+        // Check that global statistics are not updated yet
+        const levelKey = getCurrentLevelKey(state);
+        expect(state.playerStats.levels[levelKey]).toBeUndefined();
+        expect(state.playerStats.summary.totalHintsUsed).toBe(0);
 
         // Use another hint
         state = gameReducer(state, getHint());
 
-        // Check that hint statistics are incremented
-        expect(state.playerStats.levels[levelKey].totalHintsUsed).toBe(2);
-        expect(state.playerStats.summary.totalHintsUsed).toBe(2);
+        // Check that session hint count is incremented
+        expect(state.currentLevel.sessionHintsUsed).toBe(2);
+
+        // Check that global statistics are still not updated
+        expect(state.playerStats.levels[levelKey]).toBeUndefined();
+        expect(state.playerStats.summary.totalHintsUsed).toBe(0);
     });
 
-    test('WRONG_CLICK updates mistake statistics', () => {
+    test('WRONG_CLICK updates session mistake count but not global statistics', () => {
         let state: GameState = initialState;
 
         // Make a wrong click
         state = gameReducer(state, wrongClick(0, 0, 'wrong'));
 
-        // Get level key for the current level
-        const levelKey = getCurrentLevelKey(state);
+        // Check that session mistake count is updated
+        expect(state.currentLevel.sessionMistakesMade).toBe(1);
 
-        // Check that mistake statistics are updated
-        expect(state.playerStats.levels[levelKey]).toBeDefined();
-        expect(state.playerStats.levels[levelKey].totalMistakesMade).toBe(1);
-        expect(state.playerStats.summary.totalMistakesMade).toBe(1);
+        // Check that global statistics are not updated yet
+        const levelKey = getCurrentLevelKey(state);
+        expect(state.playerStats.levels[levelKey]).toBeUndefined();
+        expect(state.playerStats.summary.totalMistakesMade).toBe(0);
 
         // Make another wrong click
         state = gameReducer(state, wrongClick(0, 0, 'another_wrong'));
 
-        // Check that mistake statistics are incremented
-        expect(state.playerStats.levels[levelKey].totalMistakesMade).toBe(2);
-        expect(state.playerStats.summary.totalMistakesMade).toBe(2);
+        // Check that session mistake count is incremented
+        expect(state.currentLevel.sessionMistakesMade).toBe(2);
+
+        // Check that global statistics are still not updated
+        expect(state.playerStats.levels[levelKey]).toBeUndefined();
+        expect(state.playerStats.summary.totalMistakesMade).toBe(0);
     });
 
     test('Complete level with multiple actions updates statistics correctly', () => {

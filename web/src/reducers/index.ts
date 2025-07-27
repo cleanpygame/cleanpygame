@@ -225,27 +225,13 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
 
             if (!newLevelState) return state;
 
-            // Get level key for the current level
-            const levelKey = getCurrentLevelKey(state);
-
-            // Use statsReducer to handle player statistics - increment hints used
-            const playerStats = statsReducer(
-                state.playerStats,
-                updateLevelStats(
-                    levelKey,
-                    {},
-                    undefined, // timeSpent
-                    false,     // isCompleted
-                    1,         // hintsUsed - increment by 1 (already incremented in levelReducer)
-                    0          // mistakesMade
-                )
-            );
+            // No longer update player stats here - only track in session
+            // Stats will be updated when the level is completed
 
             return {
                 ...state,
                 currentLevel: newLevelState,
                 chatMessages: newChatMessages,
-                playerStats,
                 isTypingAnimationComplete: false
             };
         }
@@ -261,27 +247,13 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
 
             if (!newLevelState) return state;
 
-            // Get level key for the current level
-            const levelKey = getCurrentLevelKey(state);
-
-            // Use statsReducer to handle player statistics - increment mistakes made
-            const playerStats = statsReducer(
-                state.playerStats,
-                updateLevelStats(
-                    levelKey,
-                    {},
-                    undefined, // timeSpent
-                    false,     // isCompleted
-                    0,         // hintsUsed
-                    1          // mistakesMade - increment by 1 (already incremented in levelReducer)
-                )
-            );
+            // No longer update player stats here - only track in session
+            // Stats will be updated when the level is completed
 
             return {
                 ...state,
                 currentLevel: newLevelState,
                 chatMessages: newChatMessages,
-                playerStats,
                 isTypingAnimationComplete: false
             };
         }

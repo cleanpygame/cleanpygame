@@ -1,13 +1,7 @@
 import React, {useContext} from 'react';
+import {useNavigate} from 'react-router-dom';
 import {GameStateContext} from '../reducers';
-import {
-    loginFailure,
-    loginRequest,
-    loginSuccess,
-    logout,
-    resetProgress,
-    toggleStatsPage
-} from '../reducers/actionCreators';
+import {loginFailure, loginRequest, loginSuccess, logout, resetProgress} from '../reducers/actionCreators';
 import {savePlayerStats} from '../firebase/firestore';
 import {createDefaultPlayerStats} from '../reducers/statsReducer';
 
@@ -17,6 +11,7 @@ import {createDefaultPlayerStats} from '../reducers/statsReducer';
  */
 export function TopBar(): React.ReactElement {
     const context = useContext(GameStateContext);
+    const navigate = useNavigate();
 
     if (!context) {
         throw new Error('TopBar must be used within a GameStateContext Provider');
@@ -103,7 +98,7 @@ export function TopBar(): React.ReactElement {
     function renderStatsButton() {
         return (
             <button
-                onClick={() => dispatch(toggleStatsPage())}
+                onClick={() => navigate(state.statsPageVisible ? '/' : '/stats')}
                 className="px-3 py-1 flex items-center gap-2 rounded hover:bg-[#3c3c3c] transition-colors"
                 title={state.statsPageVisible ? "Back to Game" : "View Statistics"}>
                 <span>{state.statsPageVisible ? "Back to Game" : "Stats"}</span>

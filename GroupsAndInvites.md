@@ -52,7 +52,9 @@ groups/{groupId}
 └── deletedAt?: Timestamp
 
 playerStats/{playerId}
-├── memberOfgroups: string[] // group ids where this player is a member 
+├── memberOfgroups: string[] // group ids where this player is a member
+├── teacherIds: string[] // uids of the owners of the groups where this player is a member (for access control — grant read access for this uids)
+ 
 ...
 ```
 
@@ -82,15 +84,16 @@ joinCodes/{code}
 
 ### Rule Philosophy
 
-- **Principle of Least Privilege**: Users can only access data they need
-- **Teacher Authority**: Teachers have full control over their groups
-- **Join Link Accessibility**: Unauthenticated users can read basic group info for join flows
+- Players can access their stats.
+- Group owners can read all stats of their group members (using PlayerStats.teacherIds)
+- Group members can NOT read stats of other group members.
+- Unauthenticated users can read basic group info for join flows
 
 ### Access Patterns
 
 **Groups**:
 
-- Read: Teachers (full access), Members (basic info)
+- Read: Teachers (full access), Members (name, and owner only)
 - Create: Any authenticated user (as teacher)
 - Update/Delete: Group owner only. Regenerate join codes, group name, etc.
 - Join Operations: Students can add themselves to memberIds
@@ -117,12 +120,6 @@ ClassroomState
 └── error?: string
 ```
 
-### State Management Patterns
-
-1. **Async Actions (Thunks)**: Handle all Firebase operations
-2. **Optimistic Updates**: Update UI immediately, rollback on error
-3. **Cache Management**: Store frequently accessed data locally
-
 ### Data Flow Examples
 
 **Group Dashboard Loading**:
@@ -139,10 +136,10 @@ ClassroomState
 **Process Flow**:
 
 1. Generate unique join code
-2. Create group document with teacher as owner
-3. Create corresponding join code document
-4. Update teacher's local state with new group as selected group
-5. Navigate to group management page
+2. Create a group document with a teacher as owner
+3. Create a corresponding join code document
+4. Update a teacher's local state with a new group as a selected group
+5. Navigate to the group management page
 
 **Error Handling**:
 
@@ -151,14 +148,15 @@ ClassroomState
 
 ### Scenario 2: Student Joins Group via Link
 
-**Authentication Flow**:
+**User Scenario**:
 
-1. Unauthenticated user clicks join link
-2. Display group info (name, teacher) without requiring auth
+1. Unauthenticated user clicks the join link
+2. Display JoinGroup page with group info (name, teacher) without requiring auth
 3. Prompt for Google sign-in
 4. After auth, check if already a member
+5. Confirm Joining the group, prompt moving to playing game
 
-**Join Process**:
+**Technical details of Join Process**:
 
 1. Add student UID to group's `memberIds`
 2. Create/update player's group membership
@@ -170,10 +168,10 @@ ClassroomState
 
 **Data Loading**:
 
-1. Load all groups where user is owner
+1. Load all groups where the user is owner
 2. Display groups list with summaries: group name, number of members, creation date
 3. Enable drill-down to individual group details: table of members with summary stats
-4. On the Group page show table of students with summary stats. Enable to force copying player summary stats to the
+4. On the Group page shows a table of students with summary stats. Enable to force copying player summary stats to the
    group (to restore consistency in case)
 5. Enable drill-down to individual student details: with summary stats and per level stats
 6. Enable to restore consistency by recalculating summary using full per-level stats. Update summary duplicated in
@@ -192,13 +190,13 @@ ClassroomState
 - **Header**: Back to Game navigation, create group button
 - **Main Content**: Grid of groups you own, each showing name, members count, creation date. Groups are clickable.
 - **Small secondary content**: List of groups you have joined: group name, group owner name, joinDateAndTime.
+- Do not stretch the content to a full-screen width on the big screens.
 
 #### 2. Group page
 
 - **Header**: Group Name.
-- **Sidebar**: Group management tools (invite links, with creation date and ability to de/activate them. Creation of the
-  new invite link)
-- **Table with members with summary stats** Clickable rows — open Student Profile
+- **Sidebar to the left**: Creation time, invite links with copy, de/activate, create buttons.
+- **Table to the right with members with summary stats** Clickable rows — open Student Profile
     - Rows:
         - Row per students
         - Total row:
@@ -216,7 +214,7 @@ ClassroomState
 
 #### 3. Group Join Flow
 
-- **Landing Page**: Group info with teacher details
+- **Landing Page**: Special minimalistic page, explaining what is going on with teacher name and group name.
 - GroupJoinPage
     - Group name
     - Teacher name (read-only)
@@ -230,7 +228,10 @@ ClassroomState
 
 ### Router Behavior
 
+
 **Route Structure**:
+
+Opening the page should change the url in the browser but do not reload the page.
 
 ```
 /                           # Game interface
