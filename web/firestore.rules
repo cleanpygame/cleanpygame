@@ -1,0 +1,14 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    // Player stats rules
+    match /playerStats/{userId} {
+      // Users can read and write their own stats
+      allow read, write: if isAuthenticated() && request.auth.uid == userId;
+    }
+  }
+}
