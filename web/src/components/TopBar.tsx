@@ -1,6 +1,13 @@
 import React, {useContext} from 'react';
 import {GameStateContext} from '../reducers';
-import {loginFailure, loginRequest, loginSuccess, logout, resetProgress} from '../reducers/actionCreators';
+import {
+    loginFailure,
+    loginRequest,
+    loginSuccess,
+    logout,
+    resetProgress,
+    toggleStatsPage
+} from '../reducers/actionCreators';
 import {savePlayerStats} from '../firebase/firestore';
 import {createDefaultPlayerStats} from '../reducers/statsReducer';
 
@@ -93,10 +100,22 @@ export function TopBar(): React.ReactElement {
             </button>);
     }
 
+    function renderStatsButton() {
+        return (
+            <button
+                onClick={() => dispatch(toggleStatsPage())}
+                className="px-3 py-1 flex items-center gap-2 rounded hover:bg-[#3c3c3c] transition-colors"
+                title={state.statsPageVisible ? "Back to Game" : "View Statistics"}>
+                <span>{state.statsPageVisible ? "Back to Game" : "Stats"}</span>
+            </button>
+        );
+    }
+
     return (
         <div className="flex items-center justify-between h-12 px-4 bg-[#252526] border-b border-[#3c3c3c]">
             <div className="text-lg font-medium">Clean Code Game</div>
             <div className="flex gap-4">
+                {renderStatsButton()}
                 {renderResetProgressButton()}
                 {auth.isAuthenticated ? renderLogoutButton() : renderLoginButton()}
             </div>

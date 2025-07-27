@@ -13,6 +13,7 @@ import {
     SET_PLAYER_STATS,
     SET_TYPING_ANIMATION_COMPLETE,
     TOGGLE_NOTEBOOK,
+    TOGGLE_STATS_PAGE,
     UPDATE_LEVEL_STATS,
     WRONG_CLICK
 } from './actionTypes';
@@ -124,6 +125,10 @@ export interface SetPlayerStatsAction {
     };
 }
 
+export interface ToggleStatsPageAction {
+    type: typeof TOGGLE_STATS_PAGE;
+}
+
 export type GameAction =
     | LoadLevelAction
     | ApplyFixAction
@@ -140,7 +145,8 @@ export type GameAction =
     | LoginFailureAction
     | LogoutAction
     | UpdateLevelStatsAction
-    | SetPlayerStatsAction;
+    | SetPlayerStatsAction
+    | ToggleStatsPageAction;
 
 // Action creators
 export const loadLevel = (levelId: LevelId): LoadLevelAction => ({
@@ -246,6 +252,14 @@ export const updateLevelStats = (
 export const setPlayerStats = (playerStats: PlayerStatsState): SetPlayerStatsAction => ({
     type: SET_PLAYER_STATS,
     payload: {playerStats}
+});
+
+/**
+ * Toggle the visibility of the player statistics page
+ * @returns Action to toggle stats page visibility
+ */
+export const toggleStatsPage = (): ToggleStatsPageAction => ({
+    type: TOGGLE_STATS_PAGE
 });
 
 // Thunk action creator for Google sign-in

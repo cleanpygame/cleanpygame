@@ -121,4 +121,5 @@ export interface GameState {
     isTypingAnimationComplete: boolean;
     auth: AuthState;
     playerStats: PlayerStatsState;
+    statsPageVisible: boolean;
 }

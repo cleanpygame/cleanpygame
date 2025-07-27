@@ -18,6 +18,7 @@ import {
     SET_PLAYER_STATS,
     SET_TYPING_ANIMATION_COMPLETE,
     TOGGLE_NOTEBOOK,
+    TOGGLE_STATS_PAGE,
     WRONG_CLICK
 } from './actionTypes.ts';
 import {createInitialLevelState, levelReducer} from './levelReducer.ts';
@@ -52,7 +53,8 @@ export const initialState: GameState = {
             totalMistakesMade: 0
         },
         levels: {}
-    }
+    },
+    statsPageVisible: false
 };
 
 /**
@@ -332,6 +334,13 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
             return {
                 ...state,
                 notebookOpen: !state.notebookOpen
+            };
+        }
+
+        case TOGGLE_STATS_PAGE: {
+            return {
+                ...state,
+                statsPageVisible: !state.statsPageVisible
             };
         }
 
