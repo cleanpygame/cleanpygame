@@ -1,9 +1,10 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import {GameStateContext} from '../reducers';
 import {loginFailure, loginRequest, loginSuccess, logout, resetProgress} from '../reducers/actionCreators';
 import {savePlayerStats} from '../firebase/firestore';
 import {createDefaultPlayerStats} from '../reducers/statsReducer';
+import {parseDebugModeFromUrl} from '../utils/debugUtils';
 
 /**
  * Top navigation bar component
@@ -13,6 +14,7 @@ export function TopBar(): React.ReactElement {
     const context = useContext(GameStateContext);
     const navigate = useNavigate();
     const location = useLocation();
+    const [debugMode, setDebugMode] = useState(false);
 
     if (!context) {
         throw new Error('TopBar must be used within a GameStateContext Provider');
@@ -20,6 +22,12 @@ export function TopBar(): React.ReactElement {
 
     const {dispatch, state} = context;
     const {auth} = state;
+
+    // Parse debug parameter from URL on component mount and when URL changes
+    useEffect(() => {
+        const isDebugEnabled = parseDebugModeFromUrl();
+        setDebugMode(isDebugEnabled);
+    }, [location.search]);
 
     // Determine current page based on route
     const currentPath = location.pathname;
@@ -74,7 +82,7 @@ export function TopBar(): React.ReactElement {
     }
 
     function renderResetProgressButton() {
-        let showButton = window.location.hostname === 'localhost';
+        // Show button if in debug mode or on localhost
         return (
             <button
                 onClick={async () => {
@@ -95,7 +103,7 @@ export function TopBar(): React.ReactElement {
                         }
                     }
                 }}
-                className={"px-3 py-1 flex items-center gap-2 rounded hover:bg-[#3c3c3c] transition-colors " + (showButton ? '' : 'hidden')}
+                className={"px-3 py-1 flex items-center gap-2 rounded hover:bg-[#3c3c3c] transition-colors " + (debugMode ? '' : 'hidden')}
                 title="Reset Progress">
                 <span>Reset Progress</span>
             </button>);
@@ -135,7 +143,12 @@ export function TopBar(): React.ReactElement {
 
     return (
         <div className="flex items-center justify-between h-12 px-4 bg-[#252526] border-b border-[#3c3c3c]">
-            <div className="text-lg font-medium">Clean Code Game</div>
+            <div
+                className="text-lg font-medium cursor-pointer hover:text-[#9cdcfe]"
+                onClick={() => navigate(debugMode ? '/?debug=false' : '/')}
+            >
+                Clean Code Game
+            </div>
             <div className="flex gap-4">
                 {isMainPage && renderNavigationButtons()}
                 {auth.isAuthenticated ? renderLogoutButton() : renderLoginButton()}

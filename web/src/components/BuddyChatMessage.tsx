@@ -78,7 +78,7 @@ function BuddyChatMessage({message, isNew = false}: BuddyChatMessageProps): Reac
 
     return (
         <div className="flex items-start">
-            <span className="flex-shrink-0 mr-2 mt-1">
+            <span className="flex-shrink-0 mr-2 mt-1 text-2xl">
                 😎️
             </span>
             <div className={`rounded-lg p-3 bg-gray-900 ${getTextColor(message.type)}`}>

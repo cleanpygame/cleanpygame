@@ -1,0 +1,1 @@
+cd web ; npm run build ; cd .. ; firebase deploy --only hosting

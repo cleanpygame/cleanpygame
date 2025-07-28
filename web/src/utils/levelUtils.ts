@@ -3,6 +3,7 @@
  */
 
 import {GameState} from '../types';
+import {isDebugModeEnabled} from './debugUtils';
 
 /**
  * Creates a level key in format topic__levelFilenameWithoutExtension
@@ -66,6 +67,11 @@ export const isCurrentLevel = (state: GameState, topic: string, levelId: string)
  * @returns Whether the level is clickable
  */
 export const isLevelClickable = (state: GameState, topic: string, levelId: string): boolean => {
+    // Debug mode: all levels are clickable
+    if (isDebugModeEnabled()) {
+        return true;
+    }
+    
     // Rule 1: All solved levels are clickable
     if (isLevelSolved(state, topic, levelId)) {
         return true;
