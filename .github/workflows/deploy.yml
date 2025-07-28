@@ -1,4 +1,4 @@
-name: Deploy to Firebase Hosting
+name: Test and Deploy to Firebase Hosting
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  test-build-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,10 +18,20 @@ jobs:
         with:
           node-version: 22
 
-      - name: Install dependencies
+      - name: Install dependencies (web)
         run: |
           cd web
           npm ci
+
+      - name: Install dependencies (levels_compiler)
+        run: |
+          cd levels_compiler
+          npm ci
+
+      - name: Run tests
+        run: |
+          cd web
+          npm run test
 
       - name: Build project
         run: |
