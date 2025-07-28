@@ -242,3 +242,109 @@ export const fetchJoinedGroups = async (userId: string): Promise<Group[]> => {
         throw error;
     }
 };
+
+/**
+ * Fetch a single group by ID
+ * @param groupId - Group ID
+ * @returns Promise that resolves with the group or null if not found
+ */
+export const fetchGroupById = async (groupId: string): Promise<Group | null> => {
+    try {
+        const groupDocRef = doc(db, 'groups', groupId);
+        const docSnap = await getDoc(groupDocRef);
+
+        if (docSnap.exists()) {
+            const data = docSnap.data() as Group;
+            return {
+                ...data,
+                id: docSnap.id
+            };
+        }
+
+        return null;
+    } catch (error) {
+        console.error('Error fetching group by ID:', error);
+        throw error;
+    }
+};
+
+/**
+ * Update a group's name
+ * @param groupId - Group ID
+ * @param newName - New group name
+ * @returns Promise that resolves when the operation is complete
+ */
+export const updateGroupName = async (groupId: string, newName: string): Promise<void> => {
+    try {
+        const groupDocRef = doc(db, 'groups', groupId);
+
+        await updateDoc(groupDocRef, {
+            name: newName,
+            updatedAt: serverTimestamp()
+        });
+    } catch (error) {
+        console.error('Error updating group name:', error);
+        throw error;
+    }
+};
+
+/**
+ * Toggle a join code's active status
+ * @param joinCode - Join code
+ * @param isActive - New active status
+ * @returns Promise that resolves when the operation is complete
+ */
+export const toggleJoinCodeActive = async (joinCode: string, isActive: boolean): Promise<void> => {
+    try {
+        const joinCodeDocRef = doc(db, 'joinCodes', joinCode);
+
+        await updateDoc(joinCodeDocRef, {
+            active: isActive
+        });
+    } catch (error) {
+        console.error('Error toggling join code active status:', error);
+        throw error;
+    }
+};
+
+/**
+ * Get a join code's active status
+ * @param joinCode - Join code
+ * @returns Promise that resolves with the active status or null if not found
+ */
+export const getJoinCodeActiveStatus = async (joinCode: string): Promise<boolean | null> => {
+    try {
+        const joinCodeDocRef = doc(db, 'joinCodes', joinCode);
+        const docSnap = await getDoc(joinCodeDocRef);
+
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            return data.active;
+        }
+
+        return null;
+    } catch (error) {
+        console.error('Error getting join code active status:', error);
+        throw error;
+    }
+};
+
+/**
+ * Delete a group (soft delete)
+ * @param groupId - Group ID
+ * @returns Promise that resolves when the operation is complete
+ */
+export const deleteGroup = async (groupId: string): Promise<void> => {
+    try {
+        const groupDocRef = doc(db, 'groups', groupId);
+
+        await updateDoc(groupDocRef, {
+            deleted: true,
+            deletedAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+        });
+    } catch (error) {
+        console.error('Error deleting group:', error);
+        throw error;
+    }
+};

@@ -9,6 +9,9 @@ import {
     CREATE_GROUP_FAILURE,
     CREATE_GROUP_REQUEST,
     CREATE_GROUP_SUCCESS,
+    FETCH_GROUP_BY_ID_FAILURE,
+    FETCH_GROUP_BY_ID_REQUEST,
+    FETCH_GROUP_BY_ID_SUCCESS,
     FETCH_GROUPS_FAILURE,
     FETCH_GROUPS_REQUEST,
     FETCH_GROUPS_SUCCESS,
@@ -24,7 +27,13 @@ import {
     SELECT_GROUP,
     SET_PLAYER_STATS,
     SET_TYPING_ANIMATION_COMPLETE,
+    TOGGLE_JOIN_CODE_ACTIVE_FAILURE,
+    TOGGLE_JOIN_CODE_ACTIVE_REQUEST,
+    TOGGLE_JOIN_CODE_ACTIVE_SUCCESS,
     TOGGLE_NOTEBOOK,
+    UPDATE_GROUP_NAME_FAILURE,
+    UPDATE_GROUP_NAME_REQUEST,
+    UPDATE_GROUP_NAME_SUCCESS,
     WRONG_CLICK
 } from './actionTypes.ts';
 import {createInitialLevelState, levelReducer} from './levelReducer.ts';
@@ -469,6 +478,102 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
             return {
                 ...state,
                 selectedGroup: group
+            };
+        }
+
+        // Fetch group by ID action handlers
+        case FETCH_GROUP_BY_ID_REQUEST: {
+            return {
+                ...state,
+                isGroupsLoading: true,
+                groupsError: undefined
+            };
+        }
+
+        case FETCH_GROUP_BY_ID_SUCCESS: {
+            const {group} = action.payload;
+            return {
+                ...state,
+                selectedGroup: group,
+                isGroupsLoading: false,
+                groupsError: undefined
+            };
+        }
+
+        case FETCH_GROUP_BY_ID_FAILURE: {
+            const {error} = action.payload;
+            return {
+                ...state,
+                isGroupsLoading: false,
+                groupsError: error
+            };
+        }
+
+        // Update group name action handlers
+        case UPDATE_GROUP_NAME_REQUEST: {
+            return {
+                ...state,
+                isGroupsLoading: true,
+                groupsError: undefined
+            };
+        }
+
+        case UPDATE_GROUP_NAME_SUCCESS: {
+            const {groupId, newName} = action.payload;
+
+            // Update the group in the ownedGroups array
+            const updatedOwnedGroups = state.ownedGroups.map(group =>
+                group.id === groupId ? {...group, name: newName} : group
+            );
+
+            // Update the selectedGroup if it's the one being renamed
+            const updatedSelectedGroup = state.selectedGroup && state.selectedGroup.id === groupId
+                ? {...state.selectedGroup, name: newName}
+                : state.selectedGroup;
+
+            return {
+                ...state,
+                ownedGroups: updatedOwnedGroups,
+                selectedGroup: updatedSelectedGroup,
+                isGroupsLoading: false,
+                groupsError: undefined
+            };
+        }
+
+        case UPDATE_GROUP_NAME_FAILURE: {
+            const {error} = action.payload;
+            return {
+                ...state,
+                isGroupsLoading: false,
+                groupsError: error
+            };
+        }
+
+        // Toggle join code active action handlers
+        case TOGGLE_JOIN_CODE_ACTIVE_REQUEST: {
+            return {
+                ...state,
+                isGroupsLoading: true,
+                groupsError: undefined
+            };
+        }
+
+        case TOGGLE_JOIN_CODE_ACTIVE_SUCCESS: {
+            // We don't need to update any state here since the join code active status
+            // is not stored in the Redux state, but in Firestore
+            return {
+                ...state,
+                isGroupsLoading: false,
+                groupsError: undefined
+            };
+        }
+
+        case TOGGLE_JOIN_CODE_ACTIVE_FAILURE: {
+            const {error} = action.payload;
+            return {
+                ...state,
+                isGroupsLoading: false,
+                groupsError: error
             };
         }
 

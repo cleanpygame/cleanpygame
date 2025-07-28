@@ -4,6 +4,7 @@ import {GameStateContext} from '../reducers';
 import {createGroupThunk, fetchGroupsThunk} from '../reducers/actionCreators';
 import {formatDate} from '../utils/dateUtils';
 
+
 /**
  * Groups page component
  * Displays a list of groups owned by the user and groups the user has joined

@@ -4,6 +4,12 @@ import {
     CREATE_GROUP_FAILURE,
     CREATE_GROUP_REQUEST,
     CREATE_GROUP_SUCCESS,
+    DELETE_GROUP_FAILURE,
+    DELETE_GROUP_REQUEST,
+    DELETE_GROUP_SUCCESS,
+    FETCH_GROUP_BY_ID_FAILURE,
+    FETCH_GROUP_BY_ID_REQUEST,
+    FETCH_GROUP_BY_ID_SUCCESS,
     FETCH_GROUPS_FAILURE,
     FETCH_GROUPS_REQUEST,
     FETCH_GROUPS_SUCCESS,
@@ -19,7 +25,13 @@ import {
     SELECT_GROUP,
     SET_PLAYER_STATS,
     SET_TYPING_ANIMATION_COMPLETE,
+    TOGGLE_JOIN_CODE_ACTIVE_FAILURE,
+    TOGGLE_JOIN_CODE_ACTIVE_REQUEST,
+    TOGGLE_JOIN_CODE_ACTIVE_SUCCESS,
     TOGGLE_NOTEBOOK,
+    UPDATE_GROUP_NAME_FAILURE,
+    UPDATE_GROUP_NAME_REQUEST,
+    UPDATE_GROUP_NAME_SUCCESS,
     UPDATE_LEVEL_STATS,
     WRONG_CLICK
 } from './actionTypes';
@@ -176,6 +188,98 @@ export interface SelectGroupAction {
     };
 }
 
+// Fetch group by ID action interfaces
+export interface FetchGroupByIdRequestAction {
+    type: typeof FETCH_GROUP_BY_ID_REQUEST;
+    payload: {
+        groupId: string;
+    };
+}
+
+export interface FetchGroupByIdSuccessAction {
+    type: typeof FETCH_GROUP_BY_ID_SUCCESS;
+    payload: {
+        group: Group;
+    };
+}
+
+export interface FetchGroupByIdFailureAction {
+    type: typeof FETCH_GROUP_BY_ID_FAILURE;
+    payload: {
+        error: string;
+    };
+}
+
+// Update group name action interfaces
+export interface UpdateGroupNameRequestAction {
+    type: typeof UPDATE_GROUP_NAME_REQUEST;
+    payload: {
+        groupId: string;
+        newName: string;
+    };
+}
+
+export interface UpdateGroupNameSuccessAction {
+    type: typeof UPDATE_GROUP_NAME_SUCCESS;
+    payload: {
+        groupId: string;
+        newName: string;
+    };
+}
+
+export interface UpdateGroupNameFailureAction {
+    type: typeof UPDATE_GROUP_NAME_FAILURE;
+    payload: {
+        error: string;
+    };
+}
+
+// Toggle join code active action interfaces
+export interface ToggleJoinCodeActiveRequestAction {
+    type: typeof TOGGLE_JOIN_CODE_ACTIVE_REQUEST;
+    payload: {
+        joinCode: string;
+        isActive: boolean;
+    };
+}
+
+export interface ToggleJoinCodeActiveSuccessAction {
+    type: typeof TOGGLE_JOIN_CODE_ACTIVE_SUCCESS;
+    payload: {
+        joinCode: string;
+        isActive: boolean;
+    };
+}
+
+export interface ToggleJoinCodeActiveFailureAction {
+    type: typeof TOGGLE_JOIN_CODE_ACTIVE_FAILURE;
+    payload: {
+        error: string;
+    };
+}
+
+// Delete group action interfaces
+export interface DeleteGroupRequestAction {
+    type: typeof DELETE_GROUP_REQUEST;
+    payload: {
+        groupId: string;
+    };
+}
+
+export interface DeleteGroupSuccessAction {
+    type: typeof DELETE_GROUP_SUCCESS;
+    payload: {
+        groupId: string;
+    };
+}
+
+export interface DeleteGroupFailureAction {
+    type: typeof DELETE_GROUP_FAILURE;
+    payload: {
+        error: string;
+    };
+}
+
 export type GameAction =
     | LoadLevelAction
     | ApplyFixAction
@@ -199,7 +303,19 @@ export type GameAction =
     | FetchGroupsRequestAction
     | FetchGroupsSuccessAction
     | FetchGroupsFailureAction
-    | SelectGroupAction;
+    | SelectGroupAction
+    | FetchGroupByIdRequestAction
+    | FetchGroupByIdSuccessAction
+    | FetchGroupByIdFailureAction
+    | UpdateGroupNameRequestAction
+    | UpdateGroupNameSuccessAction
+    | UpdateGroupNameFailureAction
+    | ToggleJoinCodeActiveRequestAction
+    | ToggleJoinCodeActiveSuccessAction
+    | ToggleJoinCodeActiveFailureAction
+    | DeleteGroupRequestAction
+    | DeleteGroupSuccessAction
+    | DeleteGroupFailureAction;
 
 // Action creators
 export const loadLevel = (levelId: LevelId): LoadLevelAction => ({
@@ -308,42 +424,6 @@ export const setPlayerStats = (playerStats: PlayerStatsState): SetPlayerStatsAct
 });
 
 
-// Thunk action creator for Google sign-in
-export const signInWithGoogle = () => {
-    return async (dispatch: React.Dispatch<GameAction>) => {
-        try {
-            dispatch(loginRequest());
-            const {signInWithGoogle: firebaseSignInWithGoogle} = await import('../firebase/auth');
-            const result = await firebaseSignInWithGoogle();
-
-            if (result.user) {
-                const user: User = {
-                    uid: result.user.uid,
-                    displayName: result.user.displayName,
-                    email: result.user.email,
-                    photoURL: result.user.photoURL
-                };
-                dispatch(loginSuccess(user));
-            }
-        } catch (error) {
-            dispatch(loginFailure(error instanceof Error ? error.message : 'An unknown error occurred'));
-        }
-    };
-};
-
-// Thunk action creator for sign-out
-export const signOut = () => {
-    return async (dispatch: React.Dispatch<GameAction>) => {
-        try {
-            const {signOut: firebaseSignOut} = await import('../firebase/auth');
-            await firebaseSignOut();
-            dispatch(logout());
-        } catch (error) {
-            console.error('Error signing out:', error);
-        }
-    };
-};
-
 // Group management action creators
 export const createGroupRequest = (): CreateGroupRequestAction => ({
     type: CREATE_GROUP_REQUEST
@@ -377,6 +457,171 @@ export const selectGroup = (group: Group): SelectGroupAction => ({
     type: SELECT_GROUP,
     payload: {group}
 });
+
+
+// Fetch group by ID action creators
+export const fetchGroupByIdRequest = (groupId: string): FetchGroupByIdRequestAction => ({
+    type: FETCH_GROUP_BY_ID_REQUEST,
+    payload: {groupId}
+});
+
+export const fetchGroupByIdSuccess = (group: Group): FetchGroupByIdSuccessAction => ({
+    type: FETCH_GROUP_BY_ID_SUCCESS,
+    payload: {group}
+});
+
+export const fetchGroupByIdFailure = (error: string): FetchGroupByIdFailureAction => ({
+    type: FETCH_GROUP_BY_ID_FAILURE,
+    payload: {error}
+});
+
+// Update group name action creators
+export const updateGroupNameRequest = (groupId: string, newName: string): UpdateGroupNameRequestAction => ({
+    type: UPDATE_GROUP_NAME_REQUEST,
+    payload: {groupId, newName}
+});
+
+export const updateGroupNameSuccess = (groupId: string, newName: string): UpdateGroupNameSuccessAction => ({
+    type: UPDATE_GROUP_NAME_SUCCESS,
+    payload: {groupId, newName}
+});
+
+export const updateGroupNameFailure = (error: string): UpdateGroupNameFailureAction => ({
+    type: UPDATE_GROUP_NAME_FAILURE,
+    payload: {error}
+});
+
+// Toggle join code active action creators
+export const toggleJoinCodeActiveRequest = (joinCode: string, isActive: boolean): ToggleJoinCodeActiveRequestAction => ({
+    type: TOGGLE_JOIN_CODE_ACTIVE_REQUEST,
+    payload: {joinCode, isActive}
+});
+
+export const toggleJoinCodeActiveSuccess = (joinCode: string, isActive: boolean): ToggleJoinCodeActiveSuccessAction => ({
+    type: TOGGLE_JOIN_CODE_ACTIVE_SUCCESS,
+    payload: {joinCode, isActive}
+});
+
+export const toggleJoinCodeActiveFailure = (error: string): ToggleJoinCodeActiveFailureAction => ({
+    type: TOGGLE_JOIN_CODE_ACTIVE_FAILURE,
+    payload: {error}
+});
+
+// Delete group action creators
+export const deleteGroupRequest = (groupId: string): DeleteGroupRequestAction => ({
+    type: DELETE_GROUP_REQUEST,
+    payload: {groupId}
+});
+
+export const deleteGroupSuccess = (groupId: string): DeleteGroupSuccessAction => ({
+    type: DELETE_GROUP_SUCCESS,
+    payload: {groupId}
+});
+
+export const deleteGroupFailure = (error: string): DeleteGroupFailureAction => ({
+    type: DELETE_GROUP_FAILURE,
+    payload: {error}
+});
+
+// Thunk action creator for deleting a group
+export const deleteGroupThunk = (groupId: string) => {
+    return async (dispatch: React.Dispatch<GameAction>) => {
+        try {
+            dispatch(deleteGroupRequest(groupId));
+
+            const {deleteGroup} = await import('../firebase/firestore');
+            await deleteGroup(groupId);
+
+            dispatch(deleteGroupSuccess(groupId));
+            return true;
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+            dispatch(deleteGroupFailure(errorMessage));
+            throw error;
+        }
+    };
+};
+
+// Thunk action creator for fetching a group by ID
+export const fetchGroupByIdThunk = (groupId: string) => {
+    return async (dispatch: React.Dispatch<GameAction>) => {
+        try {
+            dispatch(fetchGroupByIdRequest(groupId));
+
+            const {fetchGroupById} = await import('../firebase/firestore');
+            const group = await fetchGroupById(groupId);
+
+            if (!group) {
+                throw new Error('Group not found');
+            }
+
+            dispatch(fetchGroupByIdSuccess(group));
+            return group;
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+            dispatch(fetchGroupByIdFailure(errorMessage));
+            throw error;
+        }
+    };
+};
+
+// Thunk action creator for updating a group's name
+export const updateGroupNameThunk = (groupId: string, newName: string) => {
+    return async (dispatch: React.Dispatch<GameAction>, getState: () => any) => {
+        try {
+            dispatch(updateGroupNameRequest(groupId, newName));
+
+            const {updateGroupName} = await import('../firebase/firestore');
+            await updateGroupName(groupId, newName);
+
+            dispatch(updateGroupNameSuccess(groupId, newName));
+
+            // Update the group in the state
+            const state = getState();
+            const {ownedGroups, selectedGroup} = state;
+
+            // If the updated group is the selected group, update it
+            if (selectedGroup && selectedGroup.id === groupId) {
+                dispatch(selectGroup({
+                    ...selectedGroup,
+                    name: newName
+                }));
+            }
+
+            // Update the group in the ownedGroups array
+            const updatedOwnedGroups = ownedGroups.map((group: { id: string; }) =>
+                group.id === groupId ? {...group, name: newName} : group
+            );
+
+            dispatch(fetchGroupsSuccess(updatedOwnedGroups, state.joinedGroups));
+
+            return true;
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+            dispatch(updateGroupNameFailure(errorMessage));
+            throw error;
+        }
+    };
+};
+
+// Thunk action creator for toggling a join code's active status
+export const toggleJoinCodeActiveThunk = (joinCode: string, isActive: boolean) => {
+    return async (dispatch: React.Dispatch<GameAction>) => {
+        try {
+            dispatch(toggleJoinCodeActiveRequest(joinCode, isActive));
+
+            const {toggleJoinCodeActive} = await import('../firebase/firestore');
+            await toggleJoinCodeActive(joinCode, isActive);
+
+            dispatch(toggleJoinCodeActiveSuccess(joinCode, isActive));
+            return true;
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+            dispatch(toggleJoinCodeActiveFailure(errorMessage));
+            throw error;
+        }
+    };
+};
 
 // Thunk action creator for creating a group
 export const createGroupThunk = (groupName: string) => {
