@@ -28,6 +28,11 @@ jobs:
           cd web
           npm install @rollup/rollup-linux-x64-gnu
 
+      - name: Fix lightningcss binary on Linux
+        run: |
+          cd web
+          npm install @parcel/css-linux-x64-gnu
+
       - name: Install dependencies (levels_compiler)
         run: |
           cd levels_compiler
