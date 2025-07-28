@@ -2,7 +2,7 @@ import type {PluginOption} from 'vite';
 import {defineConfig} from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import tailwindcss from '@tailwindcss/vite'
-import {generate} from '../levels_compiler/main.js'
+import {generate} from './src/levels_compiler/main.js'
 import * as path from "node:path";
 
 

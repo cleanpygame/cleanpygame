@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import type {Topic} from '../web/src/types.js'
+import type {Topic} from '../types.js'
 import {parseLevelFile} from "./parser.ts";
 
 export interface OutputStructure {

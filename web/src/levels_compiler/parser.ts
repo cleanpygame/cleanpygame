@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import type {LevelBlock, LevelData} from '../web/src/types.js'
+import type {LevelBlock, LevelData} from '../types.js'
 
 export interface ParseContext {
     filename: string;
