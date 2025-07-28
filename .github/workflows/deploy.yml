@@ -23,6 +23,11 @@ jobs:
           cd web
           npm install
 
+      - name: Manually install rollup Linux binary
+        run: |
+          cd web
+          npm install @rollup/rollup-linux-x64-gnu
+
       - name: Install dependencies (levels_compiler)
         run: |
           cd levels_compiler
