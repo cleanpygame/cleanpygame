@@ -21,12 +21,12 @@ jobs:
       - name: Install dependencies (web)
         run: |
           cd web
-          npm ci
+          npm install
 
       - name: Install dependencies (levels_compiler)
         run: |
           cd levels_compiler
-          npm ci
+          npm install
 
       - name: Run tests
         run: |
