@@ -387,7 +387,7 @@ export function GroupPage(): React.ReactElement {
                         <h2 className="text-lg font-semibold mb-3">Group Info</h2>
                         <div className="mb-2">
                             <p className="text-sm text-gray-400">Created</p>
-                            <p>{formatDate(group.createdAt)}</p>
+                            <p title={formatDate(group.createdAt, 'N/A', true)}>{formatDate(group.createdAt)}</p>
                         </div>
                         <div className="mb-4">
                             <p className="text-sm text-gray-400">Members</p>
@@ -509,8 +509,10 @@ export function GroupPage(): React.ReactElement {
                                             <td className="p-2">{member.totalTimeSpent || 0}s</td>
                                             <td className="p-2">{member.totalHintsUsed || 0}</td>
                                             <td className="p-2">{member.totalWrongClicks || 0}</td>
-                                            <td className="p-2">{member.lastPlayedAt ? formatDate(member.lastPlayedAt) : 'Never'}</td>
-                                            <td className="p-2">{formatDate(member.joinedAt)}</td>
+                                            <td className="p-2"
+                                                title={member.lastPlayedAt ? formatDate(member.lastPlayedAt, 'Never', true) : 'Never'}>{member.lastPlayedAt ? formatDate(member.lastPlayedAt) : 'Never'}</td>
+                                            <td className="p-2"
+                                                title={formatDate(member.joinedAt, 'N/A', true)}>{formatDate(member.joinedAt)}</td>
                                             <td className="p-2" onClick={(e) => e.stopPropagation()}>
                                                 <button
                                                     onClick={() => handleRefreshMemberStats(member.uid)}

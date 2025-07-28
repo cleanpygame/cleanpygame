@@ -220,7 +220,8 @@ export function GroupsPage(): React.ReactElement {
                                                 <h3 className="text-lg font-medium mb-2">{group.name}</h3>
                                                 <div className="flex justify-between text-sm text-gray-400">
                                                     <span>{group.memberCount || 0} members</span>
-                                                    <span>Created: {formatDate(group.createdAt)}</span>
+                                                    <span
+                                                        title={formatDate(group.createdAt, 'N/A', true)}>Created: {formatDate(group.createdAt)}</span>
                                                 </div>
                                             </div>
                                         ))}
@@ -265,7 +266,8 @@ export function GroupsPage(): React.ReactElement {
                                                 </div>
                                                 <div className="flex justify-between text-sm text-gray-400">
                                                     <span>Owner: {group.ownerName}</span>
-                                                    <span>Joined: {formatDate(group.joinedAt || group.createdAt)}</span>
+                                                    <span
+                                                        title={formatDate(group.joinedAt || group.createdAt, 'N/A', true)}>Joined: {formatDate(group.joinedAt || group.createdAt)}</span>
                                                 </div>
                                             </div>
                                         ))}
