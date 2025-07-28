@@ -58,9 +58,9 @@ export function GroupPage(): React.ReactElement {
         deleted: false
     };
 
-    // State for members
+    // State for members and join codes
     const [members, setMembers] = useState<GroupMember[]>([]);
-    const [joinCode, setJoinCode] = useState<string>('');
+    const [joinCodes, setJoinCodes] = useState<{ code: string, active: boolean }[]>([]);
     const [refreshingMember, setRefreshingMember] = useState<string | null>(null);
     const [refreshSuccess, setRefreshSuccess] = useState<string | null>(null);
 
@@ -83,18 +83,15 @@ export function GroupPage(): React.ReactElement {
                     console.error('Error fetching group members:', error);
                 });
 
-            // Fetch the join code for the group
+            // Fetch the join codes for the group
             import('../firebase/firestore')
                 .then(({fetchJoinCodesForGroup}) => {
                     // Fetch the join codes from Firestore
                     return fetchJoinCodesForGroup(groupId);
                 })
-                .then((joinCodes) => {
-                    // Use the first active join code if available
-                    const activeJoinCode = joinCodes.find(code => code.active);
-                    if (activeJoinCode) {
-                        setJoinCode(activeJoinCode.code);
-                    }
+                .then((fetchedJoinCodes) => {
+                    // Store all join codes in state
+                    setJoinCodes(fetchedJoinCodes);
                 })
                 .catch((error) => {
                     console.error('Error fetching join codes:', error);
@@ -118,16 +115,18 @@ export function GroupPage(): React.ReactElement {
                 return createJoinCode(groupId, ownerUid);
             })
             .then((newJoinCode) => {
-                // Update the join code state
-                setJoinCode(newJoinCode);
-                setIsLinkActive(true);
+                // Add the new join code to the joinCodes array
+                setJoinCodes(prevJoinCodes => [
+                    ...prevJoinCodes,
+                    {code: newJoinCode, active: true}
+                ]);
 
-                // Show toast notification
-                setShowToast(true);
+                // Set the copied code to show feedback
+                setCopiedCode(newJoinCode);
 
-                // Hide toast after 2 seconds
+                // Clear the copied code after 2 seconds
                 setTimeout(() => {
-                    setShowToast(false);
+                    setCopiedCode(null);
                 }, 2000);
             })
             .catch((error) => {
@@ -135,23 +134,22 @@ export function GroupPage(): React.ReactElement {
             });
     };
 
-    const [showToast, setShowToast] = React.useState(false);
 
-    const handleCopyInviteLink = () => {
-        if (!joinCode) return;
-        
+    const [copiedCode, setCopiedCode] = useState<string | null>(null);
+
+    const handleCopyInviteLink = (code: string) => {
         // Construct the full invite URL using current page origin
-        const fullInviteUrl = `${window.location.origin}/join/${joinCode}`;
+        const fullInviteUrl = `${window.location.origin}/join/${code}`;
 
         // Copy to clipboard
         navigator.clipboard.writeText(fullInviteUrl)
             .then(() => {
-                // Show toast notification
-                setShowToast(true);
+                // Set which code was copied (for UI feedback)
+                setCopiedCode(code);
 
-                // Hide toast after 2 seconds
+                // Clear the copied code after 2 seconds
                 setTimeout(() => {
-                    setShowToast(false);
+                    setCopiedCode(null);
                 }, 2000);
             })
             .catch(err => {
@@ -159,58 +157,25 @@ export function GroupPage(): React.ReactElement {
             });
     };
 
-    // Get the active state from Firestore
-    const [isLinkActive, setIsLinkActive] = React.useState(true);
+    // We no longer need a separate isLinkActive state since we have the active status for all join codes
 
-    // Fetch the join code active status when the join code is loaded
-    useEffect(() => {
-        if (joinCode) {
-            // Import the getJoinCodeActiveStatus function dynamically
-            import('../firebase/firestore')
-                .then(({getJoinCodeActiveStatus}) => {
-                    // Fetch the active status from Firestore
-                    return getJoinCodeActiveStatus(joinCode);
-                })
-                .then((activeStatus) => {
-                    // Update the state with the fetched active status
-                    // If activeStatus is null (join code not found), default to false
-                    setIsLinkActive(activeStatus !== null ? activeStatus : false);
-                })
-                .catch((error) => {
-                    console.error('Error fetching join code active status:', error);
-                    // In case of error, default to false
-                    setIsLinkActive(false);
-                });
-        }
-    }, [joinCode]);
-
-    const handleToggleInviteLink = () => {
-        if (!joinCode || !group.id) return;
+    const handleToggleInviteLink = (code: string, currentActive: boolean) => {
+        if (!group.id) return;
         
         // Toggle the active state
-        const newActiveState = !isLinkActive;
-        const groupId = group.id; // Store in a constant to satisfy TypeScript
+        const newActiveState = !currentActive;
 
         // Update Firestore
-        executeThunk(toggleJoinCodeActiveThunk(joinCode, newActiveState), dispatch)
+        executeThunk(toggleJoinCodeActiveThunk(code, newActiveState), dispatch)
             .then(() => {
                 // Update local state
-                setIsLinkActive(newActiveState);
-
-                // Refresh join codes
-                import('../firebase/firestore')
-                    .then(({fetchJoinCodesForGroup}) => {
-                        return fetchJoinCodesForGroup(groupId);
-                    })
-                    .then((joinCodes) => {
-                        const activeJoinCode = joinCodes.find(code => code.active);
-                        if (activeJoinCode) {
-                            setJoinCode(activeJoinCode.code);
-                        }
-                    })
-                    .catch((error) => {
-                        console.error('Error refreshing join codes:', error);
-                    });
+                setJoinCodes(prevJoinCodes =>
+                    prevJoinCodes.map(joinCode =>
+                        joinCode.code === code
+                            ? {...joinCode, active: newActiveState}
+                            : joinCode
+                    )
+                );
             })
             .catch((error: Error) => {
                 console.error('Failed to toggle invite link:', error);
@@ -434,53 +399,61 @@ export function GroupPage(): React.ReactElement {
 
                         <div className="border-t border-[#444] pt-4 mb-4">
                             <h3 className="font-medium mb-2">Invite Links</h3>
-                            <div className="flex items-center mb-2">
-                                <input
-                                    type="text"
-                                    value={joinCode || 'No active code'}
-                                    readOnly
-                                    className="bg-[#222] text-sm p-2 rounded w-32 mr-2"
-                                />
-                                <div className="relative">
-                                    <button
-                                        onClick={handleCopyInviteLink}
-                                        className="p-2 bg-[#444] rounded hover:bg-[#555] transition-colors mr-2"
-                                        title="Copy code"
-                                        disabled={!joinCode}
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-                                             strokeLinecap="round" strokeLinejoin="round">
-                                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                        </svg>
-                                    </button>
-                                    {showToast && (
-                                        <div
-                                            className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-gray-800 text-white px-2 py-1 rounded text-xs whitespace-nowrap z-50">
-                                            {joinCode ? 'Copied' : 'Created new code'}
+                            {joinCodes.length === 0 ? (
+                                <div className="text-sm text-gray-400 mb-3">No invite links created yet.</div>
+                            ) : (
+                                <div className="max-h-48 overflow-y-auto mb-3">
+                                    {joinCodes.map((joinCode) => (
+                                        <div key={joinCode.code} className="flex items-center mb-2">
+                                            <input
+                                                type="text"
+                                                value={joinCode.code}
+                                                readOnly
+                                                className="bg-[#222] text-sm p-2 rounded w-24 mr-2"
+                                            />
+                                            <div className="relative">
+                                                <button
+                                                    onClick={() => handleCopyInviteLink(joinCode.code)}
+                                                    className="p-2 bg-[#444] rounded hover:bg-[#555] transition-colors mr-2"
+                                                    title="Copy code"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                         strokeWidth="2"
+                                                         strokeLinecap="round" strokeLinejoin="round">
+                                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                                        <path
+                                                            d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                                    </svg>
+                                                </button>
+                                                {copiedCode === joinCode.code && (
+                                                    <div
+                                                        className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-gray-800 text-white px-2 py-1 rounded text-xs whitespace-nowrap z-50">
+                                                        Copied
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="flex items-center">
+                                                <label className="inline-flex items-center cursor-pointer">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={joinCode.active}
+                                                        onChange={() => handleToggleInviteLink(joinCode.code, joinCode.active)}
+                                                        className="sr-only peer"
+                                                    />
+                                                    <div
+                                                        className={`relative w-11 h-6 bg-gray-600 rounded-full peer peer-checked:bg-blue-600 peer-focus:ring-2 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all`}
+                                                        title={joinCode.active ? "Link is Active" : "Link is Inactive"}
+                                                    ></div>
+                                                </label>
+                                            </div>
                                         </div>
-                                    )}
+                                    ))}
                                 </div>
-                                <div className="flex items-center">
-                                    <label className="inline-flex items-center cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            checked={isLinkActive}
-                                            onChange={handleToggleInviteLink}
-                                            className="sr-only peer"
-                                            disabled={!joinCode}
-                                        />
-                                        <div
-                                            className={`relative w-11 h-6 ${!joinCode ? 'bg-gray-800' : 'bg-gray-600'} rounded-full peer peer-checked:bg-blue-600 peer-focus:ring-2 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all`}
-                                            title={!joinCode ? "No active code" : (isLinkActive ? "Link is Active" : "Link is Inactive")}
-                                        ></div>
-                                    </label>
-                                </div>
-                            </div>
+                            )}
                             <button
                                 onClick={handleCreateInviteLink}
-                                className="w-full text-sm px-3 py-1 bg-blue-600 rounded hover:bg-blue-700 transition-colors mt-2"
+                                className="w-full text-sm px-3 py-1 bg-blue-600 rounded hover:bg-blue-700 transition-colors"
                             >
                                 Create New Link
                             </button>
