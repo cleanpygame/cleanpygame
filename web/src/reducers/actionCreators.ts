@@ -10,10 +10,16 @@ import {
     FETCH_GROUP_BY_ID_FAILURE,
     FETCH_GROUP_BY_ID_REQUEST,
     FETCH_GROUP_BY_ID_SUCCESS,
+    FETCH_GROUP_BY_JOIN_CODE_FAILURE,
+    FETCH_GROUP_BY_JOIN_CODE_REQUEST,
+    FETCH_GROUP_BY_JOIN_CODE_SUCCESS,
     FETCH_GROUPS_FAILURE,
     FETCH_GROUPS_REQUEST,
     FETCH_GROUPS_SUCCESS,
     GET_HINT,
+    JOIN_GROUP_FAILURE,
+    JOIN_GROUP_REQUEST,
+    JOIN_GROUP_SUCCESS,
     LOAD_LEVEL,
     LOGIN_FAILURE,
     LOGIN_REQUEST,
@@ -280,6 +286,51 @@ export interface DeleteGroupFailureAction {
     };
 }
 
+// Fetch group by join code action interfaces
+export interface FetchGroupByJoinCodeRequestAction {
+    type: typeof FETCH_GROUP_BY_JOIN_CODE_REQUEST;
+    payload: {
+        joinCode: string;
+    };
+}
+
+export interface FetchGroupByJoinCodeSuccessAction {
+    type: typeof FETCH_GROUP_BY_JOIN_CODE_SUCCESS;
+    payload: {
+        group: Group;
+    };
+}
+
+export interface FetchGroupByJoinCodeFailureAction {
+    type: typeof FETCH_GROUP_BY_JOIN_CODE_FAILURE;
+    payload: {
+        error: string;
+    };
+}
+
+// Join group action interfaces
+export interface JoinGroupRequestAction {
+    type: typeof JOIN_GROUP_REQUEST;
+    payload: {
+        groupId: string;
+        displayName?: string;
+    };
+}
+
+export interface JoinGroupSuccessAction {
+    type: typeof JOIN_GROUP_SUCCESS;
+    payload: {
+        group: Group;
+    };
+}
+
+export interface JoinGroupFailureAction {
+    type: typeof JOIN_GROUP_FAILURE;
+    payload: {
+        error: string;
+    };
+}
+
 export type GameAction =
     | LoadLevelAction
     | ApplyFixAction
@@ -315,7 +366,13 @@ export type GameAction =
     | ToggleJoinCodeActiveFailureAction
     | DeleteGroupRequestAction
     | DeleteGroupSuccessAction
-    | DeleteGroupFailureAction;
+    | DeleteGroupFailureAction
+    | FetchGroupByJoinCodeRequestAction
+    | FetchGroupByJoinCodeSuccessAction
+    | FetchGroupByJoinCodeFailureAction
+    | JoinGroupRequestAction
+    | JoinGroupSuccessAction
+    | JoinGroupFailureAction;
 
 // Action creators
 export const loadLevel = (levelId: LevelId): LoadLevelAction => ({
@@ -523,6 +580,38 @@ export const deleteGroupFailure = (error: string): DeleteGroupFailureAction => (
     payload: {error}
 });
 
+// Fetch group by join code action creators
+export const fetchGroupByJoinCodeRequest = (joinCode: string): FetchGroupByJoinCodeRequestAction => ({
+    type: FETCH_GROUP_BY_JOIN_CODE_REQUEST,
+    payload: {joinCode}
+});
+
+export const fetchGroupByJoinCodeSuccess = (group: Group): FetchGroupByJoinCodeSuccessAction => ({
+    type: FETCH_GROUP_BY_JOIN_CODE_SUCCESS,
+    payload: {group}
+});
+
+export const fetchGroupByJoinCodeFailure = (error: string): FetchGroupByJoinCodeFailureAction => ({
+    type: FETCH_GROUP_BY_JOIN_CODE_FAILURE,
+    payload: {error}
+});
+
+// Join group action creators
+export const joinGroupRequest = (groupId: string, displayName?: string): JoinGroupRequestAction => ({
+    type: JOIN_GROUP_REQUEST,
+    payload: {groupId, displayName}
+});
+
+export const joinGroupSuccess = (group: Group): JoinGroupSuccessAction => ({
+    type: JOIN_GROUP_SUCCESS,
+    payload: {group}
+});
+
+export const joinGroupFailure = (error: string): JoinGroupFailureAction => ({
+    type: JOIN_GROUP_FAILURE,
+    payload: {error}
+});
+
 // Thunk action creator for deleting a group
 export const deleteGroupThunk = (groupId: string) => {
     return async (dispatch: React.Dispatch<GameAction>) => {
@@ -637,7 +726,8 @@ export const createGroupThunk = (groupName: string) => {
             }
 
             const {createGroup} = await import('../firebase/firestore');
-            const group = await createGroup(user, groupName);
+            const result = await createGroup(user, groupName);
+            const {group} = result;
 
             dispatch(createGroupSuccess(group));
             return group;
@@ -673,6 +763,60 @@ export const fetchGroupsThunk = () => {
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
             dispatch(fetchGroupsFailure(errorMessage));
+            throw error;
+        }
+    };
+};
+
+// Thunk action creator for fetching a group by join code
+export const fetchGroupByJoinCodeThunk = (joinCode: string) => {
+    return async (dispatch: React.Dispatch<GameAction>) => {
+        try {
+            dispatch(fetchGroupByJoinCodeRequest(joinCode));
+
+            const {fetchGroupByJoinCode} = await import('../firebase/firestore');
+            const group = await fetchGroupByJoinCode(joinCode);
+
+            if (!group) {
+                throw new Error('Group not found or join code is inactive');
+            }
+
+            dispatch(fetchGroupByJoinCodeSuccess(group));
+            return group;
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+            dispatch(fetchGroupByJoinCodeFailure(errorMessage));
+            throw error;
+        }
+    };
+};
+
+// Thunk action creator for joining a group
+export const joinGroupThunk = (groupId: string, displayName?: string) => {
+    return async (dispatch: React.Dispatch<GameAction>, getState: () => any) => {
+        try {
+            dispatch(joinGroupRequest(groupId, displayName));
+
+            const state = getState();
+            const {user} = state.auth;
+
+            if (!user) {
+                throw new Error('User must be authenticated to join a group');
+            }
+
+            const {joinGroup} = await import('../firebase/firestore');
+            const group = await joinGroup(groupId, user, displayName);
+
+            dispatch(joinGroupSuccess(group));
+
+            // Update the joined groups in the state
+            // Call the thunk function directly with dispatch and getState
+            await fetchGroupsThunk()(dispatch, getState);
+
+            return group;
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+            dispatch(joinGroupFailure(errorMessage));
             throw error;
         }
     };

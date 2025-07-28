@@ -112,9 +112,9 @@ export interface PlayerStatsState {
 }
 
 /**
- * Group member summary statistics
+ * Group member statistics
  */
-export interface GroupMemberSummary {
+export interface GroupMember {
     displayName: string;
     levelsCompleted: number;
     totalLevelsPlayed: number;
@@ -124,6 +124,7 @@ export interface GroupMemberSummary {
     totalWrongClicks: number;
     lastPlayedAt: string;
     joinedAt: string;
+    uid: string;
 }
 
 /**
@@ -135,14 +136,12 @@ export interface Group {
     ownerUid: string;
     ownerName: string;
     ownerEmail?: string;
-    joinCode: string;
-    memberIds: string[];
-    memberSummaries: Record<string, GroupMemberSummary>;
     createdAt: string;
     updatedAt: string;
     deleted: boolean;
     deletedAt?: string;
     joinedAt?: string;
+    memberCount?: number;
 }
 
 /**

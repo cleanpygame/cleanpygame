@@ -9,7 +9,7 @@ import {
     toggleJoinCodeActiveThunk,
     updateGroupNameThunk
 } from '../reducers/actionCreators';
-import {GroupMemberSummary} from '../types';
+import {GroupMember} from '../types';
 
 // Helper function to execute thunks directly
 type ThunkResult<T> = (dispatch: React.Dispatch<GameAction>, getState?: any) => Promise<T>;
@@ -53,34 +53,95 @@ export function GroupPage(): React.ReactElement {
         ownerUid: '',
         ownerName: '',
         ownerEmail: '',
-        joinCode: '',
-        memberIds: [],
-        memberSummaries: {},
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         deleted: false
     };
 
-    // Get members from the group's memberSummaries
-    const members = Object.entries(group.memberSummaries || {}).map(([id, summary]) => ({
-        id,
-        ...(summary as GroupMemberSummary)
-    }));
+    // State for members
+    const [members, setMembers] = useState<GroupMember[]>([]);
+    const [joinCode, setJoinCode] = useState<string>('');
+    const [refreshingMember, setRefreshingMember] = useState<string | null>(null);
+    const [refreshSuccess, setRefreshSuccess] = useState<string | null>(null);
+
+    // Fetch members when the group is loaded
+    useEffect(() => {
+        if (group.id && group.id !== 'Loading...') {
+            const groupId = group.id; // Store in a constant to satisfy TypeScript
+
+            // Import the fetchGroupMembers function dynamically
+            import('../firebase/firestore')
+                .then(({fetchGroupMembers}) => {
+                    // Fetch the members from Firestore
+                    return fetchGroupMembers(groupId);
+                })
+                .then((fetchedMembers) => {
+                    // Update the state with the fetched members
+                    setMembers(fetchedMembers);
+                })
+                .catch((error) => {
+                    console.error('Error fetching group members:', error);
+                });
+
+            // Fetch the join code for the group
+            import('../firebase/firestore')
+                .then(({fetchJoinCodesForGroup}) => {
+                    // Fetch the join codes from Firestore
+                    return fetchJoinCodesForGroup(groupId);
+                })
+                .then((joinCodes) => {
+                    // Use the first active join code if available
+                    const activeJoinCode = joinCodes.find(code => code.active);
+                    if (activeJoinCode) {
+                        setJoinCode(activeJoinCode.code);
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error fetching join codes:', error);
+                });
+        }
+    }, [group.id]);
 
     const handleBackToGroups = () => {
         navigate('/groups');
     };
 
     const handleCreateInviteLink = () => {
-        // This will be implemented later
-        console.log('Create invite link clicked');
+        if (!groupId || !group.ownerUid) return;
+
+        const ownerUid = group.ownerUid; // Store in a constant to satisfy TypeScript
+
+        // Import the createJoinCode function dynamically
+        import('../firebase/firestore')
+            .then(({createJoinCode}) => {
+                // Create a new join code for the group
+                return createJoinCode(groupId, ownerUid);
+            })
+            .then((newJoinCode) => {
+                // Update the join code state
+                setJoinCode(newJoinCode);
+                setIsLinkActive(true);
+
+                // Show toast notification
+                setShowToast(true);
+
+                // Hide toast after 2 seconds
+                setTimeout(() => {
+                    setShowToast(false);
+                }, 2000);
+            })
+            .catch((error) => {
+                console.error('Error creating join code:', error);
+            });
     };
 
     const [showToast, setShowToast] = React.useState(false);
 
     const handleCopyInviteLink = () => {
+        if (!joinCode) return;
+        
         // Construct the full invite URL using current page origin
-        const fullInviteUrl = `${window.location.origin}/join/${group.joinCode}`;
+        const fullInviteUrl = `${window.location.origin}/join/${joinCode}`;
 
         // Copy to clipboard
         navigator.clipboard.writeText(fullInviteUrl)
@@ -101,14 +162,14 @@ export function GroupPage(): React.ReactElement {
     // Get the active state from Firestore
     const [isLinkActive, setIsLinkActive] = React.useState(true);
 
-    // Fetch the join code active status when the group is loaded
+    // Fetch the join code active status when the join code is loaded
     useEffect(() => {
-        if (group.joinCode) {
+        if (joinCode) {
             // Import the getJoinCodeActiveStatus function dynamically
             import('../firebase/firestore')
                 .then(({getJoinCodeActiveStatus}) => {
                     // Fetch the active status from Firestore
-                    return getJoinCodeActiveStatus(group.joinCode);
+                    return getJoinCodeActiveStatus(joinCode);
                 })
                 .then((activeStatus) => {
                     // Update the state with the fetched active status
@@ -121,19 +182,35 @@ export function GroupPage(): React.ReactElement {
                     setIsLinkActive(false);
                 });
         }
-    }, [group.joinCode]);
+    }, [joinCode]);
 
     const handleToggleInviteLink = () => {
-        if (!group.joinCode) return;
+        if (!joinCode || !group.id) return;
         
         // Toggle the active state
         const newActiveState = !isLinkActive;
+        const groupId = group.id; // Store in a constant to satisfy TypeScript
 
         // Update Firestore
-        executeThunk(toggleJoinCodeActiveThunk(group.joinCode, newActiveState), dispatch)
+        executeThunk(toggleJoinCodeActiveThunk(joinCode, newActiveState), dispatch)
             .then(() => {
                 // Update local state
                 setIsLinkActive(newActiveState);
+
+                // Refresh join codes
+                import('../firebase/firestore')
+                    .then(({fetchJoinCodesForGroup}) => {
+                        return fetchJoinCodesForGroup(groupId);
+                    })
+                    .then((joinCodes) => {
+                        const activeJoinCode = joinCodes.find(code => code.active);
+                        if (activeJoinCode) {
+                            setJoinCode(activeJoinCode.code);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error refreshing join codes:', error);
+                    });
             })
             .catch((error: Error) => {
                 console.error('Failed to toggle invite link:', error);
@@ -186,6 +263,54 @@ export function GroupPage(): React.ReactElement {
                     alert(`Failed to delete group: ${error.message}`);
                 });
         }
+    };
+
+    const handleRefreshMemberStats = (memberId: string) => {
+        if (!groupId) return;
+
+        // Set the refreshing state
+        setRefreshingMember(memberId);
+        setRefreshSuccess(null);
+
+        // Import the refreshMemberStats function dynamically
+        import('../firebase/firestore')
+            .then(({refreshMemberStats}) => {
+                // Call the function to refresh the member's stats
+                return refreshMemberStats(groupId, memberId);
+            })
+            .then(() => {
+                // Handle success
+                console.log(`Member ${memberId} stats refreshed successfully`);
+                setRefreshSuccess(memberId);
+
+                // Refresh the members list
+                return import('../firebase/firestore')
+                    .then(({fetchGroupMembers}) => {
+                        return fetchGroupMembers(groupId);
+                    });
+            })
+            .then((updatedMembers) => {
+                // Update the members state with the refreshed data
+                if (updatedMembers) {
+                    setMembers(updatedMembers);
+                }
+            })
+            .catch((error) => {
+                // Handle error
+                console.error('Failed to refresh member stats:', error);
+                alert(`Failed to refresh member stats: ${error.message}`);
+            })
+            .finally(() => {
+                // Clear the refreshing state after a delay
+                setTimeout(() => {
+                    setRefreshingMember(null);
+
+                    // Clear the success state after a few seconds
+                    setTimeout(() => {
+                        setRefreshSuccess(null);
+                    }, 3000);
+                }, 500);
+            });
     };
 
     if (!auth.isAuthenticated) {
@@ -312,7 +437,7 @@ export function GroupPage(): React.ReactElement {
                             <div className="flex items-center mb-2">
                                 <input
                                     type="text"
-                                    value={group.joinCode}
+                                    value={joinCode || 'No active code'}
                                     readOnly
                                     className="bg-[#222] text-sm p-2 rounded w-32 mr-2"
                                 />
@@ -321,6 +446,7 @@ export function GroupPage(): React.ReactElement {
                                         onClick={handleCopyInviteLink}
                                         className="p-2 bg-[#444] rounded hover:bg-[#555] transition-colors mr-2"
                                         title="Copy code"
+                                        disabled={!joinCode}
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                              viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
@@ -332,7 +458,7 @@ export function GroupPage(): React.ReactElement {
                                     {showToast && (
                                         <div
                                             className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-gray-800 text-white px-2 py-1 rounded text-xs whitespace-nowrap z-50">
-                                            Copied
+                                            {joinCode ? 'Copied' : 'Created new code'}
                                         </div>
                                     )}
                                 </div>
@@ -343,10 +469,11 @@ export function GroupPage(): React.ReactElement {
                                             checked={isLinkActive}
                                             onChange={handleToggleInviteLink}
                                             className="sr-only peer"
+                                            disabled={!joinCode}
                                         />
                                         <div
-                                            className="relative w-11 h-6 bg-gray-600 rounded-full peer peer-checked:bg-blue-600 peer-focus:ring-2 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"
-                                            title={isLinkActive ? "Link is Active" : "Link is Inactive"}
+                                            className={`relative w-11 h-6 ${!joinCode ? 'bg-gray-800' : 'bg-gray-600'} rounded-full peer peer-checked:bg-blue-600 peer-focus:ring-2 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all`}
+                                            title={!joinCode ? "No active code" : (isLinkActive ? "Link is Active" : "Link is Inactive")}
                                         ></div>
                                     </label>
                                 </div>
@@ -395,11 +522,12 @@ export function GroupPage(): React.ReactElement {
                                         <th className="text-left p-2">Mistakes</th>
                                         <th className="text-left p-2">Last Active</th>
                                         <th className="text-left p-2">Joined</th>
+                                        <th className="text-left p-2">Actions</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     {members.map(member => (
-                                        <tr key={member.id} className="border-b border-[#444] hover:bg-[#3a3a3a]">
+                                        <tr key={member.uid} className="border-b border-[#444] hover:bg-[#3a3a3a]">
                                             <td className="p-2">{member.displayName}</td>
                                             <td className="p-2">{member.levelsCompleted || 0}</td>
                                             <td className="p-2">{member.totalTimeSpent || 0}s</td>
@@ -407,6 +535,34 @@ export function GroupPage(): React.ReactElement {
                                             <td className="p-2">{member.totalWrongClicks || 0}</td>
                                             <td className="p-2">{member.lastPlayedAt ? formatDate(member.lastPlayedAt) : 'Never'}</td>
                                             <td className="p-2">{formatDate(member.joinedAt)}</td>
+                                            <td className="p-2">
+                                                <button
+                                                    onClick={() => handleRefreshMemberStats(member.uid)}
+                                                    className={`p-1 rounded ${refreshSuccess === member.uid ? 'bg-green-600' : 'bg-blue-600'} hover:bg-blue-700 transition-colors`}
+                                                    title="Refresh stats from player data"
+                                                    disabled={refreshingMember === member.uid}
+                                                >
+                                                    {refreshingMember === member.uid ? (
+                                                        <div
+                                                            className="w-5 h-5 border-t-2 border-b-2 border-white rounded-full animate-spin"></div>
+                                                    ) : refreshSuccess === member.uid ? (
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                             viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                             strokeWidth="2" strokeLinecap="round"
+                                                             strokeLinejoin="round">
+                                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                                        </svg>
+                                                    ) : (
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                             viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                             strokeWidth="2" strokeLinecap="round"
+                                                             strokeLinejoin="round">
+                                                            <path
+                                                                d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38"></path>
+                                                        </svg>
+                                                    )}
+                                                </button>
+                                            </td>
                                         </tr>
                                     ))}
                                     </tbody>
@@ -425,6 +581,7 @@ export function GroupPage(): React.ReactElement {
                                         <td className="p-2">
                                             {members.reduce((sum, m) => sum + (m.totalWrongClicks || 0), 0)}
                                         </td>
+                                        <td className="p-2"></td>
                                         <td className="p-2"></td>
                                         <td className="p-2"></td>
                                     </tr>

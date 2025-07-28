@@ -193,7 +193,7 @@ export function GroupsPage(): React.ReactElement {
                                             >
                                                 <h3 className="text-lg font-medium mb-2">{group.name}</h3>
                                                 <div className="flex justify-between text-sm text-gray-400">
-                                                    <span>{group.memberIds?.length || 0} members</span>
+                                                    <span>{group.memberCount || 0} members</span>
                                                     <span>Created: {formatDate(group.createdAt)}</span>
                                                 </div>
                                             </div>
@@ -213,8 +213,7 @@ export function GroupsPage(): React.ReactElement {
                                         {joinedGroups.map(group => (
                                             <div
                                                 key={group.id}
-                                                onClick={() => handleGroupClick(group.id)}
-                                                className="bg-[#333333] p-4 rounded-lg shadow-md cursor-pointer hover:bg-[#3c3c3c] transition-colors"
+                                                className="bg-[#333333] p-4 rounded-lg shadow-md"
                                             >
                                                 <h3 className="text-lg font-medium mb-2">{group.name}</h3>
                                                 <div className="flex justify-between text-sm text-gray-400">

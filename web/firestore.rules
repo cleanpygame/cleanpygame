@@ -14,13 +14,6 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == groupData.ownerUid;
     }
     
-    function isGroupMember(groupData) {
-      return isAuthenticated() && (
-        request.auth.uid == groupData.ownerUid || 
-        groupData.memberIds.hasAny([request.auth.uid])
-      );
-    }
-    
     // Player Statistics Rules
     match /playerStats/{userId} {
       // Players can read and write their own stats
@@ -33,20 +26,23 @@ service cloud.firestore {
     
     // Groups Rules
     match /groups/{groupId} {
-      // Group owners have full access
+      // Group owners have full access to the group
       allow read, write: if isGroupOwner(resource.data);
       
-      // Group members can read basic group info (but not full details)
-      allow read: if isGroupMember(resource.data);
+      // Public read access for groups (basic info)
+      allow read: if true;
       
       // Any authenticated user can create a group (as a teacher)
       allow create: if isAuthenticated() && request.resource.data.ownerUid == request.auth.uid;
       
-      // Students can add themselves to memberIds (join a group)
-      allow update: if isAuthenticated() && 
-                     resource.data.memberIds.hasAll(request.resource.data.memberIds.removeAll([request.auth.uid])) &&
-                     request.resource.data.memberIds.hasAll(resource.data.memberIds) &&
-                     request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds']);
+      // Members subcollection rules
+      match /members/{memberId} {
+        // Group owner has full access to all members
+        allow read, write: if isGroupOwner(get(/databases/$(database)/documents/groups/$(groupId)).data);
+        
+        // Members have full access to their own member document
+        allow read, write: if isOwner(memberId);
+      }
     }
     
     // Join Codes Rules

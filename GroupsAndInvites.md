@@ -28,13 +28,14 @@ system will support group-based classroom management with invite links, allowing
 10. Teacher on the GroupPage controls created join links - disable, enable, create new.
 11. Teacher on the GroupPage deletes the group to hide it from his groups list.
 12. Teacher on the GroupPage inspects the Group Dashboard to track student progress on each individual level.
+13. Teacher on the GroupPage can refresh a student's stats from their player stats to ensure data consistency.
 
 ## Data Organization and Storage
 
 ### 1. Groups Collection (`groups`)
 
 **Document ID**: Auto-generated
-**Purpose**: Manage classroom groups with lightweight member summaries
+**Purpose**: Manage classroom groups
 
 ```
 groups/{groupId}
@@ -43,28 +44,37 @@ groups/{groupId}
 ├── ownerUid: string (teacher)
 ├── ownerName: string
 ├── ownerEmail?: string
-├── joinCode: string
-├── memberIds: string[] (student UIDs only)
-├── memberSummaries: { [playerId]: GroupMemberSummary }
 ├── createdAt: Timestamp
 ├── updatedAt: Timestamp
 ├── deleted: boolean
 └── deletedAt?: Timestamp
 
+groups/{groupId}/members/{memberId}
+├── uid: string
+├── displayName: string
+├── levelsCompleted: number
+├── totalLevelsPlayed: number
+├── totalMisclicks: number
+├── totalTimeSpent: number
+├── totalHintsUsed: number
+├── totalWrongClicks: number
+├── lastPlayedAt: string
+├── joinedAt: string
+├── createdAt: Timestamp
+└── updatedAt: Timestamp
+
 playerStats/{playerId}
-├── memberOfgroups: string[] // group ids where this player is a member
-├── teacherIds: string[] // uids of the owners of the groups where this player is a member (for access control — grant read access for this uids)
- 
+├── memberOfGroups: string[] // group ids where this player is a member
+├── teacherIds: string[] // uids of the owners of the groups where this player is a member (for access control)
 ...
 ```
 
-
 **Key Design Decisions**:
 
-- **Teacher Exclusion**: `memberIds` contains only students, not the teacher
-- **Denormalized Summaries**: Store summary stats in group for quick dashboard loading
+- **Subcollection for Members**: Members are stored in a subcollection for better scalability and access control
+- **Denormalized Member Stats**: Store member stats in the member document for quick dashboard loading
 - **Soft Deletion**: Groups are marked as deleted, not physically removed
-- **Join Code Simplicity**: Human-readable 8-character codes
+- **Join Code Simplicity**: Human-readable 8-character codes stored in a separate collection
 
 ### 2. Join Codes Collection (`joinCodes`)
 
@@ -86,17 +96,17 @@ joinCodes/{code}
 
 - Players can access their stats.
 - Group owners can read all stats of their group members (using PlayerStats.teacherIds)
-- Group members can NOT read stats of other group members.
+- Group members can read/write their own member document but not other members' documents.
 - Unauthenticated users can read basic group info for join flows
 
 ### Access Patterns
 
 **Groups**:
 
-- Read: Teachers (full access), Members (name, and owner only)
+- Read: Public read access for basic info (required for join flow)
 - Create: Any authenticated user (as teacher)
-- Update/Delete: Group owner only. Regenerate join codes, group name, etc.
-- Join Operations: Students can add themselves to memberIds
+- Update/Delete: Group owner only
+- Members Subcollection: Group owner has full access, members have access to their own document only
 
 **Join Codes**:
 
@@ -108,16 +118,13 @@ joinCodes/{code}
 
 ### State Architecture
 
-**Classroom State**:
-
 ```
-ClassroomState
+GameState
 ├── ownedGroups: Group[]
 ├── joinedGroups: Group[]
 ├── selectedGroup?: Group
-├── selectedMember?: GroupMemberSummary
-├── isLoading: boolean
-└── error?: string
+├── isGroupsLoading: boolean
+└── groupsError?: string
 ```
 
 ### Data Flow Examples
@@ -125,9 +132,9 @@ ClassroomState
 **Group Dashboard Loading**:
 
 1. Load teacher's groups from Firebase
-2. Group summaries are already denormalized in group documents
-3. Display dashboard immediately with cached data
-4. Background refresh for real-time updates
+2. For each group, load the members subcollection
+3. Display dashboard with member stats
+4. Enable refreshing member stats from player stats
 
 ## Detailed Technical Scenarios
 
@@ -135,8 +142,8 @@ ClassroomState
 
 **Process Flow**:
 
-1. Generate unique join code
-2. Create a group document with a teacher as owner
+1. Create a group document with a teacher as owner
+2. Generate unique join code
 3. Create a corresponding join code document
 4. Update a teacher's local state with a new group as a selected group
 5. Navigate to the group management page
@@ -151,31 +158,28 @@ ClassroomState
 **User Scenario**:
 
 1. Unauthenticated user clicks the join link
-2. Display JoinGroup page with group info (name, teacher) without requiring auth
+2. Display JoinPage with group info (name, teacher) without requiring auth
 3. Prompt for Google sign-in
 4. After auth, check if already a member
 5. Confirm Joining the group, prompt moving to playing game
 
 **Technical details of Join Process**:
 
-1. Add student UID to group's `memberIds`
-2. Create/update player's group membership
-3. Sync existing progress to group summaries
-4. Initialize student's group-specific tracking
-5. Redirect to game with group context
+1. Create a member document in the group's members subcollection
+2. Initialize member stats from player stats
+3. Update player's memberOfGroups and teacherIds arrays
+4. Redirect to success page
 
 ### Scenario 3: Teacher Views Group Dashboard
 
 **Data Loading**:
 
 1. Load all groups where the user is owner
-2. Display groups list with summaries: group name, number of members, creation date
-3. Enable drill-down to individual group details: table of members with summary stats
-4. On the Group page shows a table of students with summary stats. Enable to force copying player summary stats to the
-   group (to restore consistency in case)
-5. Enable drill-down to individual student details: with summary stats and per level stats
-6. Enable to restore consistency by recalculating summary using full per-level stats. Update summary duplicated in
-   groups
+2. For each group, count the members in the members subcollection
+3. Display groups list with summaries: group name, number of members, creation date
+4. When viewing a specific group, load all members from the members subcollection
+5. Display members table with stats
+6. Enable refreshing member stats from player stats
 
 ## UI/UX Guidelines
 
@@ -189,14 +193,15 @@ ClassroomState
 
 - **Header**: Back to Game navigation, create group button
 - **Main Content**: Grid of groups you own, each showing name, members count, creation date. Groups are clickable.
-- **Small secondary content**: List of groups you have joined: group name, group owner name, joinDateAndTime.
+- **Small secondary content**: List of groups you have joined: group name, group owner name, joinDateAndTime. These
+  groups are not clickable.
 - Do not stretch the content to a full-screen width on the big screens.
 
 #### 2. Group page
 
 - **Header**: Group Name.
 - **Sidebar to the left**: Creation time, invite links with copy, de/activate, create buttons.
-- **Table to the right with members with summary stats** Clickable rows — open Student Profile
+- **Table to the right with members with summary stats**
     - Rows:
         - Row per students
         - Total row:
@@ -211,23 +216,23 @@ ClassroomState
         - Total wrong clicks
         - Last played at
         - Joined at
+      - Actions (refresh stats button)
 
 #### 3. Group Join Flow
 
 - **Landing Page**: Special minimalistic page, explaining what is going on with teacher name and group name.
-- GroupJoinPage
+- JoinPage
     - Group name
     - Teacher name (read-only)
     - Not authenticated user:
-        - "Sign-In via Google" button / Or Join Button if
+        - "Sign-In via Google" button
     - Authenticated user (or after sign-in):
         - Input field: "Your display name" prefilled from Google Account
         - Join button
-- **Confirmation**: Success message with button "Start Playing"
+- **Confirmation**: Success message with buttons "Start Playing" and "View My Groups"
 - **Error Handling**: Clear error messages with recovery options
 
 ### Router Behavior
-
 
 **Route Structure**:
 

@@ -5,6 +5,8 @@ import {IdeLayout} from './IdeLayout';
 import {GroupPage} from './GroupPage';
 import {GroupsPage} from './GroupsPage';
 import {PlayerStatsPage} from './PlayerStatsPage';
+import {JoinPage} from './JoinPage';
+import {ConfirmationPage} from './ConfirmationPage';
 import {TopBar} from './TopBar';
 
 /**
@@ -37,6 +39,8 @@ export function App(): React.ReactElement {
                     <Route path="/stats" element={<TopBarPageWrapper Component={PlayerStatsPage}/>}/>
                     <Route path="/groups" element={<TopBarPageWrapper Component={GroupsPage}/>}/>
                     <Route path="/groups/:groupId" element={<TopBarPageWrapper Component={GroupPage}/>}/>
+                    <Route path="/join/:code" element={<JoinPage/>}/>
+                    <Route path="/join/:code/success" element={<ConfirmationPage/>}/>
                     <Route path="*" element={<IdeLayout/>}/>
                 </Routes>
             </StateProvider>

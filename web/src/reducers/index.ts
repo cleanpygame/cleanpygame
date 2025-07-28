@@ -12,10 +12,16 @@ import {
     FETCH_GROUP_BY_ID_FAILURE,
     FETCH_GROUP_BY_ID_REQUEST,
     FETCH_GROUP_BY_ID_SUCCESS,
+    FETCH_GROUP_BY_JOIN_CODE_FAILURE,
+    FETCH_GROUP_BY_JOIN_CODE_REQUEST,
+    FETCH_GROUP_BY_JOIN_CODE_SUCCESS,
     FETCH_GROUPS_FAILURE,
     FETCH_GROUPS_REQUEST,
     FETCH_GROUPS_SUCCESS,
     GET_HINT,
+    JOIN_GROUP_FAILURE,
+    JOIN_GROUP_REQUEST,
+    JOIN_GROUP_SUCCESS,
     LOAD_LEVEL,
     LOGIN_FAILURE,
     LOGIN_REQUEST,
@@ -569,6 +575,62 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
         }
 
         case TOGGLE_JOIN_CODE_ACTIVE_FAILURE: {
+            const {error} = action.payload;
+            return {
+                ...state,
+                isGroupsLoading: false,
+                groupsError: error
+            };
+        }
+
+        // Fetch group by join code action handlers
+        case FETCH_GROUP_BY_JOIN_CODE_REQUEST: {
+            return {
+                ...state,
+                isGroupsLoading: true,
+                groupsError: undefined
+            };
+        }
+
+        case FETCH_GROUP_BY_JOIN_CODE_SUCCESS: {
+            const {group} = action.payload;
+            return {
+                ...state,
+                selectedGroup: group,
+                isGroupsLoading: false,
+                groupsError: undefined
+            };
+        }
+
+        case FETCH_GROUP_BY_JOIN_CODE_FAILURE: {
+            const {error} = action.payload;
+            return {
+                ...state,
+                isGroupsLoading: false,
+                groupsError: error
+            };
+        }
+
+        // Join group action handlers
+        case JOIN_GROUP_REQUEST: {
+            return {
+                ...state,
+                isGroupsLoading: true,
+                groupsError: undefined
+            };
+        }
+
+        case JOIN_GROUP_SUCCESS: {
+            const {group} = action.payload;
+            return {
+                ...state,
+                selectedGroup: group,
+                isGroupsLoading: false,
+                groupsError: undefined
+            };
+        }
+
+        case JOIN_GROUP_FAILURE: {
             const {error} = action.payload;
             return {
                 ...state,

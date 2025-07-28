@@ -1,5 +1,6 @@
 // Firestore functions for player progress and group management
 import {
+    arrayUnion,
     collection,
     doc,
     DocumentReference,
@@ -12,7 +13,7 @@ import {
     where
 } from 'firebase/firestore';
 import {db} from './index';
-import {Group, JoinCode, PlayerStatsState, User} from '../types';
+import {Group, GroupMember, JoinCode, PlayerStatsState, User} from '../types';
 import {createDefaultPlayerStats} from '../reducers/statsReducer';
 
 /**
@@ -119,13 +120,10 @@ export const generateJoinCode = (): string => {
  * Create a new group in Firestore
  * @param user - Firebase user (owner)
  * @param name - Group name
- * @returns Promise that resolves with the created group
+ * @returns Promise that resolves with the created group and join code
  */
-export const createGroup = async (user: User, name: string): Promise<Group> => {
+export const createGroup = async (user: User, name: string): Promise<{ group: Group, joinCode: string }> => {
     if (!user) throw new Error('User must be authenticated to create a group');
-
-    // Generate a unique join code
-    const joinCode = generateJoinCode();
 
     // Create the group document
     const groupsCollection = collection(db, 'groups');
@@ -141,9 +139,6 @@ export const createGroup = async (user: User, name: string): Promise<Group> => {
         ownerUid: user.uid,
         ownerName: user.displayName || 'Unknown',
         ownerEmail: user.email || undefined,
-        joinCode,
-        memberIds: [],
-        memberSummaries: {},
         createdAt: now,
         updatedAt: now,
         deleted: false
@@ -157,11 +152,33 @@ export const createGroup = async (user: User, name: string): Promise<Group> => {
             updatedAt: serverTimestamp()
         });
 
+        // Create a join code for the group
+        const joinCode = await createJoinCode(groupId, user.uid);
+
+        return {group, joinCode};
+    } catch (error) {
+        console.error('Error creating group:', error);
+        throw error;
+    }
+};
+
+/**
+ * Create a join code for a group
+ * @param groupId - Group ID
+ * @param ownerUid - Owner user ID
+ * @returns Promise that resolves with the created join code
+ */
+export const createJoinCode = async (groupId: string, ownerUid: string): Promise<string> => {
+    // Generate a unique join code
+    const joinCode = generateJoinCode();
+    const now = new Date().toISOString();
+
+    try {
         // Create the join code document
         const joinCodeDoc = doc(db, 'joinCodes', joinCode);
         const joinCodeData: JoinCode = {
             groupId,
-            ownerUid: user.uid,
+            ownerUid,
             createdAt: now,
             active: true,
             deleted: false
@@ -172,9 +189,9 @@ export const createGroup = async (user: User, name: string): Promise<Group> => {
             createdAt: serverTimestamp()
         });
 
-        return group;
+        return joinCode;
     } catch (error) {
-        console.error('Error creating group:', error);
+        console.error('Error creating join code:', error);
         throw error;
     }
 };
@@ -196,13 +213,27 @@ export const fetchOwnedGroups = async (userId: string): Promise<Group[]> => {
         const querySnapshot = await getDocs(q);
         const groups: Group[] = [];
 
-        querySnapshot.forEach((doc) => {
+        // First, collect all the groups
+        for (const doc of querySnapshot.docs) {
             const data = doc.data() as Group;
             groups.push({
                 ...data,
-                id: doc.id
+                id: doc.id,
+                memberCount: 0 // Initialize with 0, will be updated below
             });
-        });
+        }
+
+        // Then, for each group, count the members
+        for (const group of groups) {
+            try {
+                const membersCollection = collection(db, 'groups', group.id, 'members');
+                const membersSnapshot = await getDocs(membersCollection);
+                group.memberCount = membersSnapshot.size;
+            } catch (e) {
+                console.error(`Error counting members for group ${group.id}:`, e);
+                // Keep the default 0 if there's an error
+            }
+        }
 
         return groups;
     } catch (error) {
@@ -218,10 +249,25 @@ export const fetchOwnedGroups = async (userId: string): Promise<Group[]> => {
  */
 export const fetchJoinedGroups = async (userId: string): Promise<Group[]> => {
     try {
+        // Get the player stats document to find the groups the user is a member of
+        const playerDocRef = getPlayerDocRef(userId);
+        const playerDoc = await getDoc(playerDocRef);
+
+        if (!playerDoc.exists() || !playerDoc.data().memberOfGroups) {
+            return []; // User hasn't joined any groups
+        }
+
+        const memberOfGroups = playerDoc.data().memberOfGroups as string[];
+
+        if (memberOfGroups.length === 0) {
+            return [];
+        }
+
+        // Fetch the groups the user is a member of
         const groupsCollection = collection(db, 'groups');
         const q = query(
             groupsCollection,
-            where('memberIds', 'array-contains', userId),
+            where('__name__', 'in', memberOfGroups),
             where('deleted', '==', false)
         );
 
@@ -232,10 +278,25 @@ export const fetchJoinedGroups = async (userId: string): Promise<Group[]> => {
             const data = doc.data() as Group;
             groups.push({
                 ...data,
-                id: doc.id
+                id: doc.id,
+                joinedAt: new Date().toISOString() // Placeholder, will be updated below
             });
         });
 
+        // For each group, fetch the member document to get the joinedAt date
+        for (const group of groups) {
+            try {
+                const memberDocRef = doc(db, 'groups', group.id, 'members', userId);
+                const memberDoc = await getDoc(memberDocRef);
+
+                if (memberDoc.exists()) {
+                    group.joinedAt = memberDoc.data().joinedAt;
+                }
+            } catch (e) {
+                console.error(`Error fetching member document for group ${group.id}:`, e);
+            }
+        }
+        
         return groups;
     } catch (error) {
         console.error('Error fetching joined groups:', error);
@@ -264,6 +325,32 @@ export const fetchGroupById = async (groupId: string): Promise<Group | null> => 
         return null;
     } catch (error) {
         console.error('Error fetching group by ID:', error);
+        throw error;
+    }
+};
+
+/**
+ * Fetch members for a group
+ * @param groupId - Group ID
+ * @returns Promise that resolves with an array of group members
+ */
+export const fetchGroupMembers = async (groupId: string): Promise<GroupMember[]> => {
+    try {
+        const membersCollection = collection(db, 'groups', groupId, 'members');
+        const querySnapshot = await getDocs(membersCollection);
+        const members: GroupMember[] = [];
+
+        querySnapshot.forEach((doc) => {
+            const data = doc.data() as GroupMember;
+            members.push({
+                ...data,
+                uid: doc.id
+            });
+        });
+
+        return members;
+    } catch (error) {
+        console.error('Error fetching group members:', error);
         throw error;
     }
 };
@@ -330,6 +417,38 @@ export const getJoinCodeActiveStatus = async (joinCode: string): Promise<boolean
 };
 
 /**
+ * Fetch join codes for a group
+ * @param groupId - Group ID
+ * @returns Promise that resolves with an array of join codes
+ */
+export const fetchJoinCodesForGroup = async (groupId: string): Promise<{ code: string, active: boolean }[]> => {
+    try {
+        const joinCodesCollection = collection(db, 'joinCodes');
+        const q = query(
+            joinCodesCollection,
+            where('groupId', '==', groupId),
+            where('deleted', '==', false)
+        );
+
+        const querySnapshot = await getDocs(q);
+        const joinCodes: { code: string, active: boolean }[] = [];
+
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            joinCodes.push({
+                code: doc.id,
+                active: data.active
+            });
+        });
+
+        return joinCodes;
+    } catch (error) {
+        console.error('Error fetching join codes for group:', error);
+        throw error;
+    }
+};
+
+/**
  * Delete a group (soft delete)
  * @param groupId - Group ID
  * @returns Promise that resolves when the operation is complete
@@ -345,6 +464,187 @@ export const deleteGroup = async (groupId: string): Promise<void> => {
         });
     } catch (error) {
         console.error('Error deleting group:', error);
+        throw error;
+    }
+};
+
+/**
+ * Fetch a group by join code
+ * @param joinCode - Join code
+ * @returns Promise that resolves with the group or null if not found or inactive
+ */
+export const fetchGroupByJoinCode = async (joinCode: string): Promise<Group | null> => {
+    try {
+        // First, check if the join code exists and is active
+        const joinCodeDocRef = doc(db, 'joinCodes', joinCode);
+        const joinCodeSnap = await getDoc(joinCodeDocRef);
+
+        if (!joinCodeSnap.exists()) {
+            return null; // Join code doesn't exist
+        }
+
+        const joinCodeData = joinCodeSnap.data() as JoinCode;
+
+        if (!joinCodeData.active || joinCodeData.deleted) {
+            return null; // Join code is inactive or deleted
+        }
+
+        // Now fetch the group using the groupId from the join code
+        const groupDocRef = doc(db, 'groups', joinCodeData.groupId);
+        const groupSnap = await getDoc(groupDocRef);
+
+        if (!groupSnap.exists() || groupSnap.data().deleted) {
+            return null; // Group doesn't exist or is deleted
+        }
+
+        const groupData = groupSnap.data() as Group;
+        return {
+            ...groupData,
+            id: groupSnap.id
+        };
+    } catch (error) {
+        console.error('Error fetching group by join code:', error);
+        throw error;
+    }
+};
+
+/**
+ * Join a group
+ * @param groupId - Group ID
+ * @param user - User joining the group
+ * @param displayName - Display name to use in the group (optional, defaults to user's display name)
+ * @returns Promise that resolves with the updated group
+ */
+/**
+ * Refresh a member's stats from their player stats
+ * @param groupId - Group ID
+ * @param memberId - Member ID (user UID)
+ * @returns Promise that resolves when the operation is complete
+ */
+export const refreshMemberStats = async (groupId: string, memberId: string): Promise<void> => {
+    try {
+        // Get the player stats document
+        const playerDocRef = getPlayerDocRef(memberId);
+        const playerDoc = await getDoc(playerDocRef);
+
+        if (!playerDoc.exists()) {
+            throw new Error('Player stats not found');
+        }
+
+        // Get player stats
+        const playerStats = {
+            summary: playerDoc.data().summary || createDefaultPlayerStats().summary,
+            levels: playerDoc.data().levels || {}
+        };
+
+        // Get the member document
+        const memberDocRef = doc(db, 'groups', groupId, 'members', memberId);
+        const memberDoc = await getDoc(memberDocRef);
+
+        if (!memberDoc.exists()) {
+            throw new Error('Member not found in group');
+        }
+
+        // Update the member document with stats from player stats
+        await updateDoc(memberDocRef, {
+            levelsCompleted: playerStats.summary.totalLevelsSolved || 0,
+            totalLevelsPlayed: playerStats.summary.totalLevelCompletions || 0,
+            totalMisclicks: playerStats.summary.totalMistakesMade || 0,
+            totalTimeSpent: playerStats.summary.totalTimeSpent || 0,
+            totalHintsUsed: playerStats.summary.totalHintsUsed || 0,
+            totalWrongClicks: playerStats.summary.totalMistakesMade || 0,
+            updatedAt: serverTimestamp()
+        });
+    } catch (error) {
+        console.error('Error refreshing member stats:', error);
+        throw error;
+    }
+};
+
+export const joinGroup = async (
+    groupId: string,
+    user: User,
+    displayName?: string
+): Promise<Group> => {
+    if (!user) throw new Error('User must be authenticated to join a group');
+
+    try {
+        // Get the group to make sure it exists
+        const group = await fetchGroupById(groupId);
+        if (!group) {
+            throw new Error('Group not found');
+        }
+
+        // Get the player stats document to update the memberOfGroups field
+        const playerDocRef = getPlayerDocRef(user.uid);
+        const playerDoc = await getDoc(playerDocRef);
+
+        // Check if user is already a member by checking the members subcollection
+        const memberDocRef = doc(db, 'groups', groupId, 'members', user.uid);
+        const memberDoc = await getDoc(memberDocRef);
+        const isMember = memberDoc.exists();
+        console.log('[firestore.joinGroup] isMember:', isMember);
+
+        // Get player stats to initialize member stats
+        let playerStats = createDefaultPlayerStats();
+        if (playerDoc.exists()) {
+            playerStats = {
+                summary: playerDoc.data().summary || createDefaultPlayerStats().summary,
+                levels: playerDoc.data().levels || {}
+            };
+        }
+
+        if (isMember) {
+            await updateDoc(memberDocRef, {
+                displayName: displayName || user.displayName || 'Anonymous',
+                updatedAt: serverTimestamp()
+            });
+        } else {
+            const memberData: GroupMember = {
+                uid: user.uid,
+                displayName: displayName || user.displayName || 'Anonymous',
+                levelsCompleted: playerStats.summary.totalLevelsSolved || 0,
+                totalLevelsPlayed: playerStats.summary.totalLevelCompletions || 0,
+                totalMisclicks: playerStats.summary.totalMistakesMade || 0,
+                totalTimeSpent: playerStats.summary.totalTimeSpent || 0,
+                totalHintsUsed: playerStats.summary.totalHintsUsed || 0,
+                totalWrongClicks: playerStats.summary.totalMistakesMade || 0,
+                lastPlayedAt: new Date().toISOString(),
+                joinedAt: isMember ? memberDoc.data().joinedAt : new Date().toISOString()
+            };
+            await setDoc(memberDocRef, {
+                ...memberData,
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp()
+            });
+        }
+
+        // Update the player stats document to include this group
+        if (playerDoc.exists()) {
+            // Update existing document
+            await updateDoc(playerDocRef, {
+                memberOfGroups: arrayUnion(groupId),
+                teacherIds: arrayUnion(group.ownerUid),
+                updatedAt: serverTimestamp()
+            });
+        } else {
+            // Create new document
+            await setDoc(playerDocRef, {
+                playerId: user.uid,
+                displayName: user.displayName,
+                email: user.email,
+                memberOfGroups: [groupId],
+                teacherIds: [group.ownerUid],
+                summary: createDefaultPlayerStats().summary,
+                levels: {},
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp()
+            });
+        }
+
+        return group;
+    } catch (error) {
+        console.error('Error joining group:', error);
         throw error;
     }
 };
