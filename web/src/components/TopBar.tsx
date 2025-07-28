@@ -74,6 +74,7 @@ export function TopBar(): React.ReactElement {
     }
 
     function renderResetProgressButton() {
+        let showButton = window.location.hostname === 'localhost';
         return (
             <button
                 onClick={async () => {
@@ -94,7 +95,7 @@ export function TopBar(): React.ReactElement {
                         }
                     }
                 }}
-                className="px-3 py-1 flex items-center gap-2 rounded hover:bg-[#3c3c3c] transition-colors"
+                className={"px-3 py-1 flex items-center gap-2 rounded hover:bg-[#3c3c3c] transition-colors " + (showButton ? '' : 'hidden')}
                 title="Reset Progress">
                 <span>Reset Progress</span>
             </button>);

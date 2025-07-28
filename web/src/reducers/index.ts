@@ -314,12 +314,13 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
             // Reset player statistics
             const playerStats = createDefaultPlayerStats();
 
-            // Reset to the initial state but keep the topics loaded
+            // Reset to the initial state but keep the topics loaded and auth state
             return {
                 ...initialState,
                 topics: state.topics,
                 discoveredWisdoms,
-                playerStats
+                playerStats,
+                auth: state.auth
             };
         }
 

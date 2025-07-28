@@ -128,8 +128,19 @@ describe('Game Reducer', () => {
         expect(state.chatMessages[initialChatLength]).toEqual(testMessage);
     });
 
-    test('RESET_PROGRESS transition resets the game state', () => {
+    test('RESET_PROGRESS transition resets the game state but preserves auth state', () => {
         let state: GameState = initialState;
+
+        // Set up a mock auth state
+        state = {
+            ...state,
+            auth: {
+                user: {uid: 'test-uid', displayName: 'Test User', email: 'test@example.com', photoURL: null},
+                isAuthenticated: true,
+                isLoading: false,
+                error: null
+            }
+        };
 
         // First, solve a level to change the state
         const region = state.currentLevel.regions?.[0];
@@ -148,6 +159,11 @@ describe('Game Reducer', () => {
         expect(state.playerStats.levels).toEqual({});
         expect(state.currentLevelId).toEqual(initialState.currentLevelId);
         expect(state.currentLevel.triggeredEvents).toEqual([]);
+
+        // Verify auth state is preserved
+        expect(state.auth.isAuthenticated).toBe(true);
+        expect(state.auth.user).toBeTruthy();
+        expect(state.auth.user?.uid).toBe('test-uid');
     });
 
     test('TOGGLE_NOTEBOOK transition toggles notebook state', () => {
