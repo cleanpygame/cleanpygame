@@ -2,6 +2,7 @@
 import {
     arrayUnion,
     collection,
+    deleteDoc,
     doc,
     DocumentReference,
     getDoc,
@@ -704,6 +705,107 @@ export const joinGroup = async (
         return group;
     } catch (error) {
         console.error('Error joining group:', error);
+        throw error;
+    }
+};
+
+/**
+ * Recalculate player's group membership and teacher IDs
+ * This function filters out deleted and non-existent groups from memberOfGroups
+ * and updates teacherIds to only include owners of groups the player is still a member of
+ *
+ * @param userId - User ID
+ * @returns Promise that resolves with the updated memberOfGroups and teacherIds arrays
+ */
+export const recalculatePlayerGroupMembership = async (userId: string): Promise<{
+    memberOfGroups: string[],
+    teacherIds: string[]
+}> => {
+    try {
+        // Get the player document
+        const playerDocRef = getPlayerDocRef(userId);
+        const playerDoc = await getDoc(playerDocRef);
+
+        if (!playerDoc.exists()) {
+            throw new Error('Player stats not found');
+        }
+
+        // Get the current memberOfGroups array
+        const memberOfGroups = playerDoc.data().memberOfGroups || [];
+
+        if (memberOfGroups.length === 0) {
+            return {memberOfGroups: [], teacherIds: []};
+        }
+
+        // Fetch all groups to verify they exist and aren't deleted
+        const validGroups: Group[] = [];
+        const validTeacherIds: string[] = [];
+
+        // Process groups in batches to avoid potential limitations
+        const batchSize = 10;
+        for (let i = 0; i < memberOfGroups.length; i += batchSize) {
+            const batch = memberOfGroups.slice(i, i + batchSize);
+            const groupPromises = batch.map((groupId: string) => fetchGroupById(groupId));
+            const groups = await Promise.all(groupPromises);
+
+            for (const group of groups) {
+                if (group && !group.deleted) {
+                    validGroups.push(group);
+                    // Add the owner to teacherIds if not already included
+                    if (!validTeacherIds.includes(group.ownerUid)) {
+                        validTeacherIds.push(group.ownerUid);
+                    }
+                }
+            }
+        }
+
+        // Extract valid group IDs
+        const validGroupIds = validGroups.map(group => group.id);
+
+        return {
+            memberOfGroups: validGroupIds,
+            teacherIds: validTeacherIds
+        };
+    } catch (error) {
+        console.error('Error recalculating player group membership:', error);
+        throw error;
+    }
+};
+
+/**
+ * Leave a group
+ * @param groupId - Group ID
+ * @param userId - User ID
+ * @returns Promise that resolves when the operation is complete
+ */
+export const leaveGroup = async (groupId: string, userId: string): Promise<void> => {
+    try {
+        // Get the player stats document to update the memberOfGroups field
+        const playerDocRef = getPlayerDocRef(userId);
+        const playerDoc = await getDoc(playerDocRef);
+
+        if (!playerDoc.exists()) {
+            throw new Error('Player stats not found');
+        }
+
+        // Actually delete the member document from the group's members subcollection
+        const memberDocRef = doc(db, 'groups', groupId, 'members', userId);
+        await deleteDoc(memberDocRef);
+
+        // First recalculate group membership and teacher IDs
+        const {memberOfGroups, teacherIds} = await recalculatePlayerGroupMembership(userId);
+
+        // Then remove the left group from the recalculated memberOfGroups array
+        const updatedMemberOfGroups = memberOfGroups.filter((id: string) => id !== groupId);
+
+        // Update the player stats document with the recalculated and filtered memberOfGroups and teacherIds
+        await updateDoc(playerDocRef, {
+            memberOfGroups: updatedMemberOfGroups,
+            teacherIds: teacherIds,
+            updatedAt: serverTimestamp()
+        });
+    } catch (error) {
+        console.error('Error leaving group:', error);
         throw error;
     }
 };

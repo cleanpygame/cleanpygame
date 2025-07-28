@@ -3,6 +3,7 @@ import {useNavigate} from 'react-router-dom';
 import {GameStateContext} from '../reducers';
 import {createGroupThunk, fetchGroupsThunk} from '../reducers/actionCreators';
 import {formatDate} from '../utils/dateUtils';
+import {leaveGroup} from '../firebase/firestore';
 
 
 /**
@@ -76,6 +77,31 @@ export function GroupsPage(): React.ReactElement {
 
     const handleGroupClick = (groupId: string) => {
         navigate(`/groups/${groupId}`);
+    };
+
+    const [isLeaving, setIsLeaving] = useState<string | null>(null);
+
+    const handleLeaveGroup = async (groupId: string) => {
+        if (!auth.user) return;
+
+        // Add confirmation dialog
+        const confirmLeave = window.confirm(`Are you sure you want to leave this group? You'll need a new invite link to rejoin.`);
+
+        if (!confirmLeave) return;
+
+        setIsLeaving(groupId);
+
+        try {
+            await leaveGroup(groupId, auth.user.uid);
+
+            // Refresh the groups list
+            await fetchGroupsThunk()(dispatch, () => state);
+        } catch (error) {
+            console.error('Error leaving group:', error);
+            alert(`Failed to leave group: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        } finally {
+            setIsLeaving(null);
+        }
     };
 
     return (
@@ -215,7 +241,28 @@ export function GroupsPage(): React.ReactElement {
                                                 key={group.id}
                                                 className="bg-[#333333] p-4 rounded-lg shadow-md"
                                             >
-                                                <h3 className="text-lg font-medium mb-2">{group.name}</h3>
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <h3 className="text-lg font-medium">{group.name}</h3>
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleLeaveGroup(group.id);
+                                                        }}
+                                                        className="text-xs text-blue-400 underline hover:bg-red-700 hover:text-white hover:no-underline px-2 py-1 hover:rounded transition-colors"
+                                                        title="Leave Group"
+                                                        disabled={isLeaving === group.id}
+                                                    >
+                                                        {isLeaving === group.id ? (
+                                                            <span className="flex items-center justify-center">
+                                                                <div
+                                                                    className="w-3 h-3 border-t-2 border-b-2 border-white rounded-full animate-spin mr-1"></div>
+                                                                Leaving...
+                                                            </span>
+                                                        ) : (
+                                                            'Leave'
+                                                        )}
+                                                    </button>
+                                                </div>
                                                 <div className="flex justify-between text-sm text-gray-400">
                                                     <span>Owner: {group.ownerName}</span>
                                                     <span>Joined: {formatDate(group.joinedAt || group.createdAt)}</span>
