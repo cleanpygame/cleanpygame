@@ -10,10 +10,10 @@ import {
 } from '../reducers/actionCreators';
 
 /**
- * JoinPage component
+ * GroupJoinPage component
  * Handles the group join flow
  */
-export function JoinPage(): React.ReactElement {
+export function GroupJoinPage(): React.ReactElement {
     const {code} = useParams<{ code: string }>();
     const context = useContext(GameStateContext);
     const navigate = useNavigate();
@@ -23,7 +23,7 @@ export function JoinPage(): React.ReactElement {
     const [isJoining, setIsJoining] = useState(false);
 
     if (!context) {
-        throw new Error('JoinPage must be used within a GameStateContext Provider');
+        throw new Error('GroupJoinPage must be used within a GameStateContext Provider');
     }
 
     const {state, dispatch} = context;
@@ -133,7 +133,7 @@ export function JoinPage(): React.ReactElement {
                     <h2 className="text-lg font-medium">{selectedGroup.name}</h2>
                     <p className="text-sm text-gray-400">
                         Created
-                        by {selectedGroup.ownerName} {selectedGroup.ownerEmail ? `(${selectedGroup.ownerEmail})` : ''}
+                        by {selectedGroup.ownerName}
                     </p>
                 </div>
 
@@ -188,7 +188,7 @@ export function JoinPage(): React.ReactElement {
                                 disabled={isJoining}
                             />
                             <p className="text-xs text-gray-400 mt-1">
-                                This name will be visible to the teacher and other group members.
+                                This name along with your progress will be visible to the group owner.
                             </p>
                         </div>
 

@@ -6,7 +6,7 @@ import {GameStateContext} from '../reducers';
  * ConfirmationPage component
  * Shown after successfully joining a group
  */
-export function ConfirmationPage(): React.ReactElement {
+export function GroupJoinFinalPage(): React.ReactElement {
     // We don't need the code parameter here
     useParams<{ code: string }>();
     const context = useContext(GameStateContext);
@@ -21,10 +21,6 @@ export function ConfirmationPage(): React.ReactElement {
 
     const handleStartPlaying = () => {
         navigate('/');
-    };
-
-    const handleViewGroups = () => {
-        navigate('/groups');
     };
 
     return (
@@ -46,8 +42,7 @@ export function ConfirmationPage(): React.ReactElement {
                 </div>
 
                 <p className="mb-6 text-gray-400">
-                    Your progress will now be visible to the group owner. You can continue playing the game or view your
-                    groups.
+                    Your progress will now be visible to the group owner.
                 </p>
 
                 <div className="flex flex-col gap-3">
@@ -56,12 +51,6 @@ export function ConfirmationPage(): React.ReactElement {
                         className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
                     >
                         Start Playing
-                    </button>
-                    <button
-                        onClick={handleViewGroups}
-                        className="w-full px-4 py-2 bg-[#444] rounded hover:bg-[#555] transition-colors"
-                    >
-                        View My Groups
                     </button>
                 </div>
             </div>

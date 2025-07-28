@@ -158,7 +158,7 @@ GameState
 **User Scenario**:
 
 1. Unauthenticated user clicks the join link
-2. Display JoinPage with group info (name, teacher) without requiring auth
+2. Display GroupJoinPage with group info (name, teacher) without requiring auth
 3. Prompt for Google sign-in
 4. After auth, check if already a member
 5. Confirm Joining the group, prompt moving to playing game
@@ -221,7 +221,7 @@ GameState
 #### 3. Group Join Flow
 
 - **Landing Page**: Special minimalistic page, explaining what is going on with teacher name and group name.
-- JoinPage
+- GroupJoinPage
     - Group name
     - Teacher name (read-only)
     - Not authenticated user:
