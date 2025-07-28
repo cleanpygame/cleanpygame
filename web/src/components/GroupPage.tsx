@@ -120,14 +120,6 @@ export function GroupPage(): React.ReactElement {
                     ...prevJoinCodes,
                     {code: newJoinCode, active: true}
                 ]);
-
-                // Set the copied code to show feedback
-                setCopiedCode(newJoinCode);
-
-                // Clear the copied code after 2 seconds
-                setTimeout(() => {
-                    setCopiedCode(null);
-                }, 2000);
             })
             .catch((error) => {
                 console.error('Error creating join code:', error);
@@ -276,6 +268,11 @@ export function GroupPage(): React.ReactElement {
                     }, 3000);
                 }, 500);
             });
+    };
+
+    const handleMemberClick = (memberId: string) => {
+        // Navigate to the specific member's stats page
+        navigate(`/stats/${memberId}`);
     };
 
     if (!auth.isAuthenticated) {
@@ -501,7 +498,11 @@ export function GroupPage(): React.ReactElement {
                                     </thead>
                                     <tbody>
                                     {members.map(member => (
-                                        <tr key={member.uid} className="border-b border-[#444] hover:bg-[#3a3a3a]">
+                                        <tr
+                                            key={member.uid}
+                                            className="border-b border-[#444] hover:bg-[#3a3a3a] cursor-pointer"
+                                            onClick={() => handleMemberClick(member.uid)}
+                                        >
                                             <td className="p-2">{member.displayName}</td>
                                             <td className="p-2">{member.levelsCompleted || 0}</td>
                                             <td className="p-2">{member.totalLevelsPlayed || 0}</td>
@@ -510,7 +511,7 @@ export function GroupPage(): React.ReactElement {
                                             <td className="p-2">{member.totalWrongClicks || 0}</td>
                                             <td className="p-2">{member.lastPlayedAt ? formatDate(member.lastPlayedAt) : 'Never'}</td>
                                             <td className="p-2">{formatDate(member.joinedAt)}</td>
-                                            <td className="p-2">
+                                            <td className="p-2" onClick={(e) => e.stopPropagation()}>
                                                 <button
                                                     onClick={() => handleRefreshMemberStats(member.uid)}
                                                     className={`p-1 rounded ${refreshSuccess === member.uid ? 'bg-green-600' : 'bg-blue-600'} hover:bg-blue-700 transition-colors`}

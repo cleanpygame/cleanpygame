@@ -37,6 +37,7 @@ export function App(): React.ReactElement {
             <StateProvider>
                 <Routes>
                     <Route path="/stats" element={<TopBarPageWrapper Component={PlayerStatsPage}/>}/>
+                    <Route path="/stats/:uid" element={<TopBarPageWrapper Component={PlayerStatsPage}/>}/>
                     <Route path="/groups" element={<TopBarPageWrapper Component={GroupsPage}/>}/>
                     <Route path="/groups/:groupId" element={<TopBarPageWrapper Component={GroupPage}/>}/>
                     <Route path="/join/:code" element={<GroupJoinPage/>}/>
