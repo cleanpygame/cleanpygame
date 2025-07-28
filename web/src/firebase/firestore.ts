@@ -31,6 +31,62 @@ export const getPlayerDocRef = (userId: string): DocumentReference => {
  * @param playerStats - Player statistics state
  * @returns Promise that resolves when the operation is complete
  */
+/**
+ * Update all group member stats for a player
+ * @param userId - User ID
+ * @param playerStats - Player statistics state
+ * @returns Promise that resolves when the operation is complete
+ */
+export const updateAllGroupMemberStats = async (userId: string, playerStats: PlayerStatsState): Promise<void> => {
+    try {
+        // Get the player document to access the memberOfGroups array
+        const playerDocRef = getPlayerDocRef(userId);
+        const playerDoc = await getDoc(playerDocRef);
+
+        if (!playerDoc.exists() || !playerDoc.data().memberOfGroups) {
+            // If the player document doesn't exist or doesn't have memberOfGroups, there's nothing to update
+            return;
+        }
+
+        const memberOfGroups = playerDoc.data().memberOfGroups as string[];
+
+        if (memberOfGroups.length === 0) {
+            // If the player is not a member of any groups, there's nothing to update
+            return;
+        }
+
+        // For each group, update the member document with the new stats
+        const updatePromises = memberOfGroups.map(async (groupId) => {
+            const memberDocRef = doc(db, 'groups', groupId, 'members', userId);
+            const memberDoc = await getDoc(memberDocRef);
+
+            if (!memberDoc.exists()) {
+                // If the member document doesn't exist, skip it
+                console.warn(`Member document not found for user ${userId} in group ${groupId}`);
+                return;
+            }
+
+            // Update the member document with stats from player stats
+            return updateDoc(memberDocRef, {
+                levelsCompleted: playerStats.summary.totalLevelsSolved || 0,
+                totalLevelsPlayed: playerStats.summary.totalLevelCompletions || 0,
+                totalMisclicks: playerStats.summary.totalMistakesMade || 0,
+                totalTimeSpent: playerStats.summary.totalTimeSpent || 0,
+                totalHintsUsed: playerStats.summary.totalHintsUsed || 0,
+                totalWrongClicks: playerStats.summary.totalMistakesMade || 0,
+                lastPlayedAt: new Date().toISOString(),
+                updatedAt: serverTimestamp()
+            });
+        });
+
+        // Wait for all updates to complete
+        await Promise.all(updatePromises);
+    } catch (error) {
+        console.error('Error updating group member stats:', error);
+        throw error;
+    }
+};
+
 export const savePlayerStats = async (user: User, playerStats: PlayerStatsState): Promise<void> => {
     if (!user) return;
 
@@ -59,6 +115,9 @@ export const savePlayerStats = async (user: User, playerStats: PlayerStatsState)
                 updatedAt: serverTimestamp()
             });
         }
+
+        // Update all group member stats for this player
+        await updateAllGroupMemberStats(user.uid, playerStats);
     } catch (error) {
         console.error('Error saving player statistics:', error);
         throw error;

@@ -209,6 +209,10 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
             let timeSpent;
             if (isLevelCompleted) {
                 timeSpent = Math.floor((Date.now() - state.currentLevel.startTime) / 1000); // Convert to seconds
+                // Cap time spent at 3 minutes (180 seconds) to ignore unusually large values
+                if (timeSpent > 180) {
+                    timeSpent = 180;
+                }
             }
 
             // Use statsReducer to handle player statistics

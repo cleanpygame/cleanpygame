@@ -315,7 +315,7 @@ export function GroupPage(): React.ReactElement {
 
     if (!auth.isAuthenticated) {
         return (
-            <div className="p-6 max-w-6xl mx-auto">
+            <div className="p-6 max-w-7xl mx-auto">
                 <div className="bg-[#333333] p-6 rounded-lg shadow-md">
                     <p className="text-lg mb-4">You need to be logged in to view group details.</p>
                     <p>Please log in using the button in the top right corner.</p>
@@ -327,7 +327,7 @@ export function GroupPage(): React.ReactElement {
     // Show loading state
     if (isGroupsLoading && !selectedGroup) {
         return (
-            <div className="p-6 max-w-6xl mx-auto">
+            <div className="p-6 max-w-7xl mx-auto">
                 <div className="bg-[#333333] p-6 rounded-lg shadow-md">
                     <p className="text-lg mb-4">Loading group details...</p>
                 </div>
@@ -338,7 +338,7 @@ export function GroupPage(): React.ReactElement {
     // Show error state
     if (groupsError) {
         return (
-            <div className="p-6 max-w-6xl mx-auto">
+            <div className="p-6 max-w-7xl mx-auto">
                 <div className="bg-[#333333] p-6 rounded-lg shadow-md">
                     <p className="text-lg mb-4">Error loading group details:</p>
                     <p className="text-red-500">{groupsError}</p>
@@ -354,7 +354,7 @@ export function GroupPage(): React.ReactElement {
     }
 
     return (
-        <div className="p-6 max-w-6xl mx-auto">
+        <div className="p-6 max-w-7xl mx-auto">
             {/* Toast notification is now handled inline next to the copy button */}
 
             <div className="flex items-center mb-6">
@@ -418,7 +418,7 @@ export function GroupPage(): React.ReactElement {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
                 {/* Sidebar with group info */}
                 <div className="md:col-span-1">
                     <div className="bg-[#333333] p-4 rounded-lg shadow-md mb-4">
@@ -499,7 +499,7 @@ export function GroupPage(): React.ReactElement {
                 </div>
 
                 {/* Main content with members table */}
-                <div className="md:col-span-3">
+                <div className="md:col-span-4">
                     <div className="bg-[#333333] p-4 rounded-lg shadow-md">
                         <h2 className="text-lg font-semibold mb-4">Members</h2>
 
@@ -517,6 +517,7 @@ export function GroupPage(): React.ReactElement {
                                     <tr className="border-b border-[#444]">
                                         <th className="text-left p-2">Name</th>
                                         <th className="text-left p-2">Levels Completed</th>
+                                        <th className="text-left p-2">Total Levels Played</th>
                                         <th className="text-left p-2">Total Time</th>
                                         <th className="text-left p-2">Hints Used</th>
                                         <th className="text-left p-2">Mistakes</th>
@@ -530,6 +531,7 @@ export function GroupPage(): React.ReactElement {
                                         <tr key={member.uid} className="border-b border-[#444] hover:bg-[#3a3a3a]">
                                             <td className="p-2">{member.displayName}</td>
                                             <td className="p-2">{member.levelsCompleted || 0}</td>
+                                            <td className="p-2">{member.totalLevelsPlayed || 0}</td>
                                             <td className="p-2">{member.totalTimeSpent || 0}s</td>
                                             <td className="p-2">{member.totalHintsUsed || 0}</td>
                                             <td className="p-2">{member.totalWrongClicks || 0}</td>
@@ -571,6 +573,9 @@ export function GroupPage(): React.ReactElement {
                                         <td className="p-2 font-medium">Total</td>
                                         <td className="p-2">
                                             {members.reduce((sum, m) => sum + (m.levelsCompleted || 0), 0)}
+                                        </td>
+                                        <td className="p-2">
+                                            {members.reduce((sum, m) => sum + (m.totalLevelsPlayed || 0), 0)}
                                         </td>
                                         <td className="p-2">
                                             {members.reduce((sum, m) => sum + (m.totalTimeSpent || 0), 0)}s
