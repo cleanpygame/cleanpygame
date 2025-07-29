@@ -79,6 +79,8 @@ export function SidebarNavigationContainer(): React.ReactElement {
 
     const handleLevelSelect = (topic: string, levelId: string): void => {
         dispatch(loadLevel({topic, levelId}));
+        // Reset URL path to root after loading standard level
+        navigate('/');
     };
 
     const handleCreateNewLevel = (): void => {
@@ -106,70 +108,72 @@ export function SidebarNavigationContainer(): React.ReactElement {
                     />
                 ))}
 
-                {/* My Levels topic */}
-                <div className="">
-                    <div
-                        className="flex items-center p-1 cursor-pointer"
-                        onClick={() => toggleTopic('My Levels')}
-                    >
-                        <span className="mr-1 font-mono">
-                          {expandedTopics['My Levels'] ? '-' : '+'}
-                        </span>
-                        <span>My Levels</span>
-                    </div>
-
-                    {expandedTopics['My Levels'] && (
-                        <div>
-                            {/* Create New button */}
-                            <div
-                                className="flex items-center pl-4 p-1 cursor-pointer hover:bg-[#37373d]"
-                                onClick={handleCreateNewLevel}
-                            >
-                                <span className="mr-2">+</span>
-                                <span>Create New</span>
-                            </div>
-
-                            {/* Render user levels */}
-                            {isLoading ? (
-                                <div className="pl-4 p-1 text-gray-400">
-                                    Loading levels...
-                                </div>
-                            ) : (
-                                <>
-                                    {userLevels.map((level) => {
-                                        const customLevel = customLevels[level.level_id];
-                                        return (
-                                            <div
-                                                key={level.level_id}
-                                                className="flex items-center pl-4 p-1 hover:bg-[#37373d]"
-                                            >
-                                                <div
-                                                    className="flex-1 cursor-pointer"
-                                                    onClick={() => navigate(`/community-levels/${level.level_id}`)}
-                                                >
-                                                    <span>{customLevel ? customLevel.filename : 'Loading...'}</span>
-                                                </div>
-                                                <div
-                                                    className="px-2 cursor-pointer text-gray-400 hover:text-white"
-                                                    onClick={() => handleEditLevel(level.level_id)}
-                                                    title="Edit level"
-                                                >
-                                                    <span>✎</span>
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-
-                                    {userLevels.length === 0 && (
-                                        <div className="pl-4 p-1 text-gray-400">
-                                            No levels yet. Create one!
-                                        </div>
-                                    )}
-                                </>
-                            )}
+                {/* My Levels topic - only show when user is authenticated */}
+                {state.auth.isAuthenticated && (
+                    <div className="">
+                        <div
+                            className="flex items-center p-1 cursor-pointer"
+                            onClick={() => toggleTopic('My Levels')}
+                        >
+                            <span className="mr-1 font-mono">
+                              {expandedTopics['My Levels'] ? '-' : '+'}
+                            </span>
+                            <span>My Levels</span>
                         </div>
-                    )}
-                </div>
+
+                        {expandedTopics['My Levels'] && (
+                            <div>
+                                {/* Create New button */}
+                                <div
+                                    className="flex items-center pl-4 p-1 cursor-pointer hover:bg-[#37373d]"
+                                    onClick={handleCreateNewLevel}
+                                >
+                                    <span className="mr-2">+</span>
+                                    <span>Create New</span>
+                                </div>
+
+                                {/* Render user levels */}
+                                {isLoading ? (
+                                    <div className="pl-4 p-1 text-gray-400">
+                                        Loading levels...
+                                    </div>
+                                ) : (
+                                    <>
+                                        {userLevels.map((level) => {
+                                            const customLevel = customLevels[level.level_id];
+                                            return (
+                                                <div
+                                                    key={level.level_id}
+                                                    className="flex items-center pl-4 p-1 hover:bg-[#37373d]"
+                                                >
+                                                    <div
+                                                        className="flex-1 cursor-pointer"
+                                                        onClick={() => navigate(`/community-levels/${level.level_id}`)}
+                                                    >
+                                                        <span>{customLevel ? customLevel.filename : 'Loading...'}</span>
+                                                    </div>
+                                                    <div
+                                                        className="px-2 cursor-pointer text-gray-400 hover:text-white"
+                                                        onClick={() => handleEditLevel(level.level_id)}
+                                                        title="Edit level"
+                                                    >
+                                                        <span>✎</span>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+
+                                        {userLevels.length === 0 && (
+                                            <div className="pl-4 p-1 text-gray-400">
+                                                No levels yet. Create one!
+                                            </div>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 {state.topics.length === 0 && (
                     <div className="p-2 text-[#888888]">Loading...</div>
