@@ -123,14 +123,11 @@
         },
         {
           "filename": "temperature.py",
-          "wisdoms": [
-            "no-abbr",
-            "sign-is-doc"
-          ],
+          "wisdoms": [],
           "blocks": [
             {
               "type": "text",
-              "text": "\ndef fmt_temp(idx, tt):\n    dnms = [\"Monday\", \"Tuesday\", \"Wednesday\", \"Thursday\", \"Friday\", \"Saturday\", \"Sunday\"]\n    return \"Temperature for \" + dnms[idx] + \" is \" + str(tt) + \"° C\"\n"
+              "text": "def fmt_temp(idx, tt):\n    dnms = [\"Monday\", \"Tuesday\", \"Wednesday\", \"Thursday\", \"Friday\", \"Saturday\", \"Sunday\"]\n    return \"Temperature for \" + dnms[idx] + \" is \" + str(tt) + \"° C\"\n"
             },
             {
               "type": "replace-span",
@@ -163,9 +160,15 @@
               "event": "fmt_temp",
               "explanation": "'fmt_temp' could mean anything from formatting templates to fermenting tempeh.",
               "hint": "Imagine that function name is the only documentation on this function you have..."
+            },
+            {
+              "type": "text",
+              "text": "print(fmt_temp(5, 20))\n"
             }
           ],
-          "startMessage": "Time for some real work! Take a look at this cryptic masterpiece of your colleague and see if you can decipher what's happening without consulting ancient scrolls or summoning a code whisperer.\nLet's make this readable for mere mortals."
+          "startMessage": "Oh! Time for some real work! Take a look at this cryptic masterpiece of your colleague and see if you can decipher what's happening without consulting ancient scrolls or summoning a code whisperer.\nLet's make this readable for mere mortals.",
+          "finalMessage": "Bravo! Now human might actually understand without needing a decoder ring.\nRemember: code is read far more often than it's written, so clarity trumps brevity every time. Your future teammates (and your future self at 3 AM) will be eternally grateful!",
+          "endReply": "Next naming task!"
         },
         {
           "filename": "cells.py",

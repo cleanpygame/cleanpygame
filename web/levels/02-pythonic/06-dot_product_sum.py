@@ -18,6 +18,6 @@ Perfect! `zip` pairs elements safely, reads like English,
 and kicks index acrobatics to the curb.
 """
 ##final-reply "Zip-zap, done!"
-##end
+##end_of_level
 
 print(dot_product([1,2,3], [0, 1, 2])) # 8?

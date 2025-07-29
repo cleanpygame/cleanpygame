@@ -10,7 +10,6 @@ vi.spyOn(Date, 'now').mockImplementation(() => mockDateNow);
 // Mock level data for testing
 const mockLevelData: LevelData = {
     filename: 'test_level.py',
-    wisdoms: ['test_wisdom'],
     blocks: [
         {
             type: 'code',

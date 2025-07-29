@@ -1,21 +1,3 @@
 {
-  "name": "Pythonic",
-  "wisdoms": [
-    {
-      "id": "built-in-functions",
-      "text": "Use Python's built-in functions instead of reinventing the wheel."
-    },
-    {
-      "id": "list-comprehensions",
-      "text": "List comprehensions and generator expressions are more concise and often more readable than loops."
-    },
-    {
-      "id": "context-managers",
-      "text": "Use context managers (with statement) for resource management."
-    },
-    {
-      "id": "in-operator",
-      "text": "The 'in' operator is a powerful and efficient way to check for membership."
-    }
-  ]
+  "name": "Pythonic"
 }

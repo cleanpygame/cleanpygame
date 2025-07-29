@@ -1,10 +1,8 @@
 ##file temperature.py
 """start
-Time for some real work! Take a look at this cryptic masterpiece of your colleague and see if you can decipher what's happening without consulting ancient scrolls or summoning a code whisperer.
+Oh! Time for some real work! Take a look at this cryptic masterpiece of your colleague and see if you can decipher what's happening without consulting ancient scrolls or summoning a code whisperer.
 Let's make this readable for mere mortals.
 """
-##wisdoms no-abbr sign-is-doc
-
 def fmt_temp(idx, tt):
     dnms = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
     return "Temperature for " + dnms[idx] + " is " + str(tt) + "° C"
@@ -20,8 +18,6 @@ def fmt_temp(idx, tt):
 ##replace-span - fmt_temp format_temperature
 ##explain "'fmt_temp' could mean anything from formatting templates to fermenting tempeh."
 ##hint "Imagine that function name is the only documentation on this function you have..."
-##end
-
 print(fmt_temp(5, 20))
 """final
 Bravo! Now human might actually understand without needing a decoder ring.

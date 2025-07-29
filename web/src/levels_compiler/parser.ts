@@ -306,9 +306,6 @@ function readOneBlock(context: ParseContext): void {
         case 'final-reply':
             context.level.endReply = readReply(args, context);
             break;
-        case 'wisdoms':
-            context.level.wisdoms = readWisdoms(args, context);
-            break;
         case 'replace-span':
             context.level.blocks.push(readReplaceSpan(args, context));
             break;
@@ -331,8 +328,10 @@ function readOneBlock(context: ParseContext): void {
             getPrevBlock(context).hint = readHint(args, context);
             break;
         case 'end':
+            throw errorWithContext(`Unexpected ##end`, context);
+        case 'end_of_level':
             context.idx = context.lines.length;
-            break
+            break;
         default:
             throw errorWithContext(`Unknown ##${cmd}`, context);
     }
@@ -373,16 +372,9 @@ function validateRequiredInstructions(level: LevelData): string | null {
     if (!level.startMessage) {
         missingInstructions.push('start');
     }
-    if (!level.startReply) {
-        missingInstructions.push('start-reply');
-    }
     if (!level.finalMessage) {
         missingInstructions.push('final');
     }
-    if (!level.endReply) {
-        missingInstructions.push('final-reply');
-    }
-
     if (missingInstructions.length > 0) {
         return `Missing required level instructions: ${missingInstructions.join(', ')}`;
     }

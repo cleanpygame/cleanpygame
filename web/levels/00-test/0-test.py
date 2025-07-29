@@ -2,7 +2,6 @@
 """start
 This is a test level
 """
-##wisdoms 1 2
 def foo():
     print(42)
 
@@ -34,11 +33,3 @@ def GOOD_CODE():
 ##replace-span e42 "42" "the_answer"
 ##explain "no magic constants!"
 ##hint "42 = 6 * 8"
-##end
-# here after ##end instruction the test code starts. It should be ignored by toolchain!
-foo()
-bar()
-greet_user()
-BAD_CODE()
-GOOD_CODE()
-
