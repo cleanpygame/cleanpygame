@@ -4,6 +4,7 @@ import {TopBar} from './TopBar';
 import CodeMirror from '@uiw/react-codemirror';
 import {python} from '@codemirror/lang-python';
 import {PyLevelsGuide} from './PyLevelsGuide';
+import {parseLevelText, ParseResult} from '../levels_compiler/parser';
 
 /**
  * Editor page for creating and editing custom levels
@@ -31,14 +32,21 @@ export function EditorPage(): React.ReactElement {
     const handleCodeChange = (value: string) => {
         setCode(value);
 
-        // Extract filename from code (simple implementation)
-        const fileMatch = value.match(/##file\s+([^\s]+)/);
-        if (fileMatch && fileMatch[1]) {
-            setFilename(fileMatch[1]);
-        }
+        // Parse the code using parseLevelText
+        const result: ParseResult = parseLevelText(value);
 
-        // Validation will be implemented later
-        setErrors([]);
+        if (result.error) {
+            // If there's an error, update the errors state
+            setErrors([result.error]);
+        } else if (result.level) {
+            // If parsing succeeded, clear the errors state
+            setErrors([]);
+
+            // Extract the filename from the level
+            if (result.level.filename) {
+                setFilename(result.level.filename);
+            }
+        }
     };
 
     return (

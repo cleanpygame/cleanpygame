@@ -248,7 +248,7 @@ export function readReply(args: string[], context: ParseContext): string {
 
 function errorWithContext(message: string, context: ParseContext): Error {
     let fileInfo = context.filename ? ` in file ${context.filename}` : '';
-    return new Error(`${message}. Line ${context.idx}${fileInfo}`);
+    return new Error(`${message}. Line ${context.idx + 1}${fileInfo}`);
 }
 
 export function readFilename(args: string[], context: ParseContext): string {
@@ -363,6 +363,88 @@ export function parseLevelFile(filePath: string): LevelData | undefined {
     return context.level;
 }
 
+// Function to validate required level instructions
+function validateRequiredInstructions(level: LevelData): string | null {
+    const missingInstructions: string[] = [];
+
+    if (!level.filename) {
+        missingInstructions.push('file');
+    }
+    if (!level.startMessage) {
+        missingInstructions.push('start');
+    }
+    if (!level.startReply) {
+        missingInstructions.push('start-reply');
+    }
+    if (!level.finalMessage) {
+        missingInstructions.push('final');
+    }
+    if (!level.endReply) {
+        missingInstructions.push('final-reply');
+    }
+
+    if (missingInstructions.length > 0) {
+        return `Missing required level instructions: ${missingInstructions.join(', ')}`;
+    }
+
+    return null;
+}
+
+// Function to validate that all events referenced in event-triggered blocks are defined
+function validateEventReferences(level: LevelData): string | null {
+    // Collect all defined events from replace and replace-span blocks
+    const definedEvents = new Set<string>();
+
+    // Collect all referenced events from replace-on, add-on, remove-on blocks
+    const referencedEvents = new Set<string>();
+    const referencedEventsBlocks: Record<string, string[]> = {};
+
+    for (const block of level.blocks) {
+        if (block.type === 'replace' || block.type === 'replace-span') {
+            if (block.event) {
+                definedEvents.add(block.event);
+            }
+        } else if (block.type === 'replace-on') {
+            // Note: add-on and remove-on are implemented as replace-on blocks
+            // but we still need to track the original block type for error messages
+            if (block.event) {
+                referencedEvents.add(block.event);
+                if (!referencedEventsBlocks[block.event]) {
+                    referencedEventsBlocks[block.event] = [];
+                }
+
+                // Determine the original block type based on the text/replacement pattern
+                let blockType = 'replace-on';
+                if (block.text === '' && block.replacement !== '') {
+                    blockType = 'add-on';
+                } else if (block.text !== '' && block.replacement === '') {
+                    blockType = 'remove-on';
+                }
+
+                referencedEventsBlocks[block.event].push(blockType);
+            }
+        }
+    }
+
+    // Check if all referenced events are defined
+    const undefinedEvents: string[] = [];
+    for (const event of referencedEvents) {
+        if (!definedEvents.has(event)) {
+            undefinedEvents.push(event);
+        }
+    }
+
+    if (undefinedEvents.length > 0) {
+        const eventDetails = undefinedEvents.map(event => {
+            const blockTypes = referencedEventsBlocks[event].join(', ');
+            return `${event} (used in ${blockTypes})`;
+        });
+        return `Events referenced but not defined: ${eventDetails.join('; ')}`;
+    }
+
+    return null;
+}
+
 // Main parsing function
 export function parseLevelText(content: string): ParseResult {
     const lines = content.split(/\r?\n/);
@@ -383,6 +465,18 @@ export function parseLevelText(content: string): ParseResult {
     try {
         while (context.idx < lines.length) {
             readOneBlock(context);
+        }
+
+        // Validate required level instructions
+        const requiredInstructionsError = validateRequiredInstructions(context.level);
+        if (requiredInstructionsError) {
+            return {error: requiredInstructionsError};
+        }
+
+        // Validate event references
+        const eventReferencesError = validateEventReferences(context.level);
+        if (eventReferencesError) {
+            return {error: eventReferencesError};
         }
     } catch (e) {
         return {error: e instanceof Error ? e.message : String(e)};
