@@ -17,7 +17,9 @@
     "deploy:firestore": "firebase deploy --only firestore:rules,firestore:indexes"
   },
   "dependencies": {
+    "@codemirror/lang-python": "^6.2.1",
     "@tailwindcss/vite": "^4.1.11",
+    "@uiw/react-codemirror": "^4.24.1",
     "firebase": "^10.8.0",
     "prism-react-renderer": "^2.4.1",
     "prismjs": "^1.30.0",
