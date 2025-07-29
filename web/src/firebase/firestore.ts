@@ -28,7 +28,6 @@ export interface CustomLevel {
 
 export interface UserLevel {
     level_id: string;
-    filename: string;
 }
 
 /**
@@ -829,31 +828,60 @@ export const leaveGroup = async (groupId: string, userId: string): Promise<void>
  * @param user - Firebase user (author)
  * @param content - Level content in PyLevels format
  * @param filename - Filename extracted from the level
+ * @param existingLevelId - Optional ID of an existing level to update
  * @returns Promise that resolves with the saved level ID
  */
-export const saveCustomLevel = async (user: User, content: string, filename: string): Promise<string> => {
+export const saveCustomLevel = async (user: User, content: string, filename: string, existingLevelId?: string): Promise<string> => {
     if (!user) throw new Error('User must be authenticated to save a level');
 
     try {
-        // Create a new document in the customLevels collection
-        const levelsCollection = collection(db, 'customLevels');
-        const levelDoc = doc(levelsCollection);
-        const levelId = levelDoc.id;
+        let levelId: string;
+        let levelDoc: DocumentReference;
 
-        // Create the level object
-        const level: CustomLevel = {
-            id: levelId,
-            content,
-            author_id: user.uid,
-            filename,
-            created_at: serverTimestamp()
-        };
+        if (existingLevelId) {
+            // Update existing level
+            levelId = existingLevelId;
+            levelDoc = doc(db, 'customLevels', levelId);
 
-        // Save the level to Firestore
-        await setDoc(levelDoc, level);
+            // Check if the level exists and the user is the author
+            const existingLevel = await getDoc(levelDoc);
+            if (!existingLevel.exists()) {
+                throw new Error('Level not found');
+            }
 
-        // Add the level to the user's levels
-        await addLevelToUserLevels(user.uid, levelId, filename);
+            const levelData = existingLevel.data() as CustomLevel;
+            if (levelData.author_id !== user.uid) {
+                throw new Error('You are not authorized to edit this level');
+            }
+
+            // Update the level
+            await updateDoc(levelDoc, {
+                content,
+                filename,
+                // Don't update created_at or author_id
+                updatedAt: serverTimestamp()
+            });
+        } else {
+            // Create a new level
+            const levelsCollection = collection(db, 'customLevels');
+            levelDoc = doc(levelsCollection);
+            levelId = levelDoc.id;
+
+            // Create the level object
+            const level: CustomLevel = {
+                id: levelId,
+                content,
+                author_id: user.uid,
+                filename,
+                created_at: serverTimestamp()
+            };
+
+            // Save the level to Firestore
+            await setDoc(levelDoc, level);
+
+            // Add the level to the user's levels
+            await addLevelToUserLevels(user.uid, levelId);
+        }
 
         return levelId;
     } catch (error) {
@@ -866,18 +894,16 @@ export const saveCustomLevel = async (user: User, content: string, filename: str
  * Add a level to a user's levels
  * @param userId - User ID
  * @param levelId - Level ID
- * @param filename - Filename
  * @returns Promise that resolves when the operation is complete
  */
-export const addLevelToUserLevels = async (userId: string, levelId: string, filename: string): Promise<void> => {
+export const addLevelToUserLevels = async (userId: string, levelId: string): Promise<void> => {
     try {
         // Get the userLevels document
         const userLevelsDocRef = doc(db, 'userLevels', userId);
         const userLevelsDoc = await getDoc(userLevelsDocRef);
 
         const userLevel: UserLevel = {
-            level_id: levelId,
-            filename
+            level_id: levelId
         };
 
         if (userLevelsDoc.exists()) {
@@ -917,6 +943,32 @@ export const getCustomLevelById = async (levelId: string): Promise<CustomLevel |
         return null;
     } catch (error) {
         console.error('Error getting custom level by ID:', error);
+        throw error;
+    }
+};
+
+/**
+ * Get all levels for a user
+ * @param userId - User ID
+ * @returns Promise that resolves with an array of UserLevel objects or null if not found
+ */
+export const getUserLevels = async (userId: string): Promise<UserLevel[] | null> => {
+    try {
+        const userLevelsDocRef = doc(db, 'userLevels', userId);
+        const userLevelsDoc = await getDoc(userLevelsDocRef);
+
+        if (userLevelsDoc.exists() && userLevelsDoc.data().levels) {
+            // The data in Firestore might still have the old format with filename
+            // We need to ensure we only return the level_id
+            const levels = userLevelsDoc.data().levels;
+            return levels.map((level: any) => ({
+                level_id: level.level_id
+            }));
+        }
+
+        return [];
+    } catch (error) {
+        console.error('Error getting user levels:', error);
         throw error;
     }
 };

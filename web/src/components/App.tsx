@@ -44,6 +44,7 @@ export function App(): React.ReactElement {
                     <Route path="/join/:code" element={<GroupJoinPage/>}/>
                     <Route path="/join/:code/success" element={<GroupJoinFinalPage/>}/>
                     <Route path="/editor" element={<EditorPage/>}/>
+                    <Route path="/editor/:levelId" element={<EditorPage/>}/>
                     <Route path="*" element={<IdeLayout/>}/>
                 </Routes>
             </StateProvider>

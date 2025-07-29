@@ -1,25 +1,56 @@
 import React, {useEffect, useState} from 'react';
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 import {TopBar} from './TopBar';
 import CodeMirror from '@uiw/react-codemirror';
 import {python} from '@codemirror/lang-python';
 import {PyLevelsGuide} from './PyLevelsGuide';
 import {parseLevelText, ParseResult} from '../levels_compiler/parser';
 import {getCurrentUser} from '../firebase/auth';
-import {saveCustomLevel} from '../firebase/firestore';
+import {getCustomLevelById, saveCustomLevel} from '../firebase/firestore';
 
 /**
  * Editor page for creating and editing custom levels
  */
 export function EditorPage(): React.ReactElement {
     const navigate = useNavigate();
+    const {levelId: levelIdParam} = useParams<{ levelId: string }>();
     const [code, setCode] = useState<string>('##file example.py\n\n"""start\nWelcome to the level editor!\n"""\n##start-reply "Let\'s create a level"\n\n# Your code here\n\n"""final\nGreat job creating your level!\n"""\n##final-reply "Finish"');
     const [filename, setFilename] = useState<string>('example.py');
     const [errors, setErrors] = useState<string[]>([]);
     const [isSaved, setIsSaved] = useState<boolean>(false);
-    const [levelId, setLevelId] = useState<string | null>(null);
+    const [levelId, setLevelId] = useState<string | null>(levelIdParam || null);
     const [hasChanges, setHasChanges] = useState<boolean>(false);
-    const [initialCode] = useState<string>(code); // Store initial code to detect changes
+    const [initialCode, setInitialCode] = useState<string>(code); // Store initial code to detect changes
+    const [isLoading, setIsLoading] = useState<boolean>(!!levelIdParam);
+
+    // Load level if levelId is provided
+    useEffect(() => {
+        const loadLevel = async () => {
+            if (levelIdParam) {
+                try {
+                    setIsLoading(true);
+                    const level = await getCustomLevelById(levelIdParam);
+                    if (level) {
+                        setCode(level.content);
+                        setInitialCode(level.content);
+                        setFilename(level.filename);
+                        setLevelId(levelIdParam);
+                        setIsSaved(true);
+                        setHasChanges(false);
+                    } else {
+                        console.error('Level not found');
+                        navigate('/editor'); // Redirect to create new level if not found
+                    }
+                } catch (error) {
+                    console.error('Error loading level:', error);
+                } finally {
+                    setIsLoading(false);
+                }
+            }
+        };
+
+        loadLevel();
+    }, [levelIdParam, navigate]);
 
     // Check if code has changed from initial or last saved state
     useEffect(() => {
@@ -55,10 +86,11 @@ export function EditorPage(): React.ReactElement {
             }
 
             // Save the level to Firestore
-            const savedLevelId = await saveCustomLevel(user, code, filename);
+            const savedLevelId = await saveCustomLevel(user, code, filename, levelId || undefined);
             setLevelId(savedLevelId);
             setIsSaved(true);
             setHasChanges(false);
+            setInitialCode(code); // Update initial code to detect future changes
 
             // Navigate to the level
             navigate(`/community-levels/${savedLevelId}`);
@@ -112,8 +144,8 @@ export function EditorPage(): React.ReactElement {
     return (
         <div className="flex flex-col h-screen bg-[#2d2d2d] text-[#d4d4d4]">
             <TopBar/>
-            <div className="flex flex-1 p-4 overflow-hidden">
-                <div className="flex flex-col w-full">
+            <div className="flex flex-1 p-4 overflow-auto">
+                <div className="flex flex-col w-full min-h-min">
                     {/* Top Section */}
                     <div className="flex justify-between mb-4">
                         <div className="flex items-center">
@@ -153,16 +185,22 @@ export function EditorPage(): React.ReactElement {
                     </div>
 
                     {/* Middle Section */}
-                    <div className="flex flex-1 space-x-4 mb-4">
+                    <div className="flex space-x-4 mb-4" style={{minHeight: "300px", height: "calc(100vh - 250px)"}}>
                         {/* Code Editor (Left) */}
-                        <div className="flex-1 bg-[#1e1e1e] rounded overflow-hidden">
+                        <div className="flex-1 bg-[#1e1e1e] rounded overflow-hidden relative">
+                            {isLoading && (
+                                <div
+                                    className="absolute inset-0 flex items-center justify-center bg-[#1e1e1e] bg-opacity-70 z-10">
+                                    <span className="text-white">Loading...</span>
+                                </div>
+                            )}
                             <CodeMirror
                                 value={code}
                                 height="100%"
                                 extensions={[python()]}
                                 onChange={handleCodeChange}
                                 theme="dark"
-                                className="h-full"
+                                className="h-full overflow-auto"
                             />
                         </div>
 
@@ -173,7 +211,7 @@ export function EditorPage(): React.ReactElement {
                     </div>
 
                     {/* Bottom Section - Errors */}
-                    <div className="bg-[#1e1e1e] p-4 rounded h-32 overflow-auto">
+                    <div className="bg-[#1e1e1e] p-4 rounded min-h-[120px] overflow-auto">
                         <h2 className="text-lg font-semibold mb-2">Validation</h2>
                         {errors.length > 0 ? (
                             <ul className="text-red-400">
