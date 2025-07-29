@@ -14,8 +14,6 @@ interface GameState {
   currentLevelId: LevelId
   currentLevel: LevelState          // transient state for the open level
   solvedLevels: LevelId[]
-  discoveredWisdoms: string[]       // list of wisdom IDs unlocked across all levels
-  notebookOpen: Boolean
   chatMessages: ChatMessage[]      // chat history from the Buddy mentor
 }
 
@@ -36,18 +34,11 @@ interface ChatMessage {
 // levels.json:
 interface Topic {
   name: string
-  wisdoms: WisdomEntry[]
   levels: LevelData[]
-}
-
-interface WisdomEntry {
-  id: string
-  text: string
 }
 
 interface LevelData {
   filename: string
-  wisdoms: string[]
   blocks: LevelBlock[]
 }
 ```
@@ -58,7 +49,7 @@ interface LevelData {
 
 - **POST_BUDDY_MESSAGE**  
   * payload: `{ message: ChatMessage }`
-  * Dispatch to append a new chat entry (correct/incorrect feedback, hints, wisdoms).
+  * Dispatch to append a new chat entry (correct/incorrect feedback, hints).
 
 - **GET_HINT**  
   * payload: none
@@ -84,7 +75,7 @@ interface LevelData {
   * calculates `currentLevel.pendingHintId`
   * Dispatches `POST_BUDDY_MESSAGE({ type: 'me', text: '<TOKEN> in line <LINE>' })`.
   * Dispatches `POST_BUDDY_MESSAGE({ type: 'buddy-explain', text: triggeredBlock.explanation })`.
-  * Dispatches `POST_BUDDY_MESSAGE({ type: 'buddy-summarize', text: '<wisdoms>' })` if all issues are fixed.
+  * Dispatches `POST_BUDDY_MESSAGE({ type: 'buddy-summarize', text: 'Great job!' })` if all issues are fixed.
   * `autoHintAt = Date.now() + AUTOHINT_DELAY`
 - 
 - **WRONG_CLICK**
@@ -95,9 +86,7 @@ interface LevelData {
 
 * **NEXT_LEVEL**
   * payload: none
-  * sets `notebookState` to `closed`
   * adds `currentLevelId` to `solvedLevels`
-  * adds `level.wisdoms` to `discoveredWisdoms`
   * sets `currentLevelId` to the next level in the list of topics
   * sets `currentLevel` to the level with the new ID with zero progress and empty buddy messages.
   * `autoHintAt = Date.now() + AUTOHINT_DELAY`
@@ -107,9 +96,6 @@ interface LevelData {
   * revert state to initial value, resetting all the progress.
   * `autoHintAt = Date.now() + AUTOHINT_DELAY`
 
-* **TOGGLE_NOTEBOOK**
-  * payload: none
-  * `notebookOpen = !notebookOpen` (toggles between true and false)
 
 ---
 
@@ -121,17 +107,17 @@ App
     └─ IdeLayout - UI layout
         ├─ SidebarNavigationContainer
         ├─ TopBar - buttons
-        ├─ LevelViewportContainer
-        │   ├─ CodeView
-        │   └─ BuddyChat
-        └─ NotebookContainer
+        └─ LevelViewportContainer
+            ├─ CodeView
+            └─ BuddyChat
 ```
 
 Containers use data from Context. Other components are pure props-driven components.
 
 ## StateProvider
 
-Responsibility – Owns global reactive state (current topic/level, wisdoms, lock‑out timers) and exposes actions through React Context.
+Responsibility – Owns global reactive state (current topic/level, lock‑out timers) and exposes actions through React
+Context.
 
 Public interface – No props; wraps the rest containers.
 
@@ -143,13 +129,13 @@ Responsibility – Combines StateProvider and IdeLayout. No markup here. No prop
 
 ## IdeLayout
 
-Responsibility – Layout of SideBar, TopBar, and Notebook Container. No props. No context usage. Only markup.
+Responsibility – Layout of SideBar and TopBar. No props. No context usage. Only markup.
 
 ## TopBar
 
-Top bar with buttons: notebook, reset progress.
+Top bar with buttons: reset progress.
 
-Dispatches actions: TOGGLE_NOTEBOOK and RESET_PROGRESS.
+Dispatches actions: RESET_PROGRESS.
 
 ## SidebarNavigationContainer
 
@@ -158,14 +144,14 @@ Lightweight visual, no borders, no shadows, just text, small icons for topics an
 
 Clickable levels:
 
-- all solved levels (state.solvedLevels) are clickable.
+- all completed levels are clickable.
 - first level in each topic is clickable.
-- next level after any solved level is clickable.
+- next level after any completed level is clickable.
 - all other levels are disabled.
 
 When a level is clicked, it dispatches `LOAD_LEVEL` action.
 
-Use context: topics, currentLevelId, solvedLevels.
+Use context: topics, currentLevelId, playerStats.
 
 ## LevelViewportContainer
 

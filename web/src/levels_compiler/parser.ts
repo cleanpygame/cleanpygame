@@ -97,10 +97,6 @@ export function collectBlockUntil(context: ParseContext, endDirective: string): 
 }
 
 // Directive handlers
-export function readWisdoms(args: string[], context: ParseContext): string[] {
-    context.idx++;
-    return args;
-}
 
 function isDirectiveStart(context: ParseContext): boolean {
     let line = context.lines[context.idx];
@@ -345,7 +341,6 @@ export function parseLevelFile(filePath: string): LevelData | undefined {
 
     const outputLevel: LevelData = {
         filename: "",
-        wisdoms: [],
         blocks: []
     };
 
@@ -444,7 +439,6 @@ export function parseLevelText(content: string): ParseResult {
 
     const outputLevel: LevelData = {
         filename: "",
-        wisdoms: [],
         blocks: []
     };
 

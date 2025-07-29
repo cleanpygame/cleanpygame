@@ -30,7 +30,6 @@ export function generate(source: string, output: string): void {
 
         const topic: Topic = {
             name: topicName,
-            wisdoms: topicData.wisdoms || [],
             levels: []
         };
 

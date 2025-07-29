@@ -2,23 +2,9 @@
   "topics": [
     {
       "name": "Testing",
-      "wisdoms": [
-        {
-          "id": "1",
-          "text": "Поспешишь — QA-ев насмешишь!"
-        },
-        {
-          "id": "2",
-          "text": "Под лежачий прод бабло не течёт!"
-        }
-      ],
       "levels": [
         {
           "filename": "onboarding.py",
-          "wisdoms": [
-            "1",
-            "2"
-          ],
           "blocks": [
             {
               "type": "text",
@@ -80,24 +66,9 @@
     },
     {
       "name": "Naming",
-      "wisdoms": [
-        {
-          "id": "naming-good-names",
-          "text": "Use descriptive names that convey intent."
-        },
-        {
-          "id": "no-abbr",
-          "text": "Don't use abbreviations unless they are well-known."
-        },
-        {
-          "id": "sign-is-doc",
-          "text": "Function arguments are documentation. Use meaningful names!"
-        }
-      ],
       "levels": [
         {
           "filename": "onboarding.py",
-          "wisdoms": [],
           "blocks": [
             {
               "type": "text",
@@ -123,7 +94,6 @@
         },
         {
           "filename": "temperature.py",
-          "wisdoms": [],
           "blocks": [
             {
               "type": "text",
@@ -163,7 +133,7 @@
             },
             {
               "type": "text",
-              "text": "print(fmt_temp(5, 20))\n"
+              "text": "\n\nprint(fmt_temp(5, 20))\n"
             }
           ],
           "startMessage": "Oh! Time for some real work! Take a look at this cryptic masterpiece of your colleague and see if you can decipher what's happening without consulting ancient scrolls or summoning a code whisperer.\nLet's make this readable for mere mortals.",
@@ -172,7 +142,6 @@
         },
         {
           "filename": "cells.py",
-          "wisdoms": [],
           "blocks": [
             {
               "type": "text",
@@ -221,7 +190,6 @@
         },
         {
           "filename": "views.py",
-          "wisdoms": [],
           "blocks": [
             {
               "type": "text",
@@ -272,7 +240,6 @@
         },
         {
           "filename": "contains.py",
-          "wisdoms": [],
           "blocks": [
             {
               "type": "text",
@@ -306,7 +273,6 @@
         },
         {
           "filename": "unescape.py",
-          "wisdoms": [],
           "blocks": [
             {
               "type": "text",
@@ -348,7 +314,6 @@
         },
         {
           "filename": "bigrams.py",
-          "wisdoms": [],
           "blocks": [
             {
               "type": "text",
@@ -414,7 +379,6 @@
         },
         {
           "filename": "copy.py",
-          "wisdoms": [],
           "blocks": [
             {
               "type": "text",
@@ -472,7 +436,6 @@
         },
         {
           "filename": "discount.py",
-          "wisdoms": [],
           "blocks": [
             {
               "type": "text",
@@ -506,7 +469,6 @@
         },
         {
           "filename": "board.py",
-          "wisdoms": [],
           "blocks": [
             {
               "type": "text",
@@ -556,7 +518,6 @@
         },
         {
           "filename": "final.py",
-          "wisdoms": [],
           "blocks": [
             {
               "type": "text",
@@ -632,28 +593,9 @@
     },
     {
       "name": "Pythonic",
-      "wisdoms": [
-        {
-          "id": "built-in-functions",
-          "text": "Use Python's built-in functions instead of reinventing the wheel."
-        },
-        {
-          "id": "list-comprehensions",
-          "text": "List comprehensions and generator expressions are more concise and often more readable than loops."
-        },
-        {
-          "id": "context-managers",
-          "text": "Use context managers (with statement) for resource management."
-        },
-        {
-          "id": "in-operator",
-          "text": "The 'in' operator is a powerful and efficient way to check for membership."
-        }
-      ],
       "levels": [
         {
           "filename": "sum.py",
-          "wisdoms": [],
           "blocks": [
             {
               "type": "text",
@@ -691,7 +633,6 @@
         },
         {
           "filename": "csv_processing.py",
-          "wisdoms": [],
           "blocks": [
             {
               "type": "text",
@@ -741,7 +682,6 @@
         },
         {
           "filename": "search.py",
-          "wisdoms": [],
           "blocks": [
             {
               "type": "text",
@@ -767,7 +707,6 @@
         },
         {
           "filename": "unescape.py",
-          "wisdoms": [],
           "blocks": [
             {
               "type": "text",
@@ -793,7 +732,6 @@
         },
         {
           "filename": "dot_product.py",
-          "wisdoms": [],
           "blocks": [
             {
               "type": "text",
@@ -832,7 +770,6 @@
         },
         {
           "filename": "dot_product2.py",
-          "wisdoms": [],
           "blocks": [
             {
               "type": "text",
@@ -853,7 +790,6 @@
         },
         {
           "filename": "unique_words.py",
-          "wisdoms": [],
           "blocks": [
             {
               "type": "text",
@@ -901,7 +837,6 @@
         },
         {
           "filename": "report_errors.py",
-          "wisdoms": [],
           "blocks": [
             {
               "type": "text",
@@ -936,7 +871,6 @@
         },
         {
           "filename": "bag_of_words.py",
-          "wisdoms": [],
           "blocks": [
             {
               "type": "text",
@@ -999,7 +933,6 @@
         },
         {
           "filename": "student_scores.py",
-          "wisdoms": [],
           "blocks": [
             {
               "type": "text",
@@ -1097,7 +1030,6 @@
         },
         {
           "filename": "student_scores2.py",
-          "wisdoms": [],
           "blocks": [
             {
               "type": "text",

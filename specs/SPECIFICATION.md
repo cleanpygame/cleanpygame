@@ -26,10 +26,6 @@ The game is designed for **solo self-paced learning**, but includes support for 
 - Instructors can generate **shareable join-links** to assign specific topic folders  
 - Progress of students who join via the link can be **tracked and monitored** by the instructor
 
-**Learning-Centric Design**  
-The game emphasizes a **minimal, distraction-free** experience. Gamification is mostly avoided in favor of clarity and learning outcomes. Instead of points or badges, players build a **“pocket notebook”**—a persistent knowledge log that collects every clean-code principle or refactoring pattern they’ve encountered. 
-This notebook serves as a growing revision tool the player can refer back to at any time.
-
 
 ---
 
@@ -54,10 +50,6 @@ The level is complete once **all confirmed issues** are correctly identified and
   - Triggers a **Buddy hint message** about the first remaining issue.
   - Button is always visible during the level.
 
-- ⏱ **Auto-Hint Mechanic**
-
-  - If the player takes more than 20 seconds without progress, a **Buddy message** gives a wisdom-based hint.
-
 **Level Progression**
 
 - 📘 **Topics & Folders** — Game is divided into topical folders. Players may start any topic.
@@ -66,7 +58,6 @@ The level is complete once **all confirmed issues** are correctly identified and
 
 **Level Completion**
 
-- 📒 **Wisdom Display** — At the end of a level, all new wisdoms are posted to the **Buddy chat**.
 - ➡️ A “Next Level” button in the chat lets players proceed at their own pace.
 
 The entire experience remains **minimal and distraction-free**, emphasizing understanding and reflection over gamified rewards.
@@ -101,7 +92,7 @@ The main game interface is divided into two key areas:
 
 - 💬 **Buddy Chat Area** —
   - Always visible in the **bottom right corner**
-  - Displays feedback for clicks, hints, and level completion wisdoms
+  - Displays feedback for clicks, hints, and level completion
   - New messages appear in the bottom. Old messages move up and are available with the scrolling up.
 
 **Interaction Feedback Flow**
@@ -121,11 +112,6 @@ The main game interface is divided into two key areas:
 - 🔄 Code appears with a typing animation when loading new levels
 - 🔇 No sound effects — the game is silent
 
-**Wisdom Notebook**
-
-- Accessible via 📒 icon (top right)
-- But all newly gained wisdoms also appear directly in **Buddy chat** after level completion
-
 **Interactivity Cues**
 
 No visual clues needed. The mouse cursor remains **hand pointer** over the whole code preventing hover-hunt!
@@ -136,7 +122,6 @@ No visual clues needed. The mouse cursor remains **hand pointer** over the whole
 2. For non-obvious changes, an explanation appears that draws attention.
 3. At the beginning of the level, the player notices Buddy’s starting comments.
 4. After fixing the last error, it’s obvious to the player that the level is complete.
-5. At the end of the level, if new wisdoms appear, the player pays attention to their wording.
 
 Decisions:
 
@@ -144,7 +129,7 @@ Decisions:
 2. Typing animation for chat messages with explanations (non-blocking, doesn’t require a response).
 3. Same as above.
 4. Editor theme smoothly changes to a lighter one.
-5. Typing animation with a list of wisdoms in the chat and a “Next!” button.
+5. Typing animation and a “Next!” button.
 
 
 ## 5. Technical Architecture & Deployment Plan
@@ -174,7 +159,8 @@ The game is built as a **single-page web application (SPA)**, using lightweight,
 **Client-Only Architecture (MVP)**
 
 The game is primarily **client-side**:
-- All levels and wisdoms are stored as static JSON/YAML files
+
+- All levels are stored as static JSON/YAML files
 - Loaded dynamically when a topic or level is selected
 - Game logic, event handling, and UI state are entirely local
 
@@ -202,9 +188,10 @@ This makes hosting simple and cost-effective.
 Firebase can be added later to support classroom use cases with no backend maintenance.
 
 #### 🔑 Key Features
-- **Firestore** — Store player progress, group memberships, wisdoms unlocked
+
+- **Firestore** — Store player progress, group memberships
 - **Authentication** — Anonymous sign-in or email-based logins
-- **Cloud Functions** — Trigger actions on level completion, wisdom unlocks, group join events
+- **Cloud Functions** — Trigger actions on level completion, group join events
 - **Hosting** — Optionally serve the entire game from Firebase Hosting
 - **Security Rules** — Ensure users can only read/write their own data
 
@@ -212,57 +199,3 @@ Firebase can be added later to support classroom use cases with no backend maint
 - Teachers generate a shareable join link like `/?group=abc123`
 - Any student using that link is automatically tracked under that group
 - Teachers can see aggregate progress for the group
-
-#### 🧾 Example Progress Entry
-```json
-{
-  "playerId": "xyz123",
-  "groupId": "abc123",
-  "level": "naming/onboarding",
-  "finished": true,
-  "timestamp": "...",
-  "unlockedWisdoms": ["naming-descriptive"]
-}
-```
-
-#### 💰 Cost
-Firebase is **free** at small scale (ideal for classroom projects):
-- 50K reads/day, 20K writes/day
-- 1GB stored
-- 125K Cloud Function calls/month
-
-It's scalable, secure, and removes the need to run your own backend server.
-
----
-
-This hybrid model — client-first with a plug-in backend — allows you to **move fast now** and **scale later** without rewriting the foundation.
-
-# Summary of Changes: v1 to v2
-
-The updated specification introduces several key changes that enhance the learning experience of the Clean-Code Game, particularly through the addition of a mentor-like character and revised interaction dynamics.
-
-## Key Changes
-
-### 1. Buddy System
-A major shift is the introduction of a **“Buddy”** — a mentor character who provides feedback, hints, and encouragement through a persistent chat interface. This replaces the prior neutral tooltips and explanation panels, making the interaction feel more conversational and guided.
-
-### 2. Hint Mechanics
-- The original auto-hint system after 20 seconds remains but now delivers hints through the Buddy.
-- A new **"Ask for Help" button** allows players to request hints proactively at any time, increasing accessibility and user agency.
-
-### 3. Feedback Presentation
-- Feedback for correct, incorrect, or subjective interactions now appears as chat messages from the Buddy, instead of tooltips or floating UI panels.
-- Visual feedback is enhanced with small animations on clicks, offering clearer responses to player actions.
-
-### 4. Wisdom Delivery
-- Previously, newly learned wisdoms were highlighted in a separate notebook interface.
-- Now, they are also displayed directly in the Buddy chat after level completion, creating a more integrated reflection loop.
-
-### 5. UI Enhancements
-- The Buddy chat area is permanently docked in the bottom-right corner, offering a consistent interface for guidance and progress acknowledgment.
-- While the core layout (VS Code-style editor and sidebar navigation) remains, the chat overlay adds a new dimension of interactivity without compromising the distraction-free philosophy.
-
-### 6. No Changes in Content Structure or Technical Stack
-The backend model (levels.json format, authoring tools, and deployment architecture) remains unchanged, ensuring full compatibility and ease of migration from the earlier version.
-
-These revisions aim to make the game more supportive and engaging without introducing traditional gamification, aligning with its pedagogical goals while improving user experience.

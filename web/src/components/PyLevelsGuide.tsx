@@ -12,8 +12,6 @@ interface PyLevelsGuideProps {
 export function PyLevelsGuide({className = ''}: PyLevelsGuideProps): React.ReactElement {
     // PyLevels format guide content in PyLevel format
     const guideContent = `##file example.py
-##wisdoms id1 id2
-
 """start
 Welcome to the level editor! This is a message from the buddy.
 """

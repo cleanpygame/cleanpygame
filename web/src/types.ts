@@ -8,10 +8,6 @@ export interface LevelId {
     levelId: string;
 }
 
-export interface WisdomEntry {
-    id: string;
-    text: string;
-}
 
 export interface LevelBlock {
     type: string;
@@ -25,7 +21,6 @@ export interface LevelBlock {
 
 export interface LevelData {
     filename: string;
-    wisdoms: string[];
     blocks: LevelBlock[];
     instructions?: string;
     startMessage?: string | undefined;
@@ -36,7 +31,6 @@ export interface LevelData {
 
 export interface Topic {
     name: string;
-    wisdoms: WisdomEntry[];
     levels: LevelData[];
 }
 
@@ -174,7 +168,6 @@ export interface GameState {
     topics: Topic[];
     currentLevelId: LevelId;
     currentLevel: LevelState;
-    discoveredWisdoms: string[];
     chatMessages: ChatMessage[];
     isTypingAnimationComplete: boolean;
     auth: AuthState;

@@ -18,6 +18,8 @@ def fmt_temp(idx, tt):
 ##replace-span - fmt_temp format_temperature
 ##explain "'fmt_temp' could mean anything from formatting templates to fermenting tempeh."
 ##hint "Imagine that function name is the only documentation on this function you have..."
+
+
 print(fmt_temp(5, 20))
 """final
 Bravo! Now human might actually understand without needing a decoder ring.

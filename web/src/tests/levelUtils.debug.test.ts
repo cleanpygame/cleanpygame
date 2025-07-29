@@ -13,7 +13,6 @@ vi.mock('../utils/debugUtils', () => ({
 function createLevel(filename: string): LevelData {
     return {
         filename: filename,
-        wisdoms: [],
         blocks: []
     };
 }
@@ -28,7 +27,6 @@ const mockState: GameState = {
                 createLevel('level2.py'),
                 createLevel('level3.py')
             ],
-            wisdoms: []
         },
         {
             name: 'topic2',
@@ -36,12 +34,9 @@ const mockState: GameState = {
                 createLevel('level1.py'),
                 createLevel('level2.py'),
             ],
-            wisdoms: []
         }
     ],
     currentLevelId: {topic: 'topic1', levelId: 'level1.py'},
-    discoveredWisdoms: [],
-    notebookOpen: false,
     chatMessages: [],
     isTypingAnimationComplete: true,
     auth: {

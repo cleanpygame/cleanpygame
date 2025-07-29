@@ -46,7 +46,6 @@ import {
 } from './actionTypes.ts';
 import {createInitialLevelState, levelReducer} from './levelReducer.ts';
 import {chatReducer, getInstructionChatMessage} from './chatReducer.ts';
-import {progressReducer} from './progressReducer.ts';
 import {createDefaultPlayerStats, statsReducer} from './statsReducer.ts';
 
 
@@ -57,7 +56,6 @@ export const initialState: GameState = {
     topics: levelsData.topics as Topic[],
     currentLevelId: {topic: firstTopic.name, levelId: firstLevel.filename},
     currentLevel: createInitialLevelState(firstLevel),
-    discoveredWisdoms: [],
     chatMessages: [getInstructionChatMessage(firstLevel)],
     isTypingAnimationComplete: true,
     auth: {
@@ -172,7 +170,7 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
         }
 
         case LOAD_COMMUNITY_LEVEL: {
-            const {levelId, levelData} = action.payload;
+            const {levelId} = action.payload;
 
             // Use levelReducer to handle level state
             const newLevelState = levelReducer(null, action);
@@ -212,19 +210,6 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
                 {
                     currentLevel: state.currentLevel,
                     topics: state.topics,
-                    discoveredWisdoms: state.discoveredWisdoms
-                }
-            );
-
-            // Use progressReducer to handle the progress state (only discoveredWisdoms now)
-            const {discoveredWisdoms} = progressReducer(
-                {
-                    discoveredWisdoms: state.discoveredWisdoms
-                },
-                action,
-                {
-                    currentLevel: newLevelState,
-                    currentLevelId: state.currentLevelId
                 }
             );
 
@@ -263,7 +248,6 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
                 ...state,
                 currentLevel: newLevelState,
                 chatMessages: newChatMessages,
-                discoveredWisdoms,
                 playerStats,
                 isTypingAnimationComplete: false
             };
@@ -334,14 +318,6 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
         }
 
         case RESET_PROGRESS: {
-            // Use progressReducer to handle the progress state (only discoveredWisdoms now)
-            const {discoveredWisdoms} = progressReducer(
-                {
-                    discoveredWisdoms: state.discoveredWisdoms
-                },
-                action
-            );
-
             // Reset player statistics
             const playerStats = createDefaultPlayerStats();
 
@@ -349,7 +325,6 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
             return {
                 ...initialState,
                 topics: state.topics,
-                discoveredWisdoms,
                 playerStats,
                 auth: state.auth
             };
@@ -366,29 +341,14 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
         case NEXT_LEVEL: {
             if (!state.currentLevel || !state.currentLevelId) return state;
 
-            // Use progressReducer to handle the progress state (only discoveredWisdoms now)
-            const {discoveredWisdoms} = progressReducer(
-                {
-                    discoveredWisdoms: state.discoveredWisdoms
-                },
-                action,
-                {currentLevel: state.currentLevel}
-            );
-
             const nextLevelId = findNextLevelId(state.topics, state.currentLevelId);
             if (!nextLevelId) {
-                return {
-                    ...state,
-                    discoveredWisdoms
-                };
+                return state;
             }
 
             // Load the next level
             return gameReducer(
-                {
-                    ...state,
-                    discoveredWisdoms
-                },
+                state,
                 loadLevel(nextLevelId)
             );
         }

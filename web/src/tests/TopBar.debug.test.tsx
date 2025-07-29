@@ -20,7 +20,6 @@ const mockState = {
     currentLevel: {
         level: {
             filename: 'level1.py',
-            wisdoms: [],
             blocks: []
         },
         triggeredEvents: [],
@@ -32,8 +31,6 @@ const mockState = {
         sessionHintsUsed: 0,
         sessionMistakesMade: 0
     },
-    discoveredWisdoms: [],
-    notebookOpen: false,
     chatMessages: [],
     isTypingAnimationComplete: true,
     auth: {
