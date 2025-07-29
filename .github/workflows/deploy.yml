@@ -33,11 +33,6 @@ jobs:
           cd web
           npm install @parcel/css-linux-x64-gnu
 
-      - name: Install dependencies (levels_compiler)
-        run: |
-          cd levels_compiler
-          npm install
-
       - name: Run tests
         run: |
           cd web

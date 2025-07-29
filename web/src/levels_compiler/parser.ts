@@ -2,10 +2,15 @@ import * as fs from 'fs';
 import type {LevelBlock, LevelData} from '../types.js'
 
 export interface ParseContext {
-    filename: string;
+    filename?: string;
     lines: string[];
     idx: number;
     level: LevelData;
+}
+
+export interface ParseResult {
+    error?: string;
+    level?: LevelData;
 }
 
 // Helper functions
@@ -62,6 +67,8 @@ export function parseDirective(context: ParseContext): [string, string[]] {
         // Split into directive and rest
         const parts = content.split(/\s+/);
         const cmd = parts[0];
+        if (cmd === "")
+            throw Error("No space between ## and directive name allowed");
         const argString = parts.slice(1).join(' ');
         const args = parseArgsList(argString);
 
@@ -234,13 +241,14 @@ export function readHint(args: string[], context: ParseContext): string {
 
 export function readReply(args: string[], context: ParseContext): string {
     if (args.length !== 1)
-        throw errorWithContext('##start-reply requires exactly one argument: reply', context);
+        throw errorWithContext('##final-reply and ##start-reply requires exactly one argument: reply', context);
     context.idx++;
     return cleanArg(args.join(' '));
 }
 
 function errorWithContext(message: string, context: ParseContext): Error {
-    return new Error(message + `. Line ${context.idx} in file ${context.filename}`);
+    let fileInfo = context.filename ? ` in file ${context.filename}` : '';
+    return new Error(`${message}. Line ${context.idx}${fileInfo}`);
 }
 
 export function readFilename(args: string[], context: ParseContext): string {
@@ -355,6 +363,32 @@ export function parseLevelFile(filePath: string): LevelData | undefined {
     return context.level;
 }
 
+// Main parsing function
+export function parseLevelText(content: string): ParseResult {
+    const lines = content.split(/\r?\n/);
+    resetIdGenerator();
+
+    const outputLevel: LevelData = {
+        filename: "",
+        wisdoms: [],
+        blocks: []
+    };
+
+    const context: ParseContext = {
+        lines,
+        idx: 0,
+        level: outputLevel
+    };
+
+    try {
+        while (context.idx < lines.length) {
+            readOneBlock(context);
+        }
+    } catch (e) {
+        return {error: e instanceof Error ? e.message : String(e)};
+    }
+    return {level: context.level};
+}
 
 let idCounter: Record<string, number> = {}
 

@@ -69,5 +69,19 @@ export function generate(source: string, output: string): void {
 const isMainModule = import.meta.url.endsWith(process.argv[1].replace(/\\/g, '/'));
 if (isMainModule) {
     const args = process.argv.slice(2);
-    generate(args[0], args[1]);
+
+    if (args.length < 2) {
+        console.error('Usage: main.ts <inputDir> <outputFile>');
+        process.exit(1);
+    }
+
+    const [inputDir, outputFile] = args;
+
+    try {
+        await generate(inputDir, outputFile);
+        console.log(`Levels compiled from ${inputDir} to ${outputFile}`);
+    } catch (err) {
+        console.error('Error during level compilation:', err);
+        process.exit(1);
+    }
 }
