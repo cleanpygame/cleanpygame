@@ -49,7 +49,12 @@ const mockState = {
                 minMistakesMade: 0
             }
         }
-    }
+    },
+    auth: {
+        isAuthenticated: false
+    },
+    userLevels: [],
+    customLevels: {}
 };
 
 const mockDispatch = vi.fn();

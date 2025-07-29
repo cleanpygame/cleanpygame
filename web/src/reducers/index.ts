@@ -32,8 +32,10 @@ import {
     POST_CHAT_MESSAGE,
     RESET_PROGRESS,
     SELECT_GROUP,
+    SET_CUSTOM_LEVELS,
     SET_PLAYER_STATS,
     SET_TYPING_ANIMATION_COMPLETE,
+    SET_USER_LEVELS,
     TOGGLE_JOIN_CODE_ACTIVE_FAILURE,
     TOGGLE_JOIN_CODE_ACTIVE_REQUEST,
     TOGGLE_JOIN_CODE_ACTIVE_SUCCESS,
@@ -79,7 +81,9 @@ export const initialState: GameState = {
     ownedGroups: [],
     joinedGroups: [],
     isGroupsLoading: false,
-    groupsError: undefined
+    groupsError: undefined,
+    userLevels: [],
+    customLevels: {}
 };
 
 /**
@@ -670,6 +674,23 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
                 ...state,
                 isGroupsLoading: false,
                 groupsError: error
+            };
+        }
+
+        // Community levels action handlers
+        case SET_USER_LEVELS: {
+            const {userLevels} = action.payload;
+            return {
+                ...state,
+                userLevels
+            };
+        }
+
+        case SET_CUSTOM_LEVELS: {
+            const {customLevels} = action.payload;
+            return {
+                ...state,
+                customLevels
             };
         }
 

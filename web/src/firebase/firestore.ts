@@ -14,21 +14,8 @@ import {
     where
 } from 'firebase/firestore';
 import {db} from './index';
-import {Group, GroupMember, JoinCode, PlayerStatsState, User} from '../types';
+import {CustomLevel, Group, GroupMember, JoinCode, PlayerStatsState, User, UserLevel} from '../types';
 import {createDefaultPlayerStats} from '../reducers/statsReducer';
-
-// Custom level types
-export interface CustomLevel {
-    id: string;
-    content: string;
-    author_id: string;
-    filename: string;
-    created_at: any; // serverTimestamp
-}
-
-export interface UserLevel {
-    level_id: string;
-}
 
 /**
  * Get the player document reference

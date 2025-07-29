@@ -30,8 +30,10 @@ import {
     POST_CHAT_MESSAGE,
     RESET_PROGRESS,
     SELECT_GROUP,
+    SET_CUSTOM_LEVELS,
     SET_PLAYER_STATS,
     SET_TYPING_ANIMATION_COMPLETE,
+    SET_USER_LEVELS,
     TOGGLE_JOIN_CODE_ACTIVE_FAILURE,
     TOGGLE_JOIN_CODE_ACTIVE_REQUEST,
     TOGGLE_JOIN_CODE_ACTIVE_SUCCESS,
@@ -42,7 +44,17 @@ import {
     UPDATE_LEVEL_STATS,
     WRONG_CLICK
 } from './actionTypes';
-import {ChatMessage, Group, LevelData, LevelId, PlayerLevelStats, PlayerStatsState, User} from '../types';
+import {
+    ChatMessage,
+    CustomLevel,
+    Group,
+    LevelData,
+    LevelId,
+    PlayerLevelStats,
+    PlayerStatsState,
+    User,
+    UserLevel
+} from '../types';
 
 // Action interfaces
 export interface LoadLevelAction {
@@ -340,6 +352,21 @@ export interface JoinGroupFailureAction {
     };
 }
 
+// Community levels action interfaces
+export interface SetUserLevelsAction {
+    type: typeof SET_USER_LEVELS;
+    payload: {
+        userLevels: UserLevel[];
+    };
+}
+
+export interface SetCustomLevelsAction {
+    type: typeof SET_CUSTOM_LEVELS;
+    payload: {
+        customLevels: Record<string, CustomLevel>;
+    };
+}
+
 export type GameAction =
     | LoadLevelAction
     | LoadCommunityLevelAction
@@ -382,7 +409,9 @@ export type GameAction =
     | FetchGroupByJoinCodeFailureAction
     | JoinGroupRequestAction
     | JoinGroupSuccessAction
-    | JoinGroupFailureAction;
+    | JoinGroupFailureAction
+    | SetUserLevelsAction
+    | SetCustomLevelsAction;
 
 // Action creators
 export const loadLevel = (levelId: LevelId): LoadLevelAction => ({
@@ -625,6 +654,21 @@ export const joinGroupSuccess = (group: Group): JoinGroupSuccessAction => ({
 export const joinGroupFailure = (error: string): JoinGroupFailureAction => ({
     type: JOIN_GROUP_FAILURE,
     payload: {error}
+});
+
+// Community levels action creators
+export const setUserLevels = (userLevels: UserLevel[]): SetUserLevelsAction => ({
+    type: SET_USER_LEVELS,
+    payload: {
+        userLevels
+    }
+});
+
+export const setCustomLevels = (customLevels: Record<string, CustomLevel>): SetCustomLevelsAction => ({
+    type: SET_CUSTOM_LEVELS,
+    payload: {
+        customLevels
+    }
 });
 
 // Thunk action creator for deleting a group

@@ -155,6 +155,21 @@ export interface JoinCode {
     deleted: boolean;
 }
 
+/**
+ * Custom level types
+ */
+export interface CustomLevel {
+    id: string;
+    content: string;
+    author_id: string;
+    filename: string;
+    created_at: any; // serverTimestamp
+}
+
+export interface UserLevel {
+    level_id: string;
+}
+
 export interface GameState {
     topics: Topic[];
     currentLevelId: LevelId;
@@ -170,4 +185,6 @@ export interface GameState {
     selectedGroup?: Group;
     isGroupsLoading: boolean;
     groupsError?: string;
+    userLevels: UserLevel[];
+    customLevels: Record<string, CustomLevel>;
 }
