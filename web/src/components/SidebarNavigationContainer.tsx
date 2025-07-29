@@ -26,7 +26,7 @@ export function SidebarNavigationContainer(): React.ReactElement {
         'My Levels': true // Always expand My Levels topic
     });
 
-    // Fetch user levels when auth state changes (user logs in/out)
+    // Fetch user levels when auth state changes (user logs in/out) or when current level changes
     useEffect(() => {
         const fetchUserLevels = async (user: any) => {
             if (user) {
@@ -68,7 +68,7 @@ export function SidebarNavigationContainer(): React.ReactElement {
 
         // Clean up listener when component unmounts
         return () => unsubscribe();
-    }, []);
+    }, [state.currentLevelId]); // Add dependency on currentLevelId to refresh when level changes
 
     const toggleTopic = (topicName: string): void => {
         setExpandedTopics(prev => ({
@@ -144,7 +144,12 @@ export function SidebarNavigationContainer(): React.ReactElement {
                                             return (
                                                 <div
                                                     key={level.level_id}
-                                                    className="flex items-center pl-4 p-1 hover:bg-[#37373d]"
+                                                    className={`flex items-center pl-4 p-1 hover:bg-[#37373d] ${
+                                                        state.currentLevelId.topic === 'community' &&
+                                                        state.currentLevelId.levelId === level.level_id
+                                                            ? 'bg-[#37373d]'
+                                                            : ''
+                                                    }`}
                                                 >
                                                     <div
                                                         className="flex-1 cursor-pointer"

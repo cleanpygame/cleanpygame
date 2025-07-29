@@ -5,8 +5,8 @@
 We are introducing a new feature in the web application: a “Create Level” button that allows users to design their own
 game levels using an in-browser code editor.
 The editor supports PyLevels syntax (see LEVELS_FORMAT.md).
-User-created levels will be stored in Firebase and integrated into the level selection UI under personalized sections: *
-*My Levels** and **Community Levels**.
+User-created levels will be stored in Firebase and integrated into the level selection UI under personalized section *
+*My Levels**.
 
 ---
 
@@ -14,7 +14,7 @@ User-created levels will be stored in Firebase and integrated into the level sel
 
 1. **Initiating Level Creation**
 
-    * User clicks the "Create Level" button.
+    * User clicks the "Create New" button.
     * A new code editor opens inside the web app.
 
 2. **Editing and Validation**
@@ -36,7 +36,7 @@ User-created levels will be stored in Firebase and integrated into the level sel
     * Each level can be shared via a unique URL. (Need a button for it)
     * When another user opens this URL:
 
-        * The shared level becomes permanently visible to them under **Custom Levels**.
+        * The shared level becomes permanently visible to them under **My Levels**.
         * It is not duplicated but linked.
 
 ---
@@ -48,12 +48,12 @@ User-created levels will be stored in Firebase and integrated into the level sel
 * New topic "My Levels" should appear in the SidebarNavigation.
 * "Create New" button is located in the "My Level" topic as a first element.
 * Click on the "Create New" button opens the Level Editor.
-* Click on the level in "My Levels" or "Community Levels" runs this level.
-* Each level in "My Levels" has an "Edit" button. Clicking on it opens the Level Editor.
+* Click on the level in "My Levels" runs this level.
+* Each level of player ownership in "My Levels" has an "Edit" button. Clicking it opens the Level Editor.
 
 ### Level Editor
 
-* It should havce its own route: /editor
+* It should have its own route: /editor
 * Level Editor Page replaces the whole Ide Layout.
 * It consists of four areas:
     * Top — extracted filename, Save, Share and Cancel Buttons
@@ -67,11 +67,10 @@ User-created levels will be stored in Firebase and integrated into the level sel
 
 ### Running Community Levels
 
-* When a user clicks on the level in "My Levels" or "Community Levels", the path should become "
-  /community-levels/{levelId}"
+* When a user clicks on the level in "My Levels", the path should become "/community-levels/{levelId}"
 * The level should be run in the same way as any other level. parser.ts is used to parse the level from PyLevel format.
-* When the link /community-levels/{levelId} opened and the level is not in the user's "My Levels" or "Community Levels",
-  it should be added to the "Community Levels".
+* When the link /community-levels/{levelId} opened and the level
+  it should be added to the "My Levels".
 
 ---
 
@@ -103,7 +102,6 @@ Tracks which custom levels are visible to a user.
     * `levels`: array of objects, each containing:
 
         * `level_id`: string
-        * `filename`: string (duplicated for UI display)
 * **Permissions**:
 
     * Read/Write: Only the respective user
@@ -115,12 +113,11 @@ Tracks which custom levels are visible to a user.
 * When displaying the **Shared Levels** topic:
 
     1. Fetch `userLevels/<user_id>/levels`.
-    2. Use each `filename` to render navigation.
-    3. Fetch the `content` from `customLevels/<level_id>` to load the level.
+  2. Fetch the `content` from `customLevels/<level_id>` to load the level.
 
 * When a shared link is visited:
 
-    1. Add the `level_id` (and `filename`) to the current user’s `userLevels`.
+    1. Add the `level_id` to the current user’s `userLevels`.
 
 ---
 

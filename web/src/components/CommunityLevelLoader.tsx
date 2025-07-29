@@ -1,9 +1,10 @@
 import React, {useContext, useEffect} from 'react';
 import {useParams} from 'react-router-dom';
 import {GameStateContext} from '../reducers';
-import {getCustomLevelById} from '../firebase/firestore';
+import {addLevelToUserLevels, getCustomLevelById} from '../firebase/firestore';
 import {parseLevelText} from '../levels_compiler/parser';
 import {loadCommunityLevel} from '../reducers/actionCreators';
+import {getCurrentUser} from '../firebase/auth';
 
 /**
  * Community Level Loader component
@@ -41,6 +42,20 @@ export function CommunityLevelLoader(): React.ReactElement | null {
                     return;
                 }
 
+                // Get the current user
+                const user = getCurrentUser();
+
+                // If user is authenticated, add the level to userLevels
+                if (user) {
+                    try {
+                        await addLevelToUserLevels(user.uid, levelId);
+                        console.log('Level added to user levels:', levelId);
+                    } catch (error) {
+                        console.error('Error adding level to user levels:', error);
+                        // Continue even if adding to userLevels fails
+                    }
+                }
+                
                 // Load the level using the loadCommunityLevel action
                 dispatch(loadCommunityLevel(levelId, parseResult.level));
             } catch (error) {
