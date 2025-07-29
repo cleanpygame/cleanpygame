@@ -37,7 +37,6 @@ import {
     TOGGLE_JOIN_CODE_ACTIVE_FAILURE,
     TOGGLE_JOIN_CODE_ACTIVE_REQUEST,
     TOGGLE_JOIN_CODE_ACTIVE_SUCCESS,
-    TOGGLE_NOTEBOOK,
     UPDATE_GROUP_NAME_FAILURE,
     UPDATE_GROUP_NAME_REQUEST,
     UPDATE_GROUP_NAME_SUCCESS,
@@ -103,9 +102,6 @@ export interface ResetProgressAction {
     type: typeof RESET_PROGRESS;
 }
 
-export interface ToggleNotebookAction {
-    type: typeof TOGGLE_NOTEBOOK;
-}
 
 export interface NextLevelAction {
     type: typeof NEXT_LEVEL;
@@ -375,7 +371,6 @@ export type GameAction =
     | GetHintAction
     | PostBuddyMessageAction
     | ResetProgressAction
-    | ToggleNotebookAction
     | NextLevelAction
     | CodeClickAction
     | SetTypingAnimationCompleteAction
@@ -445,10 +440,6 @@ export const postChatMessage = (message: ChatMessage): PostBuddyMessageAction =>
 
 export const resetProgress = (): ResetProgressAction => ({
     type: RESET_PROGRESS
-});
-
-export const toggleNotebook = (): ToggleNotebookAction => ({
-    type: TOGGLE_NOTEBOOK
 });
 
 export const nextLevel = (): NextLevelAction => ({

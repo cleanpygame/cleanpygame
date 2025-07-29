@@ -175,7 +175,6 @@ export interface GameState {
     currentLevelId: LevelId;
     currentLevel: LevelState;
     discoveredWisdoms: string[];
-    notebookOpen: boolean;
     chatMessages: ChatMessage[];
     isTypingAnimationComplete: boolean;
     auth: AuthState;

@@ -39,7 +39,6 @@ import {
     TOGGLE_JOIN_CODE_ACTIVE_FAILURE,
     TOGGLE_JOIN_CODE_ACTIVE_REQUEST,
     TOGGLE_JOIN_CODE_ACTIVE_SUCCESS,
-    TOGGLE_NOTEBOOK,
     UPDATE_GROUP_NAME_FAILURE,
     UPDATE_GROUP_NAME_REQUEST,
     UPDATE_GROUP_NAME_SUCCESS,
@@ -59,7 +58,6 @@ export const initialState: GameState = {
     currentLevelId: {topic: firstTopic.name, levelId: firstLevel.filename},
     currentLevel: createInitialLevelState(firstLevel),
     discoveredWisdoms: [],
-    notebookOpen: false,
     chatMessages: [getInstructionChatMessage(firstLevel)],
     isTypingAnimationComplete: true,
     auth: {
@@ -361,13 +359,6 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
             return {
                 ...state,
                 playerStats: action.payload.playerStats
-            };
-        }
-
-        case TOGGLE_NOTEBOOK: {
-            return {
-                ...state,
-                notebookOpen: !state.notebookOpen
             };
         }
 

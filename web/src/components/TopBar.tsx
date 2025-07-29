@@ -8,7 +8,7 @@ import {parseDebugModeFromUrl} from '../utils/debugUtils';
 
 /**
  * Top navigation bar component
- * Dispatches actions: TOGGLE_NOTEBOOK, RESET_PROGRESS, GET_HINT
+ * Dispatches actions: RESET_PROGRESS, GET_HINT
  */
 export function TopBar(): React.ReactElement {
     const context = useContext(GameStateContext);

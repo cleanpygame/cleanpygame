@@ -8,7 +8,6 @@ import {
     nextLevel,
     postChatMessage,
     resetProgress,
-    toggleNotebook,
     wrongClick
 } from '../reducers/actionCreators';
 import {GameState, LevelId} from '../types';
@@ -166,18 +165,6 @@ describe('Game Reducer', () => {
         expect(state.auth.user?.uid).toBe('test-uid');
     });
 
-    test('TOGGLE_NOTEBOOK transition toggles notebook state', () => {
-        let state: GameState = initialState;
-        const initialNotebookState = state.notebookOpen;
-
-        // Toggle the notebook (should open it)
-        state = gameReducer(state, toggleNotebook());
-        expect(state.notebookOpen).toBe(!initialNotebookState);
-
-        // Toggle the notebook again (should close it)
-        state = gameReducer(state, toggleNotebook());
-        expect(state.notebookOpen).toBe(initialNotebookState);
-    });
 
     test('APPLY_FIX transition directly applies a fix', () => {
         let state: GameState = initialState;

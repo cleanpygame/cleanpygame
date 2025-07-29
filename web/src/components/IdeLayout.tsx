@@ -2,7 +2,6 @@ import React, {useContext} from 'react';
 import {TopBar} from './TopBar';
 import {SidebarNavigationContainer} from './SidebarNavigationContainer';
 import {LevelViewportContainer} from './LevelViewportContainer';
-import {NotebookContainer} from './NotebookContainer';
 import {GameStateContext} from '../reducers';
 
 export function IdeLayout(): React.ReactElement {
@@ -19,7 +18,6 @@ export function IdeLayout(): React.ReactElement {
                 <SidebarNavigationContainer/>
                 <LevelViewportContainer/>
             </div>
-            <NotebookContainer/>
         </div>
     );
 }
