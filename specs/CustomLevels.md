@@ -41,15 +41,37 @@ User-created levels will be stored in Firebase and integrated into the level sel
 
 ---
 
-## UI Changes
+## UI Prototypes
 
-* New “Create Level” button on the main screen.
-* Embedded syntax-highlighting code editor with real-time validation.
-* Two new topic sections in the navigation:
+### Sidebar Navigation
 
-    * **My Levels**: User's own levels. Visible only if at least one user-created level exists.
-    * **Community Levels**: Shared levels that the user has accessed via links. Visible only if at least one shared
-      level exists.
+* New topic "My Levels" should appear in the SidebarNavigation.
+* "Create New" button is located in the "My Level" topic as a first element.
+* Click on the "Create New" button opens the Level Editor.
+* Click on the level in "My Levels" or "Community Levels" runs this level.
+* Each level in "My Levels" has an "Edit" button. Clicking on it opens the Level Editor.
+
+### Level Editor
+
+* It should havce its own route: /editor
+* Level Editor Page replaces the whole Ide Layout.
+* It consists of four areas:
+    * Top — extracted filename, Save, Share and Cancel Buttons
+    * Main Middle with Code Editor to the left and PyLevel format to the right
+    * Bottom — Errors found in the code.
+* Use the CodeMirror component for editing the code in Code Editor. Do not use CodeView.
+* Use Python syntax highlighting in Code Editor
+* Use parser.ts logic to validate the code in the Code Editor in real time and show errors in the Bottom part.
+* Share button copies the link to the clipboard: {domain}/community-levels/{levelId}
+* Save Button saves the level in DB, closes the Editor and Runs the level.
+
+### Running Community Levels
+
+* When a user clicks on the level in "My Levels" or "Community Levels", the path should become "
+  /community-levels/{levelId}"
+* The level should be run in the same way as any other level. parser.ts is used to parse the level from PyLevel format.
+* When the link /community-levels/{levelId} opened and the level is not in the user's "My Levels" or "Community Levels",
+  it should be added to the "Community Levels".
 
 ---
 
