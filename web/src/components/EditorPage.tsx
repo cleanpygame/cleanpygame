@@ -6,7 +6,7 @@ import {python} from '@codemirror/lang-python';
 import {PyLevelsGuide} from './PyLevelsGuide';
 import {parseLevelText, ParseResult} from '../levels_compiler/parser';
 import {getCurrentUser} from '../firebase/auth';
-import {getCustomLevelById, saveCustomLevel} from '../firebase/firestore';
+import {deleteLevelFromUserLevels, getCustomLevelById, saveCustomLevel} from '../firebase/firestore';
 
 /**
  * Editor page for creating and editing custom levels
@@ -120,6 +120,35 @@ export function EditorPage(): React.ReactElement {
             });
     };
 
+    const handleDelete = async () => {
+        if (!levelId) {
+            return; // Should not happen as button is only visible when levelId exists
+        }
+
+        // Show confirmation dialog
+        const confirmDelete = window.confirm('Are you sure you want to delete this level? This action cannot be undone.');
+        if (!confirmDelete) {
+            return;
+        }
+
+        try {
+            const user = getCurrentUser();
+            if (!user) {
+                alert('You must be signed in to delete a level');
+                return;
+            }
+
+            // Delete the level from userLevels
+            await deleteLevelFromUserLevels(user.uid, levelId);
+
+            // Navigate back to home page
+            navigate('/');
+        } catch (error) {
+            console.error('Error deleting level:', error);
+            alert('Failed to delete level. Please try again.');
+        }
+    };
+
     const handleCodeChange = (value: string) => {
         setCode(value);
         setHasChanges(true);
@@ -175,6 +204,14 @@ export function EditorPage(): React.ReactElement {
                             >
                                 Share
                             </button>
+                            {levelId && (
+                                <button
+                                    className="px-4 py-2 mr-2 bg-[#8b3636] hover:bg-[#a13636] rounded"
+                                    onClick={handleDelete}
+                                >
+                                    Delete Level
+                                </button>
+                            )}
                             <button
                                 className="px-4 py-2 mr-2 bg-[#3c3c3c] hover:bg-[#4c4c4c] rounded"
                                 onClick={handleCancel}

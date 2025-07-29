@@ -972,3 +972,36 @@ export const getUserLevels = async (userId: string): Promise<UserLevel[] | null>
         throw error;
     }
 };
+
+/**
+ * Delete a level from a user's levels
+ * This removes the level from userLevels collection but does not delete it from communityLevels
+ * @param userId - User ID
+ * @param levelId - Level ID to delete
+ * @returns Promise that resolves when the operation is complete
+ */
+export const deleteLevelFromUserLevels = async (userId: string, levelId: string): Promise<void> => {
+    try {
+        // Get the userLevels document
+        const userLevelsDocRef = doc(db, 'userLevels', userId);
+        const userLevelsDoc = await getDoc(userLevelsDocRef);
+
+        if (!userLevelsDoc.exists() || !userLevelsDoc.data().levels) {
+            console.warn('User levels document not found or has no levels');
+            return;
+        }
+
+        // Get current levels and filter out the one to delete
+        const currentLevels = userLevelsDoc.data().levels;
+        const updatedLevels = currentLevels.filter((level: any) => level.level_id !== levelId);
+
+        // Update the document with the filtered levels array
+        await updateDoc(userLevelsDocRef, {
+            levels: updatedLevels,
+            updatedAt: serverTimestamp()
+        });
+    } catch (error) {
+        console.error('Error deleting level from user levels:', error);
+        throw error;
+    }
+};
