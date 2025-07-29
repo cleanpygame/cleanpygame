@@ -22,6 +22,7 @@ import {
     JOIN_GROUP_FAILURE,
     JOIN_GROUP_REQUEST,
     JOIN_GROUP_SUCCESS,
+    LOAD_COMMUNITY_LEVEL,
     LOAD_LEVEL,
     LOGIN_FAILURE,
     LOGIN_REQUEST,
@@ -162,6 +163,34 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
             return {
                 ...state,
                 currentLevelId: levelId,
+                currentLevel: newLevelState,
+                chatMessages: newChatMessages,
+                isTypingAnimationComplete: false
+            };
+        }
+
+        case LOAD_COMMUNITY_LEVEL: {
+            const {levelId, levelData} = action.payload;
+
+            // Use levelReducer to handle level state
+            const newLevelState = levelReducer(null, action);
+
+            if (!newLevelState) return state;
+
+            // Use chatReducer to handle chat messages
+            const newChatMessages = chatReducer([], action, {
+                currentLevel: newLevelState
+            });
+
+            // Create a special LevelId for community levels
+            const communityLevelId = {
+                topic: 'community',
+                levelId: levelId
+            };
+
+            return {
+                ...state,
+                currentLevelId: communityLevelId,
                 currentLevel: newLevelState,
                 chatMessages: newChatMessages,
                 isTypingAnimationComplete: false

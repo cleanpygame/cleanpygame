@@ -8,6 +8,7 @@ import {PlayerStatsPage} from './PlayerStatsPage';
 import {GroupJoinPage} from './GroupJoinPage.tsx';
 import {GroupJoinFinalPage} from './GroupJoinFinalPage.tsx';
 import {EditorPage} from './EditorPage';
+import {CommunityLevelLoader} from './CommunityLevelLoader';
 import {TopBar} from './TopBar';
 
 /**
@@ -45,6 +46,10 @@ export function App(): React.ReactElement {
                     <Route path="/join/:code/success" element={<GroupJoinFinalPage/>}/>
                     <Route path="/editor" element={<EditorPage/>}/>
                     <Route path="/editor/:levelId" element={<EditorPage/>}/>
+                    <Route path="/community-levels/:levelId" element={<>
+                        <CommunityLevelLoader/>
+                        <IdeLayout/>
+                    </>}/>
                     <Route path="*" element={<IdeLayout/>}/>
                 </Routes>
             </StateProvider>

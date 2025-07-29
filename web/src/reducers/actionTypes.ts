@@ -1,5 +1,6 @@
 // Action type constants
 export const LOAD_LEVEL = 'LOAD_LEVEL';
+export const LOAD_COMMUNITY_LEVEL = 'LOAD_COMMUNITY_LEVEL';
 export const APPLY_FIX = 'APPLY_FIX';
 export const WRONG_CLICK = 'WRONG_CLICK';
 export const GET_HINT = 'GET_HINT';

@@ -20,6 +20,7 @@ import {
     JOIN_GROUP_FAILURE,
     JOIN_GROUP_REQUEST,
     JOIN_GROUP_SUCCESS,
+    LOAD_COMMUNITY_LEVEL,
     LOAD_LEVEL,
     LOGIN_FAILURE,
     LOGIN_REQUEST,
@@ -41,13 +42,21 @@ import {
     UPDATE_LEVEL_STATS,
     WRONG_CLICK
 } from './actionTypes';
-import {ChatMessage, Group, LevelId, PlayerLevelStats, PlayerStatsState, User} from '../types';
+import {ChatMessage, Group, LevelData, LevelId, PlayerLevelStats, PlayerStatsState, User} from '../types';
 
 // Action interfaces
 export interface LoadLevelAction {
     type: typeof LOAD_LEVEL;
     payload: {
         levelId: LevelId;
+    };
+}
+
+export interface LoadCommunityLevelAction {
+    type: typeof LOAD_COMMUNITY_LEVEL;
+    payload: {
+        levelId: string;
+        levelData: LevelData;
     };
 }
 
@@ -333,6 +342,7 @@ export interface JoinGroupFailureAction {
 
 export type GameAction =
     | LoadLevelAction
+    | LoadCommunityLevelAction
     | ApplyFixAction
     | WrongClickAction
     | GetHintAction
@@ -378,6 +388,11 @@ export type GameAction =
 export const loadLevel = (levelId: LevelId): LoadLevelAction => ({
     type: LOAD_LEVEL,
     payload: {levelId}
+});
+
+export const loadCommunityLevel = (levelId: string, levelData: LevelData): LoadCommunityLevelAction => ({
+    type: LOAD_COMMUNITY_LEVEL,
+    payload: {levelId, levelData}
 });
 
 export const applyFix = (eventId: string): ApplyFixAction => ({

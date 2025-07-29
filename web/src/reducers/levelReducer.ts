@@ -1,6 +1,6 @@
 import {LevelData, LevelState, Topic} from '../types';
 import {GameAction} from './actionCreators';
-import {APPLY_FIX, GET_HINT, LOAD_LEVEL, WRONG_CLICK} from './actionTypes';
+import {APPLY_FIX, GET_HINT, LOAD_COMMUNITY_LEVEL, LOAD_LEVEL, WRONG_CLICK} from './actionTypes';
 import {applyEvents} from '../utils/pylang';
 
 
@@ -46,7 +46,7 @@ export function levelReducer(
     action: GameAction,
     topics: Topic[] = []
 ): LevelState | null {
-    if (!state && action.type !== LOAD_LEVEL) return null;
+    if (!state && action.type !== LOAD_LEVEL && action.type !== LOAD_COMMUNITY_LEVEL) return null;
 
     switch (action.type) {
         case LOAD_LEVEL: {
@@ -60,6 +60,13 @@ export function levelReducer(
             if (!levelData) return state;
 
             // Create an initial level state
+            return createInitialLevelState(levelData);
+        }
+
+        case LOAD_COMMUNITY_LEVEL: {
+            const {levelData} = action.payload;
+
+            // Create an initial level state directly from the provided level data
             return createInitialLevelState(levelData);
         }
 
