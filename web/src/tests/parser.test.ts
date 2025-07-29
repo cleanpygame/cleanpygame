@@ -62,25 +62,6 @@ Great job!
         expect(result.error).toContain('Missing required level instructions: start');
     });
 
-    test('should return error for missing start-reply instruction', () => {
-        const content = `##file test.py
-"""start
-Welcome to the level!
-"""
-
-# Code here
-
-"""final
-Great job!
-"""
-##final-reply "Finish"`;
-        const result = parseLevelText(content);
-
-        expect(result.error).toBeDefined();
-        expect(result.level).toBeUndefined();
-        expect(result.error).toContain('Missing required level instructions: start-reply');
-    });
-
     test('should return error for missing final instruction', () => {
         const content = `##file test.py
 """start
@@ -98,38 +79,16 @@ Welcome to the level!
         expect(result.error).toContain('Missing required level instructions: final');
     });
 
-    test('should return error for missing final-reply instruction', () => {
-        const content = `##file test.py
-"""start
-Welcome to the level!
-"""
-##start-reply "Let's begin"
-
-# Code here
-
-"""final
-Great job!
-"""`;
-        const result = parseLevelText(content);
-
-        expect(result.error).toBeDefined();
-        expect(result.level).toBeUndefined();
-        expect(result.error).toContain('Missing required level instructions: final-reply');
-    });
-
     test('should return error for multiple missing instructions', () => {
         const content = `##file test.py
 
 # Code here
-
-"""final
-Great job!
-"""`;
+`;
         const result = parseLevelText(content);
 
         expect(result.error).toBeDefined();
         expect(result.level).toBeUndefined();
-        expect(result.error).toContain('Missing required level instructions: start, start-reply, final-reply');
+        expect(result.error).toContain('Missing required level instructions: start, final');
     });
 });
 
