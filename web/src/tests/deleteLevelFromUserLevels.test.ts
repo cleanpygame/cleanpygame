@@ -1,4 +1,4 @@
-import {describe, expect, test, vi} from 'vitest';
+import {beforeEach, describe, expect, test, vi} from 'vitest';
 import {deleteLevelFromUserLevels} from '../firebase/firestore';
 import {doc, getDoc, updateDoc} from 'firebase/firestore';
 

@@ -5,6 +5,7 @@ import {loadLevel, setCustomLevels, setUserLevels} from '../reducers/actionCreat
 import {TopicItem} from './TopicItem';
 import {onAuthStateChanged} from '../firebase/auth';
 import {getCustomLevelById, getUserLevels} from '../firebase/firestore';
+import {CustomLevel} from '../types';
 
 /**
  * Sidebar navigation component showing topics and levels

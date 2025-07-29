@@ -1,4 +1,4 @@
-import {describe, expect, test, vi} from 'vitest';
+import {beforeEach, describe, expect, test, vi} from 'vitest';
 import {getCustomLevelById, getUserLevels} from '../firebase/firestore';
 import {doc, getDoc} from 'firebase/firestore';
 

@@ -51,7 +51,9 @@ const mockState = {
     },
     ownedGroups: [],
     joinedGroups: [],
-    isGroupsLoading: false
+    isGroupsLoading: false,
+    userLevels: [],
+    customLevels: {}
 };
 
 const mockDispatch = vi.fn();

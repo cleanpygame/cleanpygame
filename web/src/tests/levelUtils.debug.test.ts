@@ -68,6 +68,8 @@ const mockState: GameState = {
     ownedGroups: [],
     joinedGroups: [],
     isGroupsLoading: false,
+    userLevels: [],
+    customLevels: {},
     currentLevel: {
         level: createLevel('level1.py'),
         triggeredEvents: [],
