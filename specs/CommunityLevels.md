@@ -45,7 +45,7 @@ User-created levels will be stored in Firebase and integrated into the level sel
 
 ### Sidebar Navigation
 
-* New topic "My Levels" should appear in the SidebarNavigation.
+* The new topic "My Levels" should appear in the SidebarNavigation, but only if the user is signed in.
 * "Create New" button is located in the "My Level" topic as a first element.
 * Click on the "Create New" button opens the Level Editor.
 * Click on the level in "My Levels" runs this level.
@@ -64,13 +64,19 @@ User-created levels will be stored in Firebase and integrated into the level sel
 * Use parser.ts logic to validate the code in the Code Editor in real time and show errors in the Bottom part.
 * Share button copies the link to the clipboard: {domain}/community-levels/{levelId}
 * Save Button saves the level in DB, closes the Editor and Runs the level.
+* Delete Level Functionality
+    - The EditorPage component includes a Delete button for existing levels
+    - Confirmation dialog is shown before deletion
+    - Level is removed from userLevels collection, not from communtyLevels
+* **Unsaved Changes Warning**
+    - When leaving the editor with unsaved changes, a confirmation dialog is shown
 
 ### Running Community Levels
 
 * When a user clicks on the level in "My Levels", the path should become "/community-levels/{levelId}"
 * The level should be run in the same way as any other level. parser.ts is used to parse the level from PyLevel format.
 * When the link /community-levels/{levelId} opened and the level
-  it should be added to the "My Levels".
+  it should be added to the "My Levels"
 
 ---
 
@@ -123,7 +129,7 @@ Tracks which custom levels are visible to a user.
 
 ## Future Considerations
 
-* Optional tagging or categorization of levels.
+* Optional tagging or grouping of levels into topics.
 * Public level discovery and browsing.
 * Forking/editing levels created by others.
 * Version history or backups of edited levels.
