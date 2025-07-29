@@ -1,4 +1,4 @@
-// Firestore functions for player progress and group management
+// Firestore functions for player progress, group management, and custom levels
 import {
     arrayUnion,
     collection,
@@ -16,6 +16,20 @@ import {
 import {db} from './index';
 import {Group, GroupMember, JoinCode, PlayerStatsState, User} from '../types';
 import {createDefaultPlayerStats} from '../reducers/statsReducer';
+
+// Custom level types
+export interface CustomLevel {
+    id: string;
+    content: string;
+    author_id: string;
+    filename: string;
+    created_at: any; // serverTimestamp
+}
+
+export interface UserLevel {
+    level_id: string;
+    filename: string;
+}
 
 /**
  * Get the player document reference
@@ -806,6 +820,103 @@ export const leaveGroup = async (groupId: string, userId: string): Promise<void>
         });
     } catch (error) {
         console.error('Error leaving group:', error);
+        throw error;
+    }
+};
+
+/**
+ * Save a custom level to Firestore
+ * @param user - Firebase user (author)
+ * @param content - Level content in PyLevels format
+ * @param filename - Filename extracted from the level
+ * @returns Promise that resolves with the saved level ID
+ */
+export const saveCustomLevel = async (user: User, content: string, filename: string): Promise<string> => {
+    if (!user) throw new Error('User must be authenticated to save a level');
+
+    try {
+        // Create a new document in the customLevels collection
+        const levelsCollection = collection(db, 'customLevels');
+        const levelDoc = doc(levelsCollection);
+        const levelId = levelDoc.id;
+
+        // Create the level object
+        const level: CustomLevel = {
+            id: levelId,
+            content,
+            author_id: user.uid,
+            filename,
+            created_at: serverTimestamp()
+        };
+
+        // Save the level to Firestore
+        await setDoc(levelDoc, level);
+
+        // Add the level to the user's levels
+        await addLevelToUserLevels(user.uid, levelId, filename);
+
+        return levelId;
+    } catch (error) {
+        console.error('Error saving custom level:', error);
+        throw error;
+    }
+};
+
+/**
+ * Add a level to a user's levels
+ * @param userId - User ID
+ * @param levelId - Level ID
+ * @param filename - Filename
+ * @returns Promise that resolves when the operation is complete
+ */
+export const addLevelToUserLevels = async (userId: string, levelId: string, filename: string): Promise<void> => {
+    try {
+        // Get the userLevels document
+        const userLevelsDocRef = doc(db, 'userLevels', userId);
+        const userLevelsDoc = await getDoc(userLevelsDocRef);
+
+        const userLevel: UserLevel = {
+            level_id: levelId,
+            filename
+        };
+
+        if (userLevelsDoc.exists()) {
+            // Update existing document
+            await updateDoc(userLevelsDocRef, {
+                levels: arrayUnion(userLevel),
+                updatedAt: serverTimestamp()
+            });
+        } else {
+            // Create new document
+            await setDoc(userLevelsDocRef, {
+                levels: [userLevel],
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp()
+            });
+        }
+    } catch (error) {
+        console.error('Error adding level to user levels:', error);
+        throw error;
+    }
+};
+
+/**
+ * Get a custom level by ID
+ * @param levelId - Level ID
+ * @returns Promise that resolves with the level or null if not found
+ */
+export const getCustomLevelById = async (levelId: string): Promise<CustomLevel | null> => {
+    try {
+        const levelDocRef = doc(db, 'customLevels', levelId);
+        const levelDoc = await getDoc(levelDocRef);
+
+        if (levelDoc.exists()) {
+            return levelDoc.data() as CustomLevel;
+        }
+
+        return null;
+    } catch (error) {
+        console.error('Error getting custom level by ID:', error);
         throw error;
     }
 };

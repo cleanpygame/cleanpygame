@@ -77,7 +77,7 @@ User-created levels will be stored in Firebase and integrated into the level sel
 
 ## Firebase Data Model
 
-### 1. Collection: `custom_levels`
+### 1. Collection: `customLevels`
 
 Stores all user-created levels.
 
@@ -93,7 +93,7 @@ Stores all user-created levels.
     * Read: Public
     * Write: Only by `author_id`
 
-### 2. Collection: `user_levels`
+### 2. Collection: `userLevels`
 
 Tracks which custom levels are visible to a user.
 
@@ -114,13 +114,13 @@ Tracks which custom levels are visible to a user.
 
 * When displaying the **Shared Levels** topic:
 
-    1. Fetch `user_levels/<user_id>/levels`.
+    1. Fetch `userLevels/<user_id>/levels`.
     2. Use each `filename` to render navigation.
-    3. Fetch the `content` from `custom_levels/<level_id>` to load the level.
+    3. Fetch the `content` from `customLevels/<level_id>` to load the level.
 
 * When a shared link is visited:
 
-    1. Add the `level_id` (and `filename`) to the current user’s `user_levels`.
+    1. Add the `level_id` (and `filename`) to the current user’s `userLevels`.
 
 ---
 

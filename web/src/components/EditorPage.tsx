@@ -1,10 +1,12 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {TopBar} from './TopBar';
 import CodeMirror from '@uiw/react-codemirror';
 import {python} from '@codemirror/lang-python';
 import {PyLevelsGuide} from './PyLevelsGuide';
 import {parseLevelText, ParseResult} from '../levels_compiler/parser';
+import {getCurrentUser} from '../firebase/auth';
+import {saveCustomLevel} from '../firebase/firestore';
 
 /**
  * Editor page for creating and editing custom levels
@@ -14,23 +16,81 @@ export function EditorPage(): React.ReactElement {
     const [code, setCode] = useState<string>('##file example.py\n\n"""start\nWelcome to the level editor!\n"""\n##start-reply "Let\'s create a level"\n\n# Your code here\n\n"""final\nGreat job creating your level!\n"""\n##final-reply "Finish"');
     const [filename, setFilename] = useState<string>('example.py');
     const [errors, setErrors] = useState<string[]>([]);
+    const [isSaved, setIsSaved] = useState<boolean>(false);
+    const [levelId, setLevelId] = useState<string | null>(null);
+    const [hasChanges, setHasChanges] = useState<boolean>(false);
+    const [initialCode] = useState<string>(code); // Store initial code to detect changes
+
+    // Check if code has changed from initial or last saved state
+    useEffect(() => {
+        if (isSaved) {
+            // If saved, compare with current code
+            setHasChanges(code !== initialCode);
+        }
+    }, [code, initialCode, isSaved]);
 
     const handleCancel = () => {
+        if (hasChanges) {
+            // Show confirmation dialog if there are unsaved changes
+            const confirmLeave = window.confirm('You have unsaved changes. Are you sure you want to leave?');
+            if (!confirmLeave) {
+                return;
+            }
+        }
         navigate('/');
     };
 
-    const handleSave = () => {
-        // Save functionality will be implemented later
-        console.log('Save clicked');
+    const handleSave = async () => {
+        try {
+            const user = getCurrentUser();
+            if (!user) {
+                alert('You must be signed in to save a level');
+                return;
+            }
+
+            if (errors.length > 0) {
+                // Should not happen as button is disabled, but check anyway
+                alert('Please fix the errors before saving');
+                return;
+            }
+
+            // Save the level to Firestore
+            const savedLevelId = await saveCustomLevel(user, code, filename);
+            setLevelId(savedLevelId);
+            setIsSaved(true);
+            setHasChanges(false);
+
+            // Navigate to the level
+            navigate(`/community-levels/${savedLevelId}`);
+        } catch (error) {
+            console.error('Error saving level:', error);
+            alert('Failed to save level. Please try again.');
+        }
     };
 
     const handleShare = () => {
-        // Share functionality will be implemented later
-        console.log('Share clicked');
+        if (!levelId) {
+            alert('You must save the level before sharing');
+            return;
+        }
+
+        // Create the share URL
+        const shareUrl = `${window.location.origin}/community-levels/${levelId}`;
+
+        // Copy to clipboard
+        navigator.clipboard.writeText(shareUrl)
+            .then(() => {
+                alert('Link copied to clipboard!');
+            })
+            .catch((error) => {
+                console.error('Error copying to clipboard:', error);
+                alert(`Share this link: ${shareUrl}`);
+            });
     };
 
     const handleCodeChange = (value: string) => {
         setCode(value);
+        setHasChanges(true);
 
         // Parse the code using parseLevelText
         const result: ParseResult = parseLevelText(value);
@@ -62,14 +122,24 @@ export function EditorPage(): React.ReactElement {
                         </div>
                         <div>
                             <button
-                                className="px-4 py-2 mr-2 bg-[#4c8b36] hover:bg-[#5da142] rounded"
+                                className={`px-4 py-2 mr-2 rounded ${
+                                    errors.length === 0
+                                        ? "bg-[#4c8b36] hover:bg-[#5da142]"
+                                        : "bg-[#4c8b36] opacity-50 cursor-not-allowed"
+                                }`}
                                 onClick={handleSave}
+                                disabled={errors.length > 0}
                             >
                                 Save
                             </button>
                             <button
-                                className="px-4 py-2 mr-2 bg-[#3c3c3c] hover:bg-[#4c4c4c] rounded"
+                                className={`px-4 py-2 mr-2 rounded ${
+                                    isSaved
+                                        ? "bg-[#3c3c3c] hover:bg-[#4c4c4c]"
+                                        : "bg-[#3c3c3c] opacity-50 cursor-not-allowed"
+                                }`}
                                 onClick={handleShare}
+                                disabled={!isSaved}
                             >
                                 Share
                             </button>
