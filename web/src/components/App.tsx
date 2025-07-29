@@ -7,6 +7,7 @@ import {GroupsPage} from './GroupsPage';
 import {PlayerStatsPage} from './PlayerStatsPage';
 import {GroupJoinPage} from './GroupJoinPage.tsx';
 import {GroupJoinFinalPage} from './GroupJoinFinalPage.tsx';
+import {EditorPage} from './EditorPage';
 import {TopBar} from './TopBar';
 
 /**
@@ -42,6 +43,7 @@ export function App(): React.ReactElement {
                     <Route path="/groups/:groupId" element={<TopBarPageWrapper Component={GroupPage}/>}/>
                     <Route path="/join/:code" element={<GroupJoinPage/>}/>
                     <Route path="/join/:code/success" element={<GroupJoinFinalPage/>}/>
+                    <Route path="/editor" element={<EditorPage/>}/>
                     <Route path="*" element={<IdeLayout/>}/>
                 </Routes>
             </StateProvider>

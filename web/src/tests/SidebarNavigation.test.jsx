@@ -5,6 +5,11 @@ import {SidebarNavigationContainer} from '../components/SidebarNavigationContain
 import {GameStateContext} from '../reducers/index.ts';
 import {isLevelClickable} from '../utils/levelUtils';
 
+// Mock react-router-dom
+vi.mock('react-router-dom', () => ({
+    useNavigate: () => vi.fn()
+}));
+
 // Mock state for testing
 const mockState = {
     topics: [

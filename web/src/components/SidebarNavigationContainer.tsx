@@ -1,4 +1,5 @@
 import React, {useContext, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import {GameStateContext} from '../reducers';
 import {loadLevel} from '../reducers/actionCreators';
 import {TopicItem} from './TopicItem';
@@ -8,6 +9,7 @@ import {TopicItem} from './TopicItem';
  */
 export function SidebarNavigationContainer(): React.ReactElement {
     const context = useContext(GameStateContext);
+    const navigate = useNavigate();
 
     if (!context) {
         throw new Error('SidebarNavigationContainer must be used within a GameStateContext Provider');
@@ -15,7 +17,8 @@ export function SidebarNavigationContainer(): React.ReactElement {
 
     const {state, dispatch} = context;
     const [expandedTopics, setExpandedTopics] = useState<Record<string, boolean>>({
-        [state.currentLevelId.topic]: true
+        [state.currentLevelId.topic]: true,
+        'My Levels': true // Always expand My Levels topic
     });
 
     const toggleTopic = (topicName: string): void => {
@@ -27,6 +30,10 @@ export function SidebarNavigationContainer(): React.ReactElement {
 
     const handleLevelSelect = (topic: string, levelId: string): void => {
         dispatch(loadLevel({topic, levelId}));
+    };
+
+    const handleCreateNewLevel = (): void => {
+        navigate('/editor');
     };
 
     return (
@@ -45,6 +52,34 @@ export function SidebarNavigationContainer(): React.ReactElement {
                         onLevelSelect={handleLevelSelect}
                     />
                 ))}
+
+                {/* My Levels topic */}
+                <div className="">
+                    <div
+                        className="flex items-center p-1 cursor-pointer"
+                        onClick={() => toggleTopic('My Levels')}
+                    >
+                        <span className="mr-1 font-mono">
+                          {expandedTopics['My Levels'] ? '-' : '+'}
+                        </span>
+                        <span>My Levels</span>
+                    </div>
+
+                    {expandedTopics['My Levels'] && (
+                        <div>
+                            {/* Create New button */}
+                            <div
+                                className="flex items-center pl-4 p-1 cursor-pointer hover:bg-[#37373d]"
+                                onClick={handleCreateNewLevel}
+                            >
+                                <span className="mr-2">+</span>
+                                <span>Create New</span>
+                            </div>
+
+                            {/* Render My Levels here when implemented */}
+                        </div>
+                    )}
+                </div>
 
                 {state.topics.length === 0 && (
                     <div className="p-2 text-[#888888]">Loading...</div>
