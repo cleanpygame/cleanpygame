@@ -47,3 +47,4 @@ The authentication system uses Google OAuth and is implemented in `web/src/fireb
 - `signInWithGoogle()` - Initiates Google sign-in popup
 - `signOut()` - Signs out the current user
 - `getCurrentUser()` - Returns the current authenticated user
+- `onAuthStateChanged(callback)` - Sets up a listener for authentication state changes

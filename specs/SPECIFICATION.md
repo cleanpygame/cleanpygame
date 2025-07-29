@@ -132,7 +132,7 @@ Decisions:
 5. Typing animation and a “Next!” button.
 
 
-## 5. Technical Architecture & Deployment Plan
+## 3. Technical Architecture & Deployment Plan
 
 ---
 
@@ -145,57 +145,60 @@ The game is built as a **single-page web application (SPA)**, using lightweight,
 | Part                | Tech                   | Purpose                                               |
 |---------------------|------------------------|-------------------------------------------------------|
 | Framework           | React                  | UI rendering, component model, state management       |
-| Syntax Highlighting | Prism.js or Refractor  | Lightweight, read-only syntax highlighting for Python |
+| Syntax Highlighting | prism-react-renderer   | Lightweight, read-only syntax highlighting for Python |
 | Styling             | Tailwind CSS           | Utility-first styling, matches VS Code feel           |
 | Interactions        | Custom logic via React | Tooltips, overlays, game state, event triggers        |
 
 > **Rationale:**  
-> Heavy editors like Monaco are avoided. Prism.js (or Refractor for advanced cases) provides the necessary highlighting with full control over rendering, performance, and custom overlays.
+> Heavy editors like Monaco are avoided. prism-react-renderer provides the necessary highlighting with full control over rendering, performance, and custom overlays.
 
 ---
 
 ### 🏗️ Application Structure
 
-**Client-Only Architecture (MVP)**
+**Client-Side Architecture with Firebase Backend**
 
-The game is primarily **client-side**:
+The game is primarily **client-side** with Firebase backend services:
 
-- All levels are stored as static JSON/YAML files
+- Levels are compiled from PyLevels format to JSON
 - Loaded dynamically when a topic or level is selected
-- Game logic, event handling, and UI state are entirely local
+- Game logic, event handling, and UI state are managed by React reducers
+- Firebase provides authentication, database, and hosting services
 
-This makes hosting simple and cost-effective.
+For detailed information about the frontend architecture, component hierarchy, and state management, see `/web/ARCHITECTURE.md`.
 
 ---
 
 ### ☁️ Hosting & Deployment
 
 **Deployment Target:**  
-- GitHub Pages  
-- or Vercel  
-- or Netlify  
+- Firebase Hosting
 
-> These platforms offer **free hosting**, fast static file serving, and automatic deployment from Git pushes.
+> Firebase offers **free hosting**, fast static file serving, and automatic deployment with Firebase CLI.
 
 **Build Tools:**
-- Vite or Create React App (Vite recommended for faster builds)
-- Markdown/YAML parser (e.g., `js-yaml`) for loading level content
+- Vite (for faster builds)
+- TypeScript compiler for levels_compiler
 
 ---
 
-### 🔥 Backend with Firebase (Future Phase)
+### 🔥 Backend with Firebase
 
-Firebase can be added later to support classroom use cases with no backend maintenance.
+Firebase is used to support classroom use cases and community levels with no backend maintenance.
 
 #### 🔑 Key Features
 
-- **Firestore** — Store player progress, group memberships
-- **Authentication** — Anonymous sign-in or email-based logins
-- **Cloud Functions** — Trigger actions on level completion, group join events
-- **Hosting** — Optionally serve the entire game from Firebase Hosting
-- **Security Rules** — Ensure users can only read/write their own data
+- **Firestore** — Stores player progress, group memberships, and community levels
+- **Authentication** — Google sign-in for users
+- **Hosting** — Serves the entire game from Firebase Hosting
+- **Security Rules** — Ensures users can only read/write their own data
 
 #### 👩‍🏫 Classroom Integration
-- Teachers generate a shareable join link like `/?group=abc123`
-- Any student using that link is automatically tracked under that group
-- Teachers can see aggregate progress for the group
+- Teachers create groups and generate shareable join links like `/join/{code}`
+- Students join groups via these links and their progress is tracked
+- Teachers can view detailed progress statistics for their group members
+
+#### 🎮 Community Levels
+- Users can create and share their own levels using the in-browser editor
+- Levels are stored in Firebase and can be shared via unique URLs
+- Shared levels appear under "My Levels" for users who access them
