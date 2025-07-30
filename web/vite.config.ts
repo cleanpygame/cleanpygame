@@ -40,4 +40,18 @@ export default defineConfig({
         levelsGeneratorPlugin(),
         //visualizer({open: true})
     ],
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    firebase: [
+                        'firebase/app',
+                        'firebase/auth',
+                        'firebase/firestore',
+                        'firebase/analytics'
+                    ]
+                }
+            }
+        }
+    }
 })
