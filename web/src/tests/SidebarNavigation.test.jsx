@@ -4,60 +4,35 @@ import {render, screen} from '@testing-library/react';
 import {SidebarNavigationContainer} from '../components/SidebarNavigationContainer.tsx';
 import {GameStateContext} from '../reducers/index.ts';
 import {isLevelClickable} from '../utils/levelUtils';
+// Import state builder
+import {createStateBuilder, mockDispatch} from './stateBuilder';
 
 // Mock react-router-dom
 vi.mock('react-router-dom', () => ({
     useNavigate: () => vi.fn()
 }));
 
-// Mock state for testing
-const mockState = {
-    topics: [
+// Use the state builder to create mock state with completed level and custom topics
+const mockState = createStateBuilder()
+    .withCompletedLevel()
+    .withCustomTopics([
         {
             name: 'topic1',
             levels: [
-                {filename: 'level1.py', title: 'Level 1'},
-                {filename: 'level2.py', title: 'Level 2'},
-                {filename: 'level3.py', title: 'Level 3'}
+                {filename: 'level1.py', blocks: []},
+                {filename: 'level2.py', blocks: []},
+                {filename: 'level3.py', blocks: []}
             ]
         },
         {
             name: 'topic2',
             levels: [
-                {filename: 'level1.py', title: 'Level 1'},
-                {filename: 'level2.py', title: 'Level 2'}
+                {filename: 'level1.py', blocks: []},
+                {filename: 'level2.py', blocks: []}
             ]
         }
-    ],
-    currentLevelId: {topic: 'topic1', levelId: 'level1.py'},
-    playerStats: {
-        summary: {
-            totalTimeSpent: 0,
-            totalLevelsSolved: 1,
-            totalLevelCompletions: 1,
-            totalHintsUsed: 0,
-            totalMistakesMade: 0
-        },
-        levels: {
-            'topic1__level1': {
-                timesCompleted: 1,
-                totalTimeSpent: 60,
-                totalHintsUsed: 0,
-                totalMistakesMade: 0,
-                minTimeSpent: 60,
-                minHintsUsed: 0,
-                minMistakesMade: 0
-            }
-        }
-    },
-    auth: {
-        isAuthenticated: false
-    },
-    userLevels: [],
-    customLevels: {}
-};
-
-const mockDispatch = vi.fn();
+    ])
+    .build();
 
 describe('SidebarNavigationContainer', () => {
     test('renders topics and levels', () => {

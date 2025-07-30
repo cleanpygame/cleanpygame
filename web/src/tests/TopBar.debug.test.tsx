@@ -5,6 +5,8 @@ import {GameStateContext} from '../reducers';
 import {BrowserRouter} from 'react-router-dom';
 // Import the mocked functions
 import {isDebugModeEnabled, parseDebugModeFromUrl} from '../utils/debugUtils';
+// Import state builder
+import {createStateBuilder, mockDispatch} from './stateBuilder';
 
 // Mock the debugUtils module
 vi.mock('../utils/debugUtils', () => ({
@@ -13,51 +15,8 @@ vi.mock('../utils/debugUtils', () => ({
     setDebugMode: vi.fn()
 }));
 
-// Mock state for testing
-const mockState = {
-    topics: [],
-    currentLevelId: {topic: 'topic1', levelId: 'level1.py'},
-    currentLevel: {
-        level: {
-            filename: 'level1.py',
-            blocks: []
-        },
-        triggeredEvents: [],
-        pendingHintId: null,
-        code: '',
-        isFinished: false,
-        regions: [],
-        startTime: Date.now(),
-        sessionHintsUsed: 0,
-        sessionMistakesMade: 0
-    },
-    chatMessages: [],
-    isTypingAnimationComplete: true,
-    auth: {
-        user: null,
-        isAuthenticated: false,
-        isLoading: false,
-        error: null,
-        isAdmin: false
-    },
-    playerStats: {
-        summary: {
-            totalTimeSpent: 0,
-            totalLevelsSolved: 0,
-            totalLevelCompletions: 0,
-            totalHintsUsed: 0,
-            totalMistakesMade: 0
-        },
-        levels: {}
-    },
-    ownedGroups: [],
-    joinedGroups: [],
-    isGroupsLoading: false,
-    userLevels: [],
-    customLevels: {}
-};
-
-const mockDispatch = vi.fn();
+// Use the state builder to create mock state
+const mockState = createStateBuilder().build();
 
 // Helper function to render TopBar with context
 const renderTopBar = () => {

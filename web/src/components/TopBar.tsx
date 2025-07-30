@@ -56,6 +56,7 @@ export function TopBar(): React.ReactElement {
     // Determine current page based on route
     const currentPath = location.pathname;
     const isMainPage = currentPath === '/';
+    const isCommunityLevelsPage = currentPath.startsWith('/community-levels/');
 
     function renderLogoutButton() {
         return <button
@@ -199,7 +200,7 @@ export function TopBar(): React.ReactElement {
                 Clean Code Game
             </div>
             <div className="flex gap-4">
-                {isMainPage && renderNavigationButtons()}
+                {(isMainPage || isCommunityLevelsPage) && renderNavigationButtons()}
                 {auth.isAuthenticated ? renderLogoutButton() : renderLoginButton()}
             </div>
         </div>
