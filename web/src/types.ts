@@ -71,6 +71,7 @@ export interface AuthState {
     isAuthenticated: boolean;
     isLoading: boolean;
     error: string | null;
+    isAdmin: boolean;
 }
 
 /**
@@ -162,6 +163,22 @@ export interface CustomLevel {
 
 export interface UserLevel {
     level_id: string;
+}
+
+/**
+ * User activity data structure for admin view
+ */
+export interface UserActivity {
+    uid: string;
+    displayName: string;
+    email: string;
+    levelsCompleted: number;
+    totalLevelsPlayed: number;
+    totalTimeSpent: number;
+    totalHintsUsed: number;
+    totalWrongClicks: number;
+    lastPlayedAt: string | null;
+    createdAt: string | null;
 }
 
 export interface GameState {

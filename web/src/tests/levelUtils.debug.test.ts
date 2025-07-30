@@ -43,7 +43,8 @@ const mockState: GameState = {
         user: null,
         isAuthenticated: false,
         isLoading: false,
-        error: null
+        error: null,
+        isAdmin: false
     },
     playerStats: {
         summary: {

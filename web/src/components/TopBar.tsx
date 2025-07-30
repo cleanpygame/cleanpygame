@@ -1,8 +1,15 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import {GameStateContext} from '../reducers';
-import {loginFailure, loginRequest, loginSuccess, logout, resetProgress} from '../reducers/actionCreators';
-import {savePlayerStats} from '../firebase/firestore';
+import {
+    loginFailure,
+    loginRequest,
+    loginSuccess,
+    logout,
+    resetProgress,
+    setAdminStatus
+} from '../reducers/actionCreators';
+import {isUserAdmin, savePlayerStats} from '../firebase/firestore';
 import {createDefaultPlayerStats} from '../reducers/statsReducer';
 import {parseDebugModeFromUrl} from '../utils/debugUtils';
 
@@ -28,6 +35,22 @@ export function TopBar(): React.ReactElement {
         const isDebugEnabled = parseDebugModeFromUrl();
         setDebugMode(isDebugEnabled);
     }, [location.search]);
+
+    // Check if the current user is an admin when they log in
+    useEffect(() => {
+        if (auth.user) {
+            isUserAdmin(auth.user.uid)
+                .then(adminStatus => {
+                    dispatch(setAdminStatus(adminStatus));
+                })
+                .catch(error => {
+                    console.error('Error checking admin status:', error);
+                    dispatch(setAdminStatus(false));
+                });
+        } else {
+            dispatch(setAdminStatus(false));
+        }
+    }, [auth.user, dispatch]);
 
     // Determine current page based on route
     const currentPath = location.pathname;
@@ -131,12 +154,39 @@ export function TopBar(): React.ReactElement {
         );
     }
 
+    function renderAdminModeLabel() {
+        if (auth.isAdmin) {
+            return (
+                <div className="px-3 py-1 flex items-center gap-2 rounded bg-[#3c3c3c]">
+                    <span className="text-[#9cdcfe]">Admin Mode</span>
+                </div>
+            );
+        }
+        return null;
+    }
+
+    function renderWatchActivityButton() {
+        if (auth.isAdmin) {
+            return (
+                <button
+                    onClick={() => navigate('/admin/activity')}
+                    className="px-3 py-1 flex items-center gap-2 rounded hover:bg-[#3c3c3c] transition-colors"
+                    title="Watch User Activity">
+                    <span>Watch activity</span>
+                </button>
+            );
+        }
+        return null;
+    }
+
     function renderNavigationButtons() {
         return (
             <>
                 {renderStatsButton()}
                 {renderGroupsButton()}
                 {renderResetProgressButton()}
+                {renderWatchActivityButton()}
+                {renderAdminModeLabel()}
             </>
         );
     }

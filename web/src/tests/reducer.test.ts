@@ -137,7 +137,8 @@ describe('Game Reducer', () => {
                 user: {uid: 'test-uid', displayName: 'Test User', email: 'test@example.com', photoURL: null},
                 isAuthenticated: true,
                 isLoading: false,
-                error: null
+                error: null,
+                isAdmin: false
             }
         };
 

@@ -32,6 +32,7 @@ import {
     POST_CHAT_MESSAGE,
     RESET_PROGRESS,
     SELECT_GROUP,
+    SET_ADMIN_STATUS,
     SET_CUSTOM_LEVELS,
     SET_PLAYER_STATS,
     SET_TYPING_ANIMATION_COMPLETE,
@@ -62,7 +63,8 @@ export const initialState: GameState = {
         user: null,
         isAuthenticated: false,
         isLoading: false,
-        error: null
+        error: null,
+        isAdmin: false
     },
     playerStats: {
         summary: {
@@ -381,7 +383,8 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
                     user,
                     isAuthenticated: true,
                     isLoading: false,
-                    error: null
+                    error: null,
+                    isAdmin: state.auth.isAdmin
                 }
             };
         }
@@ -406,7 +409,19 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
                     user: null,
                     isAuthenticated: false,
                     isLoading: false,
-                    error: null
+                    error: null,
+                    isAdmin: false
+                }
+            };
+        }
+
+        case SET_ADMIN_STATUS: {
+            const {isAdmin} = action.payload;
+            return {
+                ...state,
+                auth: {
+                    ...state.auth,
+                    isAdmin
                 }
             };
         }

@@ -30,6 +30,7 @@ import {
     POST_CHAT_MESSAGE,
     RESET_PROGRESS,
     SELECT_GROUP,
+    SET_ADMIN_STATUS,
     SET_CUSTOM_LEVELS,
     SET_PLAYER_STATS,
     SET_TYPING_ANIMATION_COMPLETE,
@@ -144,6 +145,13 @@ export interface LoginFailureAction {
 
 export interface LogoutAction {
     type: typeof LOGOUT;
+}
+
+export interface SetAdminStatusAction {
+    type: typeof SET_ADMIN_STATUS;
+    payload: {
+        isAdmin: boolean;
+    };
 }
 
 
@@ -378,6 +386,7 @@ export type GameAction =
     | LoginSuccessAction
     | LoginFailureAction
     | LogoutAction
+    | SetAdminStatusAction
     | UpdateLevelStatsAction
     | SetPlayerStatsAction
     | CreateGroupRequestAction
@@ -473,6 +482,11 @@ export const loginFailure = (error: string): LoginFailureAction => ({
 
 export const logout = (): LogoutAction => ({
     type: LOGOUT
+});
+
+export const setAdminStatus = (isAdmin: boolean): SetAdminStatusAction => ({
+    type: SET_ADMIN_STATUS,
+    payload: {isAdmin}
 });
 
 

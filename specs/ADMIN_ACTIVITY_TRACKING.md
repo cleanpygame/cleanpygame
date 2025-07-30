@@ -122,47 +122,6 @@ match /playerStats/{userId} {
         - First Seen (createdAt)
     - Remove the "Actions" column as it's not needed for the admin view
 
-3. **Admin Check**:
-   ```typescript
-   // Function to check if current user is an admin
-   export const isUserAdmin = async (userId: string): Promise<boolean> => {
-     if (!userId) return false;
-     
-     const adminDocRef = doc(db, 'admins', userId);
-     const docSnap = await getDoc(adminDocRef);
-     return docSnap.exists();
-   };
-   ```
-
-4. **Route Protection**:
-   ```typescript
-   // AdminRoute component
-   export function AdminRoute({ children }: { children: React.ReactNode }): React.ReactElement {
-     const context = useContext(GameStateContext);
-     const navigate = useNavigate();
-     const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
-     
-     useEffect(() => {
-       if (context?.state.auth.user) {
-         isUserAdmin(context.state.auth.user.uid)
-           .then(adminStatus => {
-             setIsAdmin(adminStatus);
-             if (!adminStatus) {
-               navigate('/');
-             }
-           });
-       } else {
-         navigate('/');
-       }
-     }, [context?.state.auth.user, navigate]);
-     
-     if (isAdmin === null) {
-       return <div>Checking permissions...</div>;
-     }
-     
-     return isAdmin ? <>{children}</> : null;
-   }
-   ```
 
 ## Efficient Data Fetching
 
@@ -223,27 +182,7 @@ export const fetchRecentlyActiveUsers = async (limit: number = 50): Promise<User
       }
       ```
 
-2. **Caching**:
-    - Implement client-side caching to reduce Firestore reads:
-      ```typescript
-      // In AdminActivityPage.tsx
-      const [cachedUsers, setCachedUsers] = useState<UserActivity[]>([]);
-      const [lastFetchTime, setLastFetchTime] = useState<number>(0);
-      
-      useEffect(() => {
-        const now = Date.now();
-        // Only fetch if data is older than 5 minutes
-        if (now - lastFetchTime > 5 * 60 * 1000 || cachedUsers.length === 0) {
-          fetchRecentlyActiveUsers(50)
-            .then(users => {
-              setCachedUsers(users);
-              setLastFetchTime(now);
-            });
-        }
-      }, [lastFetchTime, cachedUsers.length]);
-      ```
-
-3. **Pagination**:
+2**Pagination**:
     - not required for just 50 users
 
 ## Implementation Plan

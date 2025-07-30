@@ -10,6 +10,8 @@ import {GroupJoinFinalPage} from './GroupJoinFinalPage.tsx';
 import {EditorPage} from './EditorPage';
 import {CommunityLevelLoader} from './CommunityLevelLoader';
 import {TopBar} from './TopBar';
+import {AdminRoute} from './AdminRoute';
+import {AdminActivityPage} from './AdminActivityPage';
 
 /**
  * Generic page wrapper component
@@ -50,6 +52,11 @@ export function App(): React.ReactElement {
                         <CommunityLevelLoader/>
                         <IdeLayout/>
                     </>}/>
+                    <Route path="/admin/activity" element={
+                        <AdminRoute>
+                            <TopBarPageWrapper Component={AdminActivityPage}/>
+                        </AdminRoute>
+                    }/>
                     <Route path="*" element={<IdeLayout/>}/>
                 </Routes>
             </StateProvider>
