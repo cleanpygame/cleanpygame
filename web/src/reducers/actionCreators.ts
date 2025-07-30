@@ -55,6 +55,17 @@ import {
     User,
     UserLevel
 } from '../types';
+import {
+    createGroup,
+    deleteGroup,
+    fetchGroupById,
+    fetchGroupByJoinCode,
+    fetchJoinedGroups,
+    fetchOwnedGroups,
+    joinGroup,
+    toggleJoinCodeActive,
+    updateGroupName
+} from '../firebase/firestore';
 
 // Action interfaces
 export interface LoadLevelAction {
@@ -682,7 +693,6 @@ export const deleteGroupThunk = (groupId: string) => {
         try {
             dispatch(deleteGroupRequest(groupId));
 
-            const {deleteGroup} = await import('../firebase/firestore');
             await deleteGroup(groupId);
 
             dispatch(deleteGroupSuccess(groupId));
@@ -701,7 +711,6 @@ export const fetchGroupByIdThunk = (groupId: string) => {
         try {
             dispatch(fetchGroupByIdRequest(groupId));
 
-            const {fetchGroupById} = await import('../firebase/firestore');
             const group = await fetchGroupById(groupId);
 
             if (!group) {
@@ -724,7 +733,6 @@ export const updateGroupNameThunk = (groupId: string, newName: string) => {
         try {
             dispatch(updateGroupNameRequest(groupId, newName));
 
-            const {updateGroupName} = await import('../firebase/firestore');
             await updateGroupName(groupId, newName);
 
             dispatch(updateGroupNameSuccess(groupId, newName));
@@ -763,7 +771,6 @@ export const toggleJoinCodeActiveThunk = (joinCode: string, isActive: boolean) =
         try {
             dispatch(toggleJoinCodeActiveRequest(joinCode, isActive));
 
-            const {toggleJoinCodeActive} = await import('../firebase/firestore');
             await toggleJoinCodeActive(joinCode, isActive);
 
             dispatch(toggleJoinCodeActiveSuccess(joinCode, isActive));
@@ -789,7 +796,6 @@ export const createGroupThunk = (groupName: string) => {
                 throw new Error('User must be authenticated to create a group');
             }
 
-            const {createGroup} = await import('../firebase/firestore');
             const result = await createGroup(user, groupName);
             const {group} = result;
 
@@ -816,7 +822,6 @@ export const fetchGroupsThunk = () => {
                 throw new Error('User must be authenticated to fetch groups');
             }
 
-            const {fetchOwnedGroups, fetchJoinedGroups} = await import('../firebase/firestore');
             const [ownedGroups, joinedGroups] = await Promise.all([
                 fetchOwnedGroups(user.uid),
                 fetchJoinedGroups(user.uid)
@@ -838,7 +843,6 @@ export const fetchGroupByJoinCodeThunk = (joinCode: string) => {
         try {
             dispatch(fetchGroupByJoinCodeRequest(joinCode));
 
-            const {fetchGroupByJoinCode} = await import('../firebase/firestore');
             const group = await fetchGroupByJoinCode(joinCode);
 
             if (!group) {
@@ -868,7 +872,6 @@ export const joinGroupThunk = (groupId: string, displayName?: string) => {
                 throw new Error('User must be authenticated to join a group');
             }
 
-            const {joinGroup} = await import('../firebase/firestore');
             const group = await joinGroup(groupId, user, displayName);
 
             dispatch(joinGroupSuccess(group));

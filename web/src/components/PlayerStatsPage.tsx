@@ -5,6 +5,7 @@ import {PlayerLevelStats, PlayerStatsState} from '../types';
 import {getLevelKey} from '../utils/levelUtils';
 import {createDefaultPlayerStats} from '../reducers/statsReducer';
 import {getDoc} from 'firebase/firestore';
+import {getPlayerDocRef} from '../firebase/firestore';
 
 /**
  * Component for displaying player statistics
@@ -33,14 +34,10 @@ export function PlayerStatsPage(): React.ReactElement {
             setIsLoading(true);
             setError(null);
 
-            // Import the necessary functions from firestore
-            import('../firebase/firestore')
-                .then(({getPlayerDocRef}) => {
-                    // Get a reference to the player's document
-                    const playerDocRef = getPlayerDocRef(uid);
-                    // Fetch the document
-                    return getDoc(playerDocRef);
-                })
+            // Get a reference to the player's document
+            const playerDocRef = getPlayerDocRef(uid);
+            // Fetch the document
+            getDoc(playerDocRef)
                 .then((docSnap) => {
                     if (docSnap.exists()) {
                         const data = docSnap.data();

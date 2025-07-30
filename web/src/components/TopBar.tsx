@@ -1,6 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import {GameStateContext} from '../reducers';
+import {signInWithGoogle, signOut} from '../firebase/auth';
 import {
     loginFailure,
     loginRequest,
@@ -61,8 +62,7 @@ export function TopBar(): React.ReactElement {
             onClick={async () => {
                 try {
                     dispatch(loginRequest());
-                    const {signOut: firebaseSignOut} = await import('../firebase/auth');
-                    await firebaseSignOut();
+                    await signOut();
                     dispatch(logout());
                 } catch (error) {
                     console.error('Error signing out:', error);
@@ -80,8 +80,7 @@ export function TopBar(): React.ReactElement {
             onClick={async () => {
                 try {
                     dispatch(loginRequest());
-                    const {signInWithGoogle: firebaseSignInWithGoogle} = await import('../firebase/auth');
-                    const result = await firebaseSignInWithGoogle();
+                    const result = await signInWithGoogle();
 
                     if (result.user) {
                         const user = {

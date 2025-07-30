@@ -1,6 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import {GameStateContext} from '../reducers';
+import {signInWithGoogle} from '../firebase/auth';
 import {
     fetchGroupByJoinCodeThunk,
     joinGroupThunk,
@@ -144,7 +145,6 @@ export function GroupJoinPage(): React.ReactElement {
                             onClick={async () => {
                                 try {
                                     dispatch(loginRequest());
-                                    const {signInWithGoogle} = await import('../firebase/auth');
                                     const result = await signInWithGoogle();
 
                                     if (result.user) {

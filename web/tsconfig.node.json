@@ -9,6 +9,6 @@
   "include": [
     "vite.config.ts",
     "vitest.config.ts",
-    "../levels_compiler/main.ts"
+    "./src/levels_compiler/main.ts"
   ]
 }

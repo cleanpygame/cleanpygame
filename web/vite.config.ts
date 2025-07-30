@@ -5,7 +5,6 @@ import tailwindcss from '@tailwindcss/vite'
 import {generate} from './src/levels_compiler/main.js'
 import * as path from "node:path";
 
-
 function generateJson() {
     generate("levels", "src/data/levels.json");
 }
@@ -38,6 +37,7 @@ export default defineConfig({
     plugins: [
         tailwindcss(),
         react(),
-        levelsGeneratorPlugin()
+        levelsGeneratorPlugin(),
+        //visualizer({open: true})
     ],
 })

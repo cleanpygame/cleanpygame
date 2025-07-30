@@ -10,6 +10,7 @@ import {
     updateGroupNameThunk
 } from '../reducers/actionCreators';
 import {GroupMember} from '../types';
+import {createJoinCode, fetchGroupMembers, fetchJoinCodesForGroup, refreshMemberStats} from '../firebase/firestore';
 
 // Helper function to execute thunks directly
 type ThunkResult<T> = (dispatch: React.Dispatch<GameAction>, getState?: any) => Promise<T>;
@@ -69,12 +70,8 @@ export function GroupPage(): React.ReactElement {
         if (group.id && group.id !== 'Loading...') {
             const groupId = group.id; // Store in a constant to satisfy TypeScript
 
-            // Import the fetchGroupMembers function dynamically
-            import('../firebase/firestore')
-                .then(({fetchGroupMembers}) => {
-                    // Fetch the members from Firestore
-                    return fetchGroupMembers(groupId);
-                })
+            // Fetch the members from Firestore
+            fetchGroupMembers(groupId)
                 .then((fetchedMembers) => {
                     // Update the state with the fetched members
                     setMembers(fetchedMembers);
@@ -84,11 +81,7 @@ export function GroupPage(): React.ReactElement {
                 });
 
             // Fetch the join codes for the group
-            import('../firebase/firestore')
-                .then(({fetchJoinCodesForGroup}) => {
-                    // Fetch the join codes from Firestore
-                    return fetchJoinCodesForGroup(groupId);
-                })
+            fetchJoinCodesForGroup(groupId)
                 .then((fetchedJoinCodes) => {
                     // Store all join codes in state
                     setJoinCodes(fetchedJoinCodes);
@@ -108,12 +101,8 @@ export function GroupPage(): React.ReactElement {
 
         const ownerUid = group.ownerUid; // Store in a constant to satisfy TypeScript
 
-        // Import the createJoinCode function dynamically
-        import('../firebase/firestore')
-            .then(({createJoinCode}) => {
-                // Create a new join code for the group
-                return createJoinCode(groupId, ownerUid);
-            })
+        // Create a new join code for the group
+        createJoinCode(groupId, ownerUid)
             .then((newJoinCode) => {
                 // Add the new join code to the joinCodes array
                 setJoinCodes(prevJoinCodes => [
@@ -229,22 +218,15 @@ export function GroupPage(): React.ReactElement {
         setRefreshingMember(memberId);
         setRefreshSuccess(null);
 
-        // Import the refreshMemberStats function dynamically
-        import('../firebase/firestore')
-            .then(({refreshMemberStats}) => {
-                // Call the function to refresh the member's stats
-                return refreshMemberStats(groupId, memberId);
-            })
+        // Call the function to refresh the member's stats
+        refreshMemberStats(groupId, memberId)
             .then(() => {
                 // Handle success
                 console.log(`Member ${memberId} stats refreshed successfully`);
                 setRefreshSuccess(memberId);
 
                 // Refresh the members list
-                return import('../firebase/firestore')
-                    .then(({fetchGroupMembers}) => {
-                        return fetchGroupMembers(groupId);
-                    });
+                return fetchGroupMembers(groupId);
             })
             .then((updatedMembers) => {
                 // Update the members state with the refreshed data
