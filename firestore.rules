@@ -14,6 +14,11 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == groupData.ownerUid;
     }
     
+    // Admin helper function
+    function isAdmin() {
+      return isAuthenticated() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+    
     // Player Statistics Rules
     match /playerStats/{userId} {
       // Players can read and write their own stats
@@ -22,6 +27,19 @@ service cloud.firestore {
       // Teachers can read stats of their group members
       // This is implemented by checking if the current user's UID is in the teacherIds array
       allow read: if isAuthenticated() && resource.data.teacherIds.hasAny([request.auth.uid]);
+      
+      // Admins can read any player stats
+      allow read: if isAdmin();
+    }
+    
+    // Admin Collection Rules
+    match /admins/{adminId} {
+      // Only admins can read the admin list
+      allow read: if isAdmin();
+      
+      // No one can write to admin collection through the app
+      // (admins will be managed directly in Firestore)
+      allow write: if false;
     }
     
     // Groups Rules

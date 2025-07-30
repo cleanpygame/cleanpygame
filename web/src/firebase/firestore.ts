@@ -7,6 +7,8 @@ import {
     DocumentReference,
     getDoc,
     getDocs,
+    limit,
+    orderBy,
     query,
     serverTimestamp,
     setDoc,
@@ -14,7 +16,7 @@ import {
     where
 } from 'firebase/firestore';
 import {db} from './index';
-import {CustomLevel, Group, GroupMember, JoinCode, PlayerStatsState, User, UserLevel} from '../types';
+import {CustomLevel, Group, GroupMember, JoinCode, PlayerStatsState, User, UserActivity, UserLevel} from '../types';
 import {createDefaultPlayerStats} from '../reducers/statsReducer';
 
 /**
@@ -990,5 +992,60 @@ export const deleteLevelFromUserLevels = async (userId: string, levelId: string)
     } catch (error) {
         console.error('Error deleting level from user levels:', error);
         throw error;
+    }
+};
+
+/**
+ * Check if a user is an admin
+ * @param userId - User ID to check
+ * @returns Promise that resolves with a boolean indicating if the user is an admin
+ */
+export const isUserAdmin = async (userId: string): Promise<boolean> => {
+    if (!userId) return false;
+
+    try {
+        const adminDocRef = doc(db, 'admins', userId);
+        const docSnap = await getDoc(adminDocRef);
+        return docSnap.exists();
+    } catch (error) {
+        console.error('Error checking admin status:', error);
+        return false;
+    }
+};
+
+/**
+ * Fetch recently active users for admin view
+ * @param limit - Maximum number of users to fetch (default: 50)
+ * @returns Promise that resolves with an array of UserActivity objects
+ */
+export const fetchRecentlyActiveUsers = async (limitCount: number = 50): Promise<UserActivity[]> => {
+    try {
+        const playerStatsRef = collection(db, 'playerStats');
+        const q = query(
+            playerStatsRef,
+            orderBy('updatedAt', 'desc'),
+            limit(limitCount)
+        );
+
+        const querySnapshot = await getDocs(q);
+
+        return querySnapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+                uid: doc.id,
+                displayName: data.displayName || 'Unknown',
+                email: data.email || 'No email',
+                levelsCompleted: data.summary?.levelsCompleted || 0,
+                totalLevelsPlayed: data.summary?.totalLevelsPlayed || 0,
+                totalTimeSpent: data.summary?.totalTimeSpent || 0,
+                totalHintsUsed: data.summary?.totalHintsUsed || 0,
+                totalWrongClicks: data.summary?.totalWrongClicks || 0,
+                lastPlayedAt: data.updatedAt?.toDate().toISOString() || null,
+                createdAt: data.createdAt?.toDate().toISOString() || null
+            };
+        });
+    } catch (error) {
+        console.error('Error fetching recently active users:', error);
+        return [];
     }
 };
