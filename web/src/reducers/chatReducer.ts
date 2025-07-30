@@ -1,6 +1,6 @@
 import {ChatMessage, ChatMessageType, GameState, LevelData} from '../types';
 import {GameAction} from './actionCreators';
-import {APPLY_FIX, GET_HINT, LOAD_LEVEL, POST_CHAT_MESSAGE, WRONG_CLICK,} from './actionTypes';
+import {APPLY_FIX, GET_HINT, LOAD_COMMUNITY_LEVEL, LOAD_LEVEL, POST_CHAT_MESSAGE, WRONG_CLICK,} from './actionTypes';
 
 export const DEFAULT_MESSAGE = 'Great job! You\'ve fixed all the issues in this level.';
 export const DEFAULT_INSTRUCTION = 'Find and fix all the issues in this code.';
@@ -34,6 +34,11 @@ export function chatReducer(
         case LOAD_LEVEL: {
             const levelData = fullState.currentLevel?.level;
             if (!levelData) return state;
+            return [getInstructionChatMessage(levelData)];
+        }
+        
+        case LOAD_COMMUNITY_LEVEL: {
+            const { levelData } = action.payload;
             return [getInstructionChatMessage(levelData)];
         }
 
