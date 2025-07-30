@@ -33,3 +33,6 @@ def GOOD_CODE():
 ##replace-span e42 "42" "the_answer"
 ##explain "no magic constants!"
 ##hint "42 = 6 * 8"
+"""final
+Congratulations! You've completed the test level.
+"""

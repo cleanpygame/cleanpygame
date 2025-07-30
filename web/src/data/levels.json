@@ -60,7 +60,8 @@
               "hint": "42 = 6 * 8"
             }
           ],
-          "startMessage": "This is a test level"
+          "startMessage": "This is a test level",
+          "finalMessage": "Congratulations! You've completed the test level."
         }
       ]
     },

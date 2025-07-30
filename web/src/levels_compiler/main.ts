@@ -42,7 +42,11 @@ export function generate(source: string, output: string): void {
             const levelFilePath = path.join(topicPath, levelFile);
             console.log(`  * level ${levelFilePath}`);
 
-            const level = parseLevelFile(levelFilePath);
+            // Read the file content
+            const content = fs.readFileSync(levelFilePath, 'utf-8');
+
+            // Parse the level with both the file path and content
+            const level = parseLevelFile(levelFilePath, content);
             if (level) {
                 topic.levels.push(level);
             }

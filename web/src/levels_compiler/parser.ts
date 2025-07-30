@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import type {LevelBlock, LevelData} from '../types.js'
 
 export interface ParseContext {
@@ -334,27 +333,21 @@ function readOneBlock(context: ParseContext): void {
 }
 
 // Main parsing function
-export function parseLevelFile(filePath: string): LevelData | undefined {
-    const content = fs.readFileSync(filePath, 'utf-8');
-    const lines = content.split(/\r?\n/);
-    resetIdGenerator();
+export function parseLevelFile(filePath: string, content: string): LevelData | undefined {
+    const result = parseLevelText(content);
 
-    const outputLevel: LevelData = {
-        filename: "",
-        blocks: []
-    };
-
-    const context: ParseContext = {
-        filename: filePath,
-        lines,
-        idx: 0,
-        level: outputLevel
-    };
-
-    while (context.idx < lines.length) {
-        readOneBlock(context);
+    // If there was an error parsing the level, log it and return undefined
+    if (result.error) {
+        console.error(`Error parsing level file ${filePath}: ${result.error}`);
+        return undefined;
     }
-    return context.level;
+
+    // Set the filename in the context if it wasn't set by parseLevelText
+    if (result.level && !result.level.filename) {
+        result.level.filename = filePath;
+    }
+
+    return result.level;
 }
 
 // Function to validate required level instructions
