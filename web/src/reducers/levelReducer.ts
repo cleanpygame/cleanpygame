@@ -31,7 +31,20 @@ export const checkAllIssuesFixed = (
 ): boolean => {
     return blocks
         .filter(block => block.event && block.type !== 'neutral')
-        .every(block => triggeredEvents.includes(block.event || '') || eventId === block.event);
+        .every(block => {
+            // Check if the block's event is triggered
+            if (Array.isArray(block.event)) {
+                // If block.event is an array, check if any of the events in the array are in the triggeredEvents list
+                // or if eventId matches any of the events in the array
+                return block.event.some(e => triggeredEvents.includes(e) || eventId === e);
+            } else if (block.event) {
+                // If block.event is a string, check if it's in the triggeredEvents list
+                // or if eventId matches the event
+                return triggeredEvents.includes(block.event) || eventId === block.event;
+            } else {
+                return false;
+            }
+        });
 };
 
 /**
@@ -138,11 +151,35 @@ export function levelReducer(
 export const calculateNextHintId = (levelData: LevelData, triggeredEvents: string[]): string | null => {
     // Find the first block with a hint that hasn't been triggered yet
     const blockWithHint = levelData.blocks.find(
-        block => block.hint && block.event && !triggeredEvents.includes(block.event || '')
+        block => block.hint && block.event && !isEventTriggered(block.event, triggeredEvents)
     );
 
-    return blockWithHint?.event || null;
+    // If the block has an event array, return the first event in the array
+    // Otherwise, return the event as is
+    if (blockWithHint?.event) {
+        return Array.isArray(blockWithHint.event) ? blockWithHint.event[0] : blockWithHint.event;
+    }
+
+    return null;
 };
+
+/**
+ * Helper function to check if an event is triggered
+ * @param event - Event ID or array of event IDs
+ * @param triggeredEvents - List of triggered event IDs
+ * @returns True if the event is triggered
+ */
+function isEventTriggered(event: string | string[] | undefined, triggeredEvents: string[]): boolean {
+    if (!event) return false;
+
+    if (Array.isArray(event)) {
+        // If event is an array, check if any of the events in the array are in the triggeredEvents list
+        return event.some(e => triggeredEvents.includes(e));
+    } else {
+        // If event is a string, check if it's in the triggeredEvents list
+        return triggeredEvents.includes(event);
+    }
+}
 
 /**
  * Creates initial level state with zero progress

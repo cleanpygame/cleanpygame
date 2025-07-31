@@ -132,10 +132,11 @@ Contains a smart and short hint that doesn't fully reveal the issue but rather g
 
 ##### 6. Replace On
 
-Replaces a block only **after another event has triggered**. Must reuse an existing EVENT_ID.
+Replaces a block only **after another event has triggered**. Must reuse an existing EVENT_ID. Can specify multiple
+events separated by spaces, in which case the replacement will be triggered if any of the events has occurred.
 
 ```text
-##replace-on EVENT_ID
+##replace-on EVENT_ID [EVENT_ID2 EVENT_ID3 ...]
 <code lines...>
 ##with
 <replacement lines...>
@@ -147,7 +148,7 @@ Replaces a block only **after another event has triggered**. Must reuse an exist
 ##### 7. Add On (Syntactic Sugar)
 
 ```text
-##add-on EVENT_ID
+##add-on EVENT_ID [EVENT_ID2 EVENT_ID3 ...]
 <code lines...>
 ##end
 ```
@@ -155,16 +156,18 @@ Replaces a block only **after another event has triggered**. Must reuse an exist
 equivalent to
 
 ```text
-##replace-on EVENT_ID
+##replace-on EVENT_ID [EVENT_ID2 EVENT_ID3 ...]
 ##with
 <code lines...>
 ##end
 ```
+
+Can specify multiple events separated by spaces, in which case the code will be added if any of the events has occurred.
 
 ##### 8. Remove On (Syntactic Sugar)
 
 ```text
-##remove-on EVENT_ID
+##remove-on EVENT_ID [EVENT_ID2 EVENT_ID3 ...]
 <code lines...>
 ##end
 ```
@@ -172,11 +175,14 @@ equivalent to
 equivalent to
 
 ```text
-##replace-on EVENT_ID
+##replace-on EVENT_ID [EVENT_ID2 EVENT_ID3 ...]
 <code lines...>
 ##with
 ##end
 ```
+
+Can specify multiple events separated by spaces, in which case the code will be removed if any of the events has
+occurred.
 
 #### 🔐 Additional Rules
 

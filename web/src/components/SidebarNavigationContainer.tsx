@@ -6,6 +6,7 @@ import {TopicItem} from './TopicItem';
 import {onAuthStateChanged} from '../firebase/auth';
 import {getCustomLevelById, getUserLevels} from '../firebase/firestore';
 import {CustomLevel} from '../types';
+import {isDebugModeEnabled} from '../utils/debugUtils';
 
 /**
  * Sidebar navigation component showing topics and levels
@@ -91,7 +92,18 @@ export function SidebarNavigationContainer(): React.ReactElement {
                 <h1 className="text-m font-light">EXPLORER</h1>
             </div>
             <div className="text-sm">
-                {state.topics.filter(t => t.name != "Testing").map((topic) => (
+                {state.topics.filter(topic => {
+                    // Filter out Testing topic
+                    if (topic.name === "Testing") return false;
+
+                    // Filter out topics with inDevelopment: true unless in debug mode or user is admin
+                    if (topic.inDevelopment) {
+                        return isDebugModeEnabled() || state.auth.isAdmin;
+                    }
+
+                    // Show all other topics
+                    return true;
+                }).map((topic) => (
                     <TopicItem
                         key={topic.name}
                         state={state}
@@ -117,15 +129,6 @@ export function SidebarNavigationContainer(): React.ReactElement {
 
                         {expandedTopics['My Levels'] && (
                             <div>
-                                {/* Create New button */}
-                                <div
-                                    className="flex items-center pl-4 p-1 cursor-pointer hover:bg-[#37373d]"
-                                    onClick={handleCreateNewLevel}
-                                >
-                                    <span className="mr-2">+</span>
-                                    <span>Create New</span>
-                                </div>
-
                                 {/* Render user levels */}
                                 {state.userLevels.map((level) => {
                                     const customLevel = state.customLevels[level.level_id];
@@ -155,12 +158,13 @@ export function SidebarNavigationContainer(): React.ReactElement {
                                         </div>
                                     );
                                 })}
-
-                                {state.userLevels.length === 0 && (
-                                    <div className="pl-4 p-1 text-gray-400">
-                                        No levels yet. Create one!
-                                    </div>
-                                )}
+                                {/* Create New button */}
+                                <div
+                                    className="flex items-center pl-4 p-1 cursor-pointer hover:bg-[#37373d]"
+                                    onClick={handleCreateNewLevel}
+                                >
+                                    <span className="underline text-gray-400">Create level</span>
+                                </div>
                             </div>
                         )}
                     </div>

@@ -178,11 +178,14 @@ describe('Game Reducer', () => {
             const region = state.currentLevel.regions?.find(r => r.eventId === eventToTrigger);
 
             if (region) {
+                // Get the event ID as a string (use the first element if it's an array)
+                const eventId = Array.isArray(eventToTrigger) ? eventToTrigger[0] : eventToTrigger;
+                
                 // Apply the fix directly
-                state = gameReducer(state, applyFix(eventToTrigger));
+                state = gameReducer(state, applyFix(eventId));
 
                 // Verify the event was triggered
-                expect(state.currentLevel.triggeredEvents).toContain(eventToTrigger);
+                expect(state.currentLevel.triggeredEvents).toContain(eventId);
 
                 // Verify chat messages were added
                 expect(state.chatMessages.length).toBeGreaterThan(1);

@@ -30,7 +30,9 @@ export function generate(source: string, output: string): void {
 
         const topic: Topic = {
             name: topicName,
-            levels: []
+            levels: [],
+            // Copy inDevelopment field from topic.json, default to false if missing
+            inDevelopment: topicData.inDevelopment || false
         };
 
         // Get all Python files in the topic directory

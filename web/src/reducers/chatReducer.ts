@@ -2,6 +2,42 @@ import {ChatMessage, ChatMessageType, GameState, LevelData} from '../types';
 import {GameAction} from './actionCreators';
 import {APPLY_FIX, GET_HINT, LOAD_COMMUNITY_LEVEL, LOAD_LEVEL, POST_CHAT_MESSAGE, WRONG_CLICK,} from './actionTypes';
 
+/**
+ * Helper function to check if an event is triggered
+ * @param event - Event ID or array of event IDs
+ * @param triggeredEvents - List of triggered event IDs
+ * @returns True if the event is triggered
+ */
+function isEventTriggered(event: string | string[] | undefined, triggeredEvents: string[]): boolean {
+    if (!event) return false;
+
+    if (Array.isArray(event)) {
+        // If event is an array, check if any of the events in the array are in the triggeredEvents list
+        return event.some(e => triggeredEvents.includes(e));
+    } else {
+        // If event is a string, check if it's in the triggeredEvents list
+        return triggeredEvents.includes(event);
+    }
+}
+
+/**
+ * Helper function to check if an event matches a specific event ID
+ * @param event - Event ID or array of event IDs
+ * @param eventId - Specific event ID to check
+ * @returns True if the event matches the event ID
+ */
+function eventMatches(event: string | string[] | undefined, eventId: string): boolean {
+    if (!event) return false;
+
+    if (Array.isArray(event)) {
+        // If event is an array, check if any of the events in the array match the event ID
+        return event.includes(eventId);
+    } else {
+        // If event is a string, check if it matches the event ID
+        return event === eventId;
+    }
+}
+
 export const DEFAULT_MESSAGE = 'Great job! You\'ve fixed all the issues in this level.';
 export const DEFAULT_INSTRUCTION = 'Find and fix all the issues in this code.';
 export const WRONG_CLICK_RESPONSE = 'Nope, not an issue.';
@@ -50,7 +86,7 @@ export function chatReducer(
 
             // Find the block that was triggered
             const triggeredBlock = currentLevel.level.blocks.find(
-                block => block.event === eventId && block.explanation
+                block => eventMatches(block.event, eventId) && block.explanation
             );
 
             // Create a buddy explanation message
@@ -63,8 +99,8 @@ export function chatReducer(
             const allIssuesFixed = currentLevel.level.blocks
                 .filter(block => block.event && block.type !== 'neutral')
                 .every(block =>
-                    currentLevel.triggeredEvents.includes(block.event || '') ||
-                    eventId === block.event
+                    isEventTriggered(block.event, currentLevel.triggeredEvents) ||
+                    eventMatches(block.event, eventId)
                 );
 
             // If all issues are fixed, add a summary message
@@ -95,7 +131,7 @@ export function chatReducer(
 
             // Find the block with the pending hint
             const blockWithHint = currentLevel.level.blocks.find(
-                block => block.event === currentLevel.pendingHintId && block.hint
+                block => currentLevel.pendingHintId && eventMatches(block.event, currentLevel.pendingHintId) && block.hint
             );
 
             // Create a buddy help message

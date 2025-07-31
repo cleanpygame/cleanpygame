@@ -63,7 +63,8 @@
           "startMessage": "This is a test level",
           "finalMessage": "Congratulations! You've completed the test level."
         }
-      ]
+      ],
+      "inDevelopment": true
     },
     {
       "name": "Naming",
@@ -590,7 +591,8 @@
           "finalMessage": "Congratulations! You've transformed this \"perfect\" code into something actually worthy of approval. \n\nYou've applied all the naming best practices we've covered:\n1. Using snake_case for Python functions and variables\n2. Making function names verbs that describe their action\n3. Using descriptive names instead of single letters or abbreviations\n4. Replacing magic numbers with self-documenting expressions\n\nRemember: Code isn't just for computers to execute - it's for humans to read, understand, and maintain. Good naming is the foundation of readable code, and readable code is the foundation of maintainable software.\n\nYou've completed the naming challenges! Your future teammates thank you in advance for your clear, descriptive naming practices.",
           "endReply": "Is it a promotion?"
         }
-      ]
+      ],
+      "inDevelopment": false
     },
     {
       "name": "Pythonic",
@@ -1054,7 +1056,164 @@
           "finalMessage": "No more index wrangling, no more glue gun print statements,\nand no more DIY loops. You turned clunky code into a clean, declarative joyride.",
           "endReply": "I'm Pythonic guru!"
         }
-      ]
+      ],
+      "inDevelopment": false
+    },
+    {
+      "name": "Decomposition",
+      "levels": [
+        {
+          "filename": "scores.py",
+          "blocks": [
+            {
+              "type": "replace-on",
+              "event": [
+                "block1",
+                "block2",
+                "block3"
+              ],
+              "text": "",
+              "replacement": "def some_duplication(scores):\n    res = []\n    for score in scores:\n        if score < 0:\n            score = 0\n        elif score > 100:\n            score = 100\n        res.append(score)\n    return res\n"
+            },
+            {
+              "type": "replace-span",
+              "clickable": "some_duplication",
+              "replacement": "clamp_scores",
+              "event": "some_duplication",
+              "explanation": "Okay, now it's finally clear what this function is",
+              "hint": "Time to get rid of temporary names!"
+            },
+            {
+              "type": "text",
+              "text": "\ndef process_exam_scores(raw_scores):\n"
+            },
+            {
+              "type": "replace",
+              "text": "    math_scores = []\n    for score in raw_scores['math']:\n        if score < 0:\n            score = 0\n        elif score > 100:\n            score = 100\n        math_scores.append(score)\n",
+              "replacement": "    math_scores = some_duplication(raw_scores['math'])\n",
+              "event": "block1",
+              "explanation": "This code is duplicating!",
+              "hint": "math... programmers don't need math!"
+            },
+            {
+              "type": "replace",
+              "text": "    science_scores = []\n    for score in raw_scores['science']:\n        if score < 0:\n            score = 0\n        elif score > 100:\n            score = 100\n        science_scores.append(score)\n",
+              "replacement": "    science_scores = some_duplication(raw_scores['science'])\n",
+              "event": "block2",
+              "explanation": "D-D-Duplication!",
+              "hint": "science... the only science I like is Computer Science!"
+            },
+            {
+              "type": "replace",
+              "text": "    history_scores = []\n    for score in raw_scores['history']:\n        if score < 0:\n            score = 0\n        elif score > 100:\n            score = 100\n        history_scores.append(score)\n",
+              "replacement": "    history_scores = some_duplication(raw_scores['history'])\n",
+              "event": "block3",
+              "explanation": "DRY (Don't Repeat Yourself) isn't just about saving keystrokes - it's about having a single source of truth. Now if the normalization logic changes, you only need to update it in one place!",
+              "hint": "I hope they mean git history?"
+            },
+            {
+              "type": "text",
+              "text": "    # ...\n"
+            },
+            {
+              "type": "text",
+              "text": "\n"
+            }
+          ],
+          "startMessage": "Welcome back, Junior! Today's code review is from our intern who seems to have a copy-paste addiction.\n\nIt seems, he forces us to use copy-paste a lot in our code review notes!",
+          "startReply": "Oh... Interns...",
+          "finalMessage": "Good start! What is next?",
+          "endReply": "Next?!"
+        },
+        {
+          "filename": "scores_v2.py",
+          "blocks": [
+            {
+              "type": "replace-on",
+              "event": "clamp",
+              "text": "",
+              "replacement": "def clamp_score(score_val, min_val, max_val):\n  return min(max_val, max(min_val, score_val))\n\n"
+            },
+            {
+              "type": "text",
+              "text": "def clamp_scores(scores):\n    res = []\n    for score in scores:\n"
+            },
+            {
+              "type": "replace",
+              "text": "      if score < 0:\n        score = 0\n      elif score > 100:\n        score = 100\n      res.append(score)\n",
+              "replacement": "      res.append(clamp_score(score, 0, 100))\n",
+              "event": "clamp",
+              "explanation": "Sometimes you extract function not because of duplication!",
+              "hint": "We just put score value in certain bound..."
+            },
+            {
+              "type": "text",
+              "text": "    return res\n\ndef process_exam_scores(raw_scores):\n    math_scores = clamp_scores(raw_scores['math'])\n    science_scores = clamp_scores(raw_scores['science'])\n    history_scores = clamp_scores(raw_scores['history'])\n    # ...\n"
+            },
+            {
+              "type": "replace-span",
+              "clickable": "clamp_score",
+              "replacement": "clamp",
+              "event": "clamp_score",
+              "explanation": "Nothing special in scores. Any number can be clamped",
+              "hint": "Not only scores deserves to be clamped!"
+            },
+            {
+              "type": "replace-span",
+              "clickable": "score_val",
+              "replacement": "value",
+              "event": "score_val",
+              "explanation": "Yes, not just score — any value goes!",
+              "hint": "What is so special in scores?"
+            },
+            {
+              "type": "text",
+              "text": "\n"
+            }
+          ],
+          "startMessage": "I clearly can see some helpful primitive here, valuable not only for scores processing.",
+          "startReply": "Primitive?!",
+          "finalMessage": "No we can move this clamp function to our math library and use it everywhere!\n\nBTW, are you finished here?",
+          "endReply": "Not yet!"
+        },
+        {
+          "filename": "scores_v3.py",
+          "blocks": [
+            {
+              "type": "text",
+              "text": "def clamp_scores(scores):\n"
+            },
+            {
+              "type": "replace",
+              "text": "    res = []\n    for score in scores:\n      res.append(clamp_score(score, 0, 100))\n    return res\n",
+              "replacement": "    return [clamp_score(score, 0, 100) for score in scores]\n",
+              "event": "id",
+              "explanation": "List comprehensions are faster, cleaner, and easier to read than loops.",
+              "hint": "Loops are for the weak!"
+            },
+            {
+              "type": "text",
+              "text": "\ndef process_exam_scores(raw_scores):\n"
+            },
+            {
+              "type": "replace",
+              "text": "    math_scores = clamp_scores(raw_scores['math'])\n    science_scores = clamp_scores(raw_scores['science'])\n    history_scores = clamp_scores(raw_scores['history'])\n\n    add_to_report('math', math_scores)\n    add_to_report('science', science_scores)\n    add_to_report('history', history_scores)\n",
+              "replacement": "    for subject in ['math', 'science', 'history']:\n        subject_scores = clamp_scores(raw_scores[subject])\n        add_to_report(subject, subject_scores)\n",
+              "event": "id-1",
+              "explanation": "Join score processing and reporting into one operation and put it in a loop. Much cleaner now!",
+              "hint": "Look, each topic is handled in the same way."
+            },
+            {
+              "type": "text",
+              "text": "\n"
+            }
+          ],
+          "startMessage": "Okay, what can you fix here?",
+          "finalMessage": "Wow, not an intern-looking-code anymore!",
+          "endReply": "I like it too, thanks!"
+        }
+      ],
+      "inDevelopment": true
     }
   ]
 }

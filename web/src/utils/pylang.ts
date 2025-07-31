@@ -97,7 +97,14 @@ function processBlock(block: LevelBlock, events: string[], lineOffset: number): 
     text: string;
     regions: EventRegion[];
 } {
-    const isEventTriggered = block.event ? events.includes(block.event) : false;
+    // Check if the event is triggered
+    // If block.event is an array, check if any of the events in the array are in the events list
+    // If block.event is a string, check if it's in the events list
+    const isEventTriggered = block.event
+        ? Array.isArray(block.event)
+            ? block.event.some(e => events.includes(e))
+            : events.includes(block.event)
+        : false;
     const displayedText = isEventTriggered ? block.replacement || '' : block.text || '';
     switch (block.type) {
         case 'text':
@@ -139,7 +146,9 @@ function createRegionsForReplaceBlock(block: LevelBlock, isTriggered: boolean, l
                 region.startColumn,
                 region.endLine + lineOffset,
                 region.endColumn,
-                block.event!
+                // If block.event is an array, use the first event in the array
+                // Otherwise, use the event as is
+                Array.isArray(block.event) ? block.event[0] : block.event!
             )
         );
     } else {
@@ -150,7 +159,9 @@ function createRegionsForReplaceBlock(block: LevelBlock, isTriggered: boolean, l
                 0,
                 lineOffset + linesCount - 1,
                 100500,
-                block.event!
+                // If block.event is an array, use the first event in the array
+                // Otherwise, use the event as is
+                Array.isArray(block.event) ? block.event[0] : block.event!
             )
         ];
     }
@@ -177,7 +188,9 @@ function getRegionsFromPendingReplaceSpans(pendingReplaceSpans: LevelBlock[], co
                 occurrence.startColumn,
                 occurrence.endLine,
                 occurrence.endColumn,
-                pendingSpan.event!
+                // If pendingSpan.event is an array, use the first event in the array
+                // Otherwise, use the event as is
+                Array.isArray(pendingSpan.event) ? pendingSpan.event[0] : pendingSpan.event!
             ));
         }
     }
@@ -328,7 +341,17 @@ function sortSpanBlocks(blocks: LevelBlock[], events: string[]): {
     const pending: LevelBlock[] = [];
     for (const block of blocks) {
         if (block.type !== 'replace-span') continue;
-        if (events.includes(block.event || ''))
+
+        // Check if the block's event is triggered
+        // If block.event is an array, check if any of the events in the array are in the events list
+        // If block.event is a string, check if it's in the events list
+        const isTriggered = block.event
+            ? Array.isArray(block.event)
+                ? block.event.some(e => events.includes(e))
+                : events.includes(block.event)
+            : false;
+
+        if (isTriggered)
             triggered.push(block);
         else
             pending.push(block);

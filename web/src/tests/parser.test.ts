@@ -211,31 +211,31 @@ describe('parseLevelText negative tests', () => {
         expect(result.error).toContain('requires exactly one argument');
     });
 
-    test('should return error for replace-on with incorrect number of arguments', () => {
+    test('should return error for replace-on with no arguments', () => {
         const content = '##file test.py\n##replace-on';
         const result = parseLevelText(content);
 
         expect(result.error).toBeDefined();
         expect(result.level).toBeUndefined();
-        expect(result.error).toContain('##replace-on requires exactly one argument');
+        expect(result.error).toContain('##replace-on requires at least one argument');
     });
 
-    test('should return error for add-on with incorrect number of arguments', () => {
+    test('should return error for add-on with no arguments', () => {
         const content = '##file test.py\n##add-on';
         const result = parseLevelText(content);
 
         expect(result.error).toBeDefined();
         expect(result.level).toBeUndefined();
-        expect(result.error).toContain('##add-on requires exactly one argument');
+        expect(result.error).toContain('##add-on requires at least one argument');
     });
 
-    test('should return error for remove-on with incorrect number of arguments', () => {
+    test('should return error for remove-on with no arguments', () => {
         const content = '##file test.py\n##remove-on';
         const result = parseLevelText(content);
 
         expect(result.error).toBeDefined();
         expect(result.level).toBeUndefined();
-        expect(result.error).toContain('##remove-on requires exactly one argument');
+        expect(result.error).toContain('##remove-on requires at least one argument');
     });
 
     test('should treat single # as plain text but fail validation for missing required instructions', () => {
@@ -410,5 +410,119 @@ print("new")
 
         expect(result.error).toBeUndefined();
         expect(result.level).toBeDefined();
+    });
+
+    test('should allow multiple events in replace-on directive', () => {
+        const content = `${baseLevel}
+
+##replace event1 "clickable1"
+def function1():
+    pass
+##with
+def better_function1():
+    pass
+##end
+
+##replace event2 "clickable2"
+def function2():
+    pass
+##with
+def better_function2():
+    pass
+##end
+
+##replace-on event1 event2
+print("old")
+##with
+print("new")
+##end
+`;
+        const result = parseLevelText(content);
+
+        expect(result.error).toBeUndefined();
+        expect(result.level).toBeDefined();
+    });
+
+    test('should allow multiple events in add-on directive', () => {
+        const content = `${baseLevel}
+
+##replace event1 "clickable1"
+def function1():
+    pass
+##with
+def better_function1():
+    pass
+##end
+
+##replace event2 "clickable2"
+def function2():
+    pass
+##with
+def better_function2():
+    pass
+##end
+
+##add-on event1 event2
+print("additional code")
+##end
+`;
+        const result = parseLevelText(content);
+
+        expect(result.error).toBeUndefined();
+        expect(result.level).toBeDefined();
+    });
+
+    test('should allow multiple events in remove-on directive', () => {
+        const content = `${baseLevel}
+
+##replace event1 "clickable1"
+def function1():
+    pass
+##with
+def better_function1():
+    pass
+##end
+
+##replace event2 "clickable2"
+def function2():
+    pass
+##with
+def better_function2():
+    pass
+##end
+
+##remove-on event1 event2
+print("code to remove")
+##end
+`;
+        const result = parseLevelText(content);
+
+        expect(result.error).toBeUndefined();
+        expect(result.level).toBeDefined();
+    });
+
+    test('should return error for undefined events in multiple event directives', () => {
+        const content = `${baseLevel}
+
+##replace event1 "clickable1"
+def function1():
+    pass
+##with
+def better_function1():
+    pass
+##end
+
+##replace-on event1 undefined_event
+print("old")
+##with
+print("new")
+##end
+`;
+        const result = parseLevelText(content);
+
+        expect(result.error).toBeDefined();
+        expect(result.level).toBeUndefined();
+        expect(result.error).toContain('Events referenced but not defined');
+        expect(result.error).toContain('undefined_event');
     });
 });

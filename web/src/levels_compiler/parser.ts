@@ -161,11 +161,13 @@ export function readReplace(args: string[], context: ParseContext): LevelBlock {
 }
 
 export function readReplaceOn(args: string[], context: ParseContext): LevelBlock {
-    if (args.length !== 1) {
-        throw errorWithContext('##replace-on requires exactly one argument: event', context);
+    if (args.length < 1) {
+        throw errorWithContext('##replace-on requires at least one argument: event', context);
     }
 
-    const event = args[0];
+    // If there's only one event, use it as a string
+    // If there are multiple events, use them as an array
+    const event = args.length === 1 ? args[0] : args;
     context.idx++;
 
     const text = collectBlockUntil(context, 'with');
@@ -181,11 +183,13 @@ export function readReplaceOn(args: string[], context: ParseContext): LevelBlock
 }
 
 export function readAddOn(args: string[], context: ParseContext): LevelBlock {
-    if (args.length !== 1) {
-        throw errorWithContext('##add-on requires exactly one argument: event', context);
+    if (args.length < 1) {
+        throw errorWithContext('##add-on requires at least one argument: event', context);
     }
 
-    const event = args[0];
+    // If there's only one event, use it as a string
+    // If there are multiple events, use them as an array
+    const event = args.length === 1 ? args[0] : args;
     context.idx++;
 
     const lines = collectBlockUntil(context, 'end');
@@ -199,11 +203,13 @@ export function readAddOn(args: string[], context: ParseContext): LevelBlock {
 }
 
 export function readRemoveOn(args: string[], context: ParseContext): LevelBlock {
-    if (args.length !== 1) {
-        throw errorWithContext('##remove-on requires exactly one argument: event', context);
+    if (args.length < 1) {
+        throw errorWithContext('##remove-on requires at least one argument: event', context);
     }
 
-    const event = args[0];
+    // If there's only one event, use it as a string
+    // If there are multiple events, use them as an array
+    const event = args.length === 1 ? args[0] : args;
     context.idx++;
 
     const lines = collectBlockUntil(context, 'end');
@@ -382,17 +388,12 @@ function validateEventReferences(level: LevelData): string | null {
     for (const block of level.blocks) {
         if (block.type === 'replace' || block.type === 'replace-span') {
             if (block.event) {
-                definedEvents.add(block.event);
+                definedEvents.add(block.event as string);
             }
         } else if (block.type === 'replace-on') {
             // Note: add-on and remove-on are implemented as replace-on blocks
             // but we still need to track the original block type for error messages
             if (block.event) {
-                referencedEvents.add(block.event);
-                if (!referencedEventsBlocks[block.event]) {
-                    referencedEventsBlocks[block.event] = [];
-                }
-
                 // Determine the original block type based on the text/replacement pattern
                 let blockType = 'replace-on';
                 if (block.text === '' && block.replacement !== '') {
@@ -401,7 +402,24 @@ function validateEventReferences(level: LevelData): string | null {
                     blockType = 'remove-on';
                 }
 
-                referencedEventsBlocks[block.event].push(blockType);
+                // Handle both string and string[] event types
+                if (Array.isArray(block.event)) {
+                    // Multiple events
+                    for (const eventId of block.event) {
+                        referencedEvents.add(eventId);
+                        if (!referencedEventsBlocks[eventId]) {
+                            referencedEventsBlocks[eventId] = [];
+                        }
+                        referencedEventsBlocks[eventId].push(blockType);
+                    }
+                } else {
+                    // Single event
+                    referencedEvents.add(block.event);
+                    if (!referencedEventsBlocks[block.event]) {
+                        referencedEventsBlocks[block.event] = [];
+                    }
+                    referencedEventsBlocks[block.event].push(blockType);
+                }
             }
         }
     }

@@ -14,7 +14,7 @@ export interface LevelBlock {
     text?: string;
     clickable?: string;
     replacement?: string;
-    event?: string;
+    event?: string | string[];
     explanation?: string;
     hint?: string;
 }
@@ -32,6 +32,12 @@ export interface LevelData {
 export interface Topic {
     name: string;
     levels: LevelData[];
+    /**
+     * Indicates if this topic is still in development.
+     * Topics with inDevelopment: true are only visible in debug mode or for admin users.
+     * @default false
+     */
+    inDevelopment?: boolean;
 }
 
 export type ChatMessageType =
