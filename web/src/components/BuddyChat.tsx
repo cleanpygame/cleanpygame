@@ -35,12 +35,13 @@ export function BuddyChat(): React.ReactElement {
 
     // Render different button based on a message type and typing animation status
     const renderButton = (): React.ReactNode => {
-        // Don't show any button if typing animation is not complete
-        if (!state.isTypingAnimationComplete) {
-            return null;
-        }
-
+        // If the level is finished, show the "Next task" button
         if (state.currentLevel.isFinished) {
+            // Only show the button if typing animation is complete
+            if (!state.isTypingAnimationComplete) {
+                return null;
+            }
+            
             return (
                 <button
                     className="px-4 py-2 bg-blue-600 text-white rounded-md mt-2 cursor-pointer"
@@ -55,6 +56,11 @@ export function BuddyChat(): React.ReactElement {
         if (lastMessage && lastMessage.type === 'buddy-instruct') {
             const reply = state.currentLevel.level.startReply;
             if (reply) {
+                // Only show the reply button if typing animation is complete
+                if (!state.isTypingAnimationComplete) {
+                    return null;
+                }
+                
                 return (
                     <button
                         className="px-4 py-2 bg-blue-600 text-white rounded-md mt-2 cursor-pointer"
@@ -66,6 +72,7 @@ export function BuddyChat(): React.ReactElement {
             }
         }
 
+        // Always show the Help button, regardless of typing animation status
         return (
             <button
                 className="px-4 py-2 bg-gray-600 text-white rounded-md mt-2 cursor-pointer"
