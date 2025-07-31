@@ -1,4 +1,4 @@
-# Admin Activity Tracking Feature Design
+# Admin Activity Tracking Feature Design Document
 
 ## Overview
 
@@ -122,7 +122,6 @@ match /playerStats/{userId} {
         - First Seen (createdAt)
     - Remove the "Actions" column as it's not needed for the admin view
 
-
 ## Efficient Data Fetching
 
 ### Query Strategy
@@ -183,7 +182,7 @@ export const fetchRecentlyActiveUsers = async (limit: number = 50): Promise<User
       ```
 
 2**Pagination**:
-    - not required for just 50 users
+- not required for just 50 users
 
 ## Implementation Plan
 

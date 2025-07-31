@@ -1,4 +1,4 @@
-# Clean Python Game: Player Statistics Design Document
+# Player Statistics Design Document
 
 ## Overview
 

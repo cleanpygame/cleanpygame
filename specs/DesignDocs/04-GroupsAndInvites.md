@@ -1,4 +1,4 @@
-# Clean Python Game: Classroom Management Design Document
+# Classroom Management Design Document
 
 ## Overview
 
@@ -216,7 +216,7 @@ GameState
         - Total wrong clicks
         - Last played at
         - Joined at
-      - Actions (refresh stats button)
+        - Actions (refresh stats button)
 
 #### 3. Group Join Flow
 

@@ -1,14 +1,12 @@
-# Feature Design Document: "Create Level" Editor for Python Game Web App
+# Community Levels Design Document
 
 ## Overview
 
-We are introducing a new feature in the web application: a “Create Level” button that allows users to design their own
+We are introducing a new feature in the web application: a "Create Level" button that allows users to design their own
 game levels using an in-browser code editor.
 The editor supports PyLevels syntax (see LEVELS_FORMAT.md).
 User-created levels will be stored in Firebase and integrated into the level selection UI under personalized section *
 *My Levels**.
-
----
 
 ## User Flow
 
@@ -21,11 +19,11 @@ User-created levels will be stored in Firebase and integrated into the level sel
 
     * Editor provides Python syntax highlighting.
     * Real-time PyLevels syntax validation is performed client-side.
-    * If syntax is correct and the level parses successfully, the “Save” button becomes enabled.
+    * If syntax is correct and the level parses successfully, the "Save" button becomes enabled.
 
 3. **Saving the Level**
 
-    * Upon clicking “Save”:
+    * Upon clicking "Save":
 
         * The level is stored in Firebase under the user's personal space.
         * It appears under the **My Levels** topic in the UI.
@@ -38,8 +36,6 @@ User-created levels will be stored in Firebase and integrated into the level sel
 
         * The shared level becomes permanently visible to them under **My Levels**.
         * It is not duplicated but linked.
-
----
 
 ## UI Prototypes
 
@@ -78,8 +74,6 @@ User-created levels will be stored in Firebase and integrated into the level sel
 * When the link /community-levels/{levelId} opened and the level
   it should be added to the "My Levels"
 
----
-
 ## Firebase Data Model
 
 ### 1. Collection: `customLevels`
@@ -112,20 +106,16 @@ Tracks which custom levels are visible to a user.
 
     * Read/Write: Only the respective user
 
----
-
 ## Loading Logic
 
 * When displaying the **Shared Levels** topic:
 
     1. Fetch `userLevels/<user_id>/levels`.
-  2. Fetch the `content` from `customLevels/<level_id>` to load the level.
+    2. Fetch the `content` from `customLevels/<level_id>` to load the level.
 
 * When a shared link is visited:
 
-    1. Add the `level_id` to the current user’s `userLevels`.
-
----
+    1. Add the `level_id` to the current user's `userLevels`.
 
 ## Future Considerations
 
