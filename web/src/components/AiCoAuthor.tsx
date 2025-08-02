@@ -1,7 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import {useLevelContext} from '../context/LevelContext';
 import {parseLevelText} from '../levels_compiler/parser';
-import {generateHintAndExplanation, generateStartAndFinalMessages, getSelectedGeminiModel} from '../utils/aiCoAuthor';
+import {
+    generateHintAndExplanation,
+    generateRandomPythonCode,
+    generateStartAndFinalMessages,
+    getSelectedGeminiModel
+} from '../utils/aiCoAuthor';
 
 /**
  * AiCoAuthor component
@@ -11,6 +16,7 @@ export function AiCoAuthor(): React.ReactElement {
     const {code, setCode} = useLevelContext();
     const [apiKey, setApiKey] = useState<string>('');
     const [selectedModel, setSelectedModel] = useState<string>(getSelectedGeminiModel());
+    const [codeStyleIssue, setCodeStyleIssue] = useState<string>('');
 
     // Available models
     const models = [
@@ -47,6 +53,30 @@ export function AiCoAuthor(): React.ReactElement {
     // Handle model selection change
     const handleModelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedModel(e.target.value);
+    };
+
+    // Handle code style issue input change
+    const handleCodeStyleIssueChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setCodeStyleIssue(e.target.value);
+    };
+
+    // Handle generating random Python code
+    const handleGenerateRandomPythonCode = async () => {
+        try {
+            if (!apiKey) {
+                alert('Please enter a Gemini API key');
+                return;
+            }
+            if (!codeStyleIssue.trim()) {
+                alert('Please enter a code style issue');
+                return;
+            }
+            const randomCode = await generateRandomPythonCode(codeStyleIssue, apiKey, selectedModel);
+            setCode(randomCode);
+        } catch (error) {
+            console.error('Error generating random Python code:', error);
+            alert('Failed to generate random Python code. Please check the console for details.');
+        }
     };
 
     // Handle generating start and final messages
@@ -187,6 +217,33 @@ export function AiCoAuthor(): React.ReactElement {
                         No events found in the current code.
                     </p>
                 )}
+            </div>
+
+            {/* Code Style Issues Section */}
+            <div className="mb-6">
+                <h3 className="text-md font-medium mb-3">Code Style Issues</h3>
+
+                {/* Code Style Issue Input */}
+                <div className="mb-4">
+                    <label htmlFor="code-style-issue" className="block text-sm font-medium mb-2">
+                        Enter Code Style Issue
+                    </label>
+                    <textarea
+                        id="code-style-issue"
+                        value={codeStyleIssue}
+                        onChange={handleCodeStyleIssueChange}
+                        className="w-full px-3 py-2 bg-[#2d2d2d] border border-gray-700 rounded text-white min-h-[100px]"
+                        placeholder="Describe the code style issue (e.g., poor variable naming, magic numbers, long functions)"
+                    />
+                </div>
+
+                {/* Random Python Code Button */}
+                <button
+                    className="w-full px-4 py-2 mb-3 bg-[#3c3c3c] hover:bg-[#4c4c4c] rounded text-left"
+                    onClick={handleGenerateRandomPythonCode}
+                >
+                    Generate Random Python Code
+                </button>
             </div>
         </div>
     );

@@ -107,9 +107,6 @@ async function updateStartAndFinalMessages(level: LevelData, apiKey: string, mod
 
     // Call the Gemini API with structured output
     const response = await callGeminiApi(userPrompt, apiKey, model, systemPrompt, startFinalMessagesSchema);
-    console.log("Response:", response);
-
-    // Parse the response and update the level
     return parseStartAndFinalResponse(level, response);
 }
 
@@ -171,7 +168,7 @@ const hintExplanationSchema = {
  * @param model The Gemini model to use
  * @returns The updated level data with generated hint and explanation
  */
-async function updateHintAndExplanation(level: LevelData, eventId: string, apiKey: string, model: string): LevelData {
+async function updateHintAndExplanation(level: LevelData, eventId: string, apiKey: string, model: string): Promise<LevelData> {
     console.log('Updating hint and explanation for event:', eventId);
     const {beforeCode, afterCode} = getCodeBeforeAndAfter(level, eventId);
 
@@ -183,9 +180,6 @@ async function updateHintAndExplanation(level: LevelData, eventId: string, apiKe
     // Call the Gemini API with structured output
     try {
         const response = await callGeminiApi(userPrompt, apiKey, model, systemPrompt, hintExplanationSchema);
-        console.log("Response:", response);
-
-        // Parse the response and update the level
         return parseHintAndExplanationResponse(level, eventId, response);
     } catch (error) {
         console.error('Error calling Gemini API:', error);
@@ -239,13 +233,38 @@ export function getSelectedGeminiModel(): string {
     return 'gemini-2.5-flash-lite';
 }
 
+function extractResponse(data, jsonSchema: object) {
+    // Extract the text or structured content from the response
+    if (data.candidates && data.candidates.length > 0 && data.candidates[0].content) {
+        if (jsonSchema) {
+            // For structured output, return the structured content
+            if (data.candidates[0].content.parts &&
+                data.candidates[0].content.parts.length > 0 &&
+                data.candidates[0].content.parts[0].structuredValue) {
+                return data.candidates[0].content.parts[0].structuredValue;
+            }
+        }
+
+        // For text output, return the text content
+        if (data.candidates[0].content.parts &&
+            data.candidates[0].content.parts.length > 0 &&
+            data.candidates[0].content.parts[0].text) {
+            return JSON.parse(data.candidates[0].content.parts[0].text);
+        }
+
+        throw new Error('Response does not contain expected content format');
+    } else {
+        throw new Error('Invalid response format from Gemini API');
+    }
+}
+
 async function callGeminiApi(
     prompt: string,
     apiKey: string,
     model: string = 'gemini-2.5-flash-lite',
     systemPrompt: string,
     jsonSchema: object
-): Promise<string> {
+): Promise<object> {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
 
     const requestBody: any = {
@@ -263,14 +282,15 @@ async function callGeminiApi(
                 }]
         }],
         generationConfig: {
-            temperature: 0.7,
+            temperature: 0.6,
             topK: 40,
-            topP: 0.90,
-            maxOutputTokens: 4048,
+            topP: 0.9,
+            maxOutputTokens: 10000,
             responseMimeType: "application/json",
             responseSchema: jsonSchema
         }
     };
+    console.log("Request to Gemini API: ", requestBody);
 
     const response = await fetch(`${url}`, {
         method: 'POST',
@@ -288,29 +308,9 @@ async function callGeminiApi(
     }
 
     const data = await response.json();
-
-    // Extract the text or structured content from the response
-    if (data.candidates && data.candidates.length > 0 && data.candidates[0].content) {
-        if (jsonSchema) {
-            // For structured output, return the structured content
-            if (data.candidates[0].content.parts &&
-                data.candidates[0].content.parts.length > 0 &&
-                data.candidates[0].content.parts[0].structuredValue) {
-                return JSON.stringify(data.candidates[0].content.parts[0].structuredValue);
-            }
-        }
-
-        // For text output, return the text content
-        if (data.candidates[0].content.parts &&
-            data.candidates[0].content.parts.length > 0 &&
-            data.candidates[0].content.parts[0].text) {
-            return data.candidates[0].content.parts[0].text;
-        }
-
-        throw new Error('Response does not contain expected content format');
-    } else {
-        throw new Error('Invalid response format from Gemini API');
-    }
+    const responseObject = extractResponse(data, jsonSchema);
+    console.log("Response from Gemini API: ", responseObject);
+    return responseObject;
 }
 
 /**
@@ -369,12 +369,8 @@ Please analyze the differences and generate appropriate messages that will help 
  * @param response The API response to parse
  * @returns The updated level data
  */
-function parseStartAndFinalResponse(level: LevelData, response: string): LevelData {
+function parseStartAndFinalResponse(level: LevelData, parsedResponse: string): LevelData {
     try {
-        // Parse the response as JSON (should be already in JSON format from structured output)
-        const parsedResponse = JSON.parse(response);
-
-        // Create a new level object with the updated messages
         return {
             ...level,
             startMessage: parsedResponse.startMessage || level.startMessage,
@@ -445,11 +441,8 @@ Please analyze the differences and generate an appropriate hint and explanation 
  * @param response The API response to parse
  * @returns The updated level data
  */
-function parseHintAndExplanationResponse(level: LevelData, eventId: string, response: string): LevelData {
+function parseHintAndExplanationResponse(level: LevelData, eventId: string, parsedResponse: object): LevelData {
     try {
-        // Parse the response as JSON (should be already in JSON format from structured output)
-        const parsedResponse = JSON.parse(response);
-
         // Find the block with the matching event ID and update its hint and explanation
         const updatedBlocks = level.blocks.map(block => {
             if ((block.type === 'replace' || block.type === 'replace-span') && block.event) {
@@ -478,5 +471,98 @@ function parseHintAndExplanationResponse(level: LevelData, eventId: string, resp
         console.error('Error parsing Gemini API response:', error);
         console.error('Response:', response);
         return level;
+    }
+}
+
+/**
+ * JSON schema for random Python code generation
+ */
+const randomPythonCodeSchema = {
+    "type": "object",
+    "properties": {
+        "candidates": {
+            "type": "ARRAY",
+            "items": {
+                "type": "STRING"
+            }
+        },
+        "analysis": {
+            "type": "string"
+        },
+        "details": {
+            "type": "string"
+        },
+        "pythonCode": {
+            "type": "string"
+        },
+        "filename": {
+            "type": "string"
+        }
+    },
+    "required": ["candidates", "analysis", "details", "pythonCode", "filename"],
+    "propertyOrdering": ["candidates", "analysis", "details", "pythonCode", "filename"]
+};
+
+/**
+ * Generates random Python code with the specified code style issue
+ * @param codeStyleIssue Description of the code style issue to include in the generated code
+ * @param apiKey The Gemini API key
+ * @param model The Gemini model to use
+ * @returns The generated Python code
+ */
+export async function generateRandomPythonCode(codeStyleIssue: string, apiKey: string, model: string): Promise<string> {
+    // Construct the system prompt
+    const systemPrompt = `
+You are a Python code generator for an educational game that teaches clean code principles.
+Your task is to generate Python code examples that demonstrate specific code style issues.
+The code should be realistic and demonstrate the requested code style issue clearly.
+The code should be 10-30 lines long and should be a complete, working Python program.
+Do not include comments that explain what the code, unless comments are related to the specific code style issue (e.g. unnecessary or outdated comments).
+
+
+Big bonus if the code also demonstrate some classic computer science algorithms, approaches and data structures.
+Small bonus if the code also demonstrate some typical contexts of the Python applications: web-dev, data analysis, machine learning, etc.
+
+To generate the code you are goring to follow this algorithm:
+1. generate a set of candidate descriptions: one sentence describing each idea.
+2. analyse the candidates in a free form to select the best one.
+3. Elaborate on the best candidate. Add more detail to the description.
+4. Generate the Python code based on the final description.
+5. Give a filename for the code.
+
+As a reply, generate a JSON response with the following fields:
+
+1. candidates — an array of 5 candidate descriptions. 
+2. analysis — internal analysis of the candidates.
+3. details — internal analysis of the final candidate.
+4. pythonCode — The final generated Python code that demonstrates the requested code style issue.
+5. filename — possible filename for this piece of code.
+`;
+
+    // Construct the user prompt
+    const userPrompt = `
+Please generate a Python code example that demonstrates the following code style issue:
+
+${codeStyleIssue}
+
+The code should be realistic and demonstrate the issue clearly. Make sure the code is syntactically correct and would run without errors.
+`;
+
+    try {
+        const parsedResponse = await callGeminiApi(userPrompt, apiKey, model, systemPrompt, randomPythonCodeSchema);
+        const parts = [
+            "##file " + parsedResponse.filename,
+            '"""start',
+            "TODO",
+            '"""',
+            parsedResponse.pythonCode,
+            '"""final',
+            'TODO',
+            '"""'
+        ];
+        return parts.join('\n');
+    } catch (error) {
+        console.error('Error generating random Python code:', error);
+        throw error;
     }
 }
