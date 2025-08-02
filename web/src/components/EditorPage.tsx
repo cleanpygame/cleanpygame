@@ -3,10 +3,11 @@ import {useNavigate, useParams} from 'react-router-dom';
 import {TopBar} from './TopBar';
 import CodeMirror from '@uiw/react-codemirror';
 import {python} from '@codemirror/lang-python';
-import {PyLevelsGuide} from './PyLevelsGuide';
+import {TabsContainer} from './TabsContainer';
 import {parseLevelText, ParseResult} from '../levels_compiler/parser';
 import {getCurrentUser} from '../firebase/auth';
 import {deleteLevelFromUserLevels, getCustomLevelById, saveCustomLevel} from '../firebase/firestore';
+import {LevelProvider} from '../context/LevelContext';
 
 /**
  * Editor page for creating and editing custom levels
@@ -241,9 +242,11 @@ export function EditorPage(): React.ReactElement {
                             />
                         </div>
 
-                        {/* PyLevel Format Guide (Right) */}
+                        {/* Tabs Container (Right) */}
                         <div className="w-1/3 bg-[#1e1e1e] p-4 rounded overflow-auto">
-                            <PyLevelsGuide className="text-sm"/>
+                            <LevelProvider code={code} setCode={setCode}>
+                                <TabsContainer/>
+                            </LevelProvider>
                         </div>
                     </div>
 
