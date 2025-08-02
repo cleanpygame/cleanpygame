@@ -83,10 +83,6 @@
               "event": "BaD_VAriABLE_NAME",
               "explanation": "Much better! Variable names should be readable by humans, not just compilers with low standards.",
               "hint": "That variable name is begging for mercy. Click it before my eyes bleed!"
-            },
-            {
-              "type": "text",
-              "text": "\n"
             }
           ],
           "startMessage": "Welcome to the coding trenches, Junior!\nAccording to our team traditions (and manager's trust issues), you're not allowed to write code yet. Your sacred duty is to review your colleagues' masterpieces and fix \"small, insignificant issues\".\n\nLet's start with something even you can't mess up. See that variable name that looks like someone fell asleep on their keyboard? Click to fix it before my eyes start bleeding!",
@@ -180,10 +176,6 @@
               "event": "c",
               "explanation": "Single-letter loop variables are mysterious characters never properly introduced. Clarity beats brevity.",
               "hint": "What is each item in this collection? Name it properly to aid understanding."
-            },
-            {
-              "type": "text",
-              "text": "\n"
             }
           ],
           "startMessage": "Well done on your previous fixes! Now your colleague has sent you this \"masterpiece\" of clarity. \n\n\"It's short and simple,\" they said. \"Probably doesn't need any changes,\" they said. Let's see about that... I spy with my little eye some variables that are playing hide-and-seek with their meanings!",
@@ -230,10 +222,6 @@
               "event": "n",
               "explanation": "Finally! A variable name that explains what the value represents. No more reverse-engineering needed.",
               "hint": "What exactly are you calculating with 24*60*60?."
-            },
-            {
-              "type": "text",
-              "text": "\n"
             }
           ],
           "startMessage": "⚠️ IMPORTANT NOTICE ⚠️\nDo NOT change any constants here! They are magically calculated by our resident wizard who refuses to document anything.\n\nThe code works perfectly through some arcane sorcery. Touching it might summon demons or worse - break production. Proceed with extreme caution!",
@@ -262,10 +250,6 @@
               "event": "i1",
               "explanation": "Off-by-many error? Is it a new level of the off-by-one?",
               "hint": "The slice is a bit... thin..."
-            },
-            {
-              "type": "text",
-              "text": "\n"
             }
           ],
           "startMessage": "Your colleague just pushed this \"perfectly working\" string search function to production. Customers are already complaining that the search doesn't work properly.\n\nCan you find what's lurking in this seemingly innocent code before the support team stages a revolt?",
@@ -303,10 +287,6 @@
               "event": "s",
               "explanation": "Single-letter variables are mysterious characters never properly introduced. Parameters deserve full identity.",
               "hint": "What kind of string is being passed to this function?"
-            },
-            {
-              "type": "text",
-              "text": "\n"
             }
           ],
           "startMessage": "Behold! Our senior developer's \"typing efficiency\" naming convention:\n- String variables: 's', 's1', 'ss' (saves keystrokes!)\n- Booleans: always 'flag' (saves thinking time!)\n\nThis is a pure efficiency of x10 developers!",
@@ -368,10 +348,6 @@
               "event": "bigramsfrequency",
               "explanation": "This variable name is having an identity crisis - it can't decide if it wants to be camelCase or snake_case, so it chose neither! Consistency in naming style makes code much easier to read.",
               "hint": "This name needs some snake_case surgery. Stat!"
-            },
-            {
-              "type": "text",
-              "text": "\n"
             }
           ],
           "startMessage": "Ah, the joys of cross-language developers! Anders and Nicolaus just transferred from the C# team and brought their naming conventions with them. They insist their style is \"perfectly readable\" and \"who cares about PEP 8 anyway?\"\n\nTheir code works, but it's like showing up to a Python conference wearing a tuxedo - technically dressed, but clearly missed the memo about the dress code. Can you help them blend in with the Python community?",
@@ -425,10 +401,6 @@
               "event": "n",
               "explanation": "'n' could stand for 'number', 'node', 'noodle'... The documentation says 'number of elements to copy', so why not use a name that actually conveys that meaning?",
               "hint": "n = noodles? narwhals? The docstring has the scoop!"
-            },
-            {
-              "type": "text",
-              "text": "\n"
             }
           ],
           "startMessage": "Well, well, well... someone actually wrote documentation for their code! How quaint! \n\nBut wait - they used clear, descriptive terms in the docs, then proceeded to name their actual parameters like they were rationing letters during a keyboard shortage. It's like writing a detailed restaurant menu in beautiful prose, then serving the food in unmarked paper bags.\n\nLet's see if we can make the code as descriptive as its documentation, shall we?",
@@ -458,10 +430,6 @@
               "event": "flag2",
               "explanation": "flag2? Is that the sequel to flag1? Coming soon to theaters near you! Numbered variables are like mystery boxes - exciting until you realize you have to open them to know what's inside.",
               "hint": "flag2 = ... or flag = ...?"
-            },
-            {
-              "type": "text",
-              "text": "\n"
             }
           ],
           "startMessage": "When you already have a variable called 'flag' and need another one, do you go with:\nA) flag and flag2\nB) flag and flag1\nC) flag1 and flag2\nD) Your option...\n\nOur developer chose option A!",
@@ -507,10 +475,6 @@
               "event": "board_reader",
               "explanation": "'board_reader' sounds like a job title, not an action. Is it a person who reads boards professionally? Functions should be verbs that describe the action they perform.",
               "hint": "Writer, reader, manager — are nouns!"
-            },
-            {
-              "type": "text",
-              "text": "\n"
             }
           ],
           "startMessage": "Your colleague, who apparently skipped the \"Parts of Speech\" day in English class, has written some board game initialization code.\n\nThey proudly explained: \"It is simple! The 'initialization' consists of 'creating a board' and filling it with the 'board_reader'!\"\n\nTime to teach them the sacred rule of naming: functions — verbs, variables — nouns.",
@@ -580,10 +544,6 @@
               "event": "8",
               "explanation": "Another magic number! '8' is the lucky number in some cultures, but in code, unexplained numbers are just bad luck waiting to happen. What if the command syntax changes? You'd have to hunt down all these hardcoded values.",
               "hint": "8 is lucky in some cultures, unlucky in your code. Count the letters!"
-            },
-            {
-              "type": "text",
-              "text": "\n"
             }
           ],
           "startMessage": "BEHOLD! I have crafted the most exquisite piece of code known to humanity! It's so perfect that it probably doesn't even need electricity to run - the sheer elegance of its logic could power a small city.\n\nAccording to our tedious team process, someone needs to review it. But let's be honest - this is just a formality. Simply approve it and we can all go home early!",
@@ -623,10 +583,6 @@
             {
               "type": "text",
               "text": "    print(f\"sum: {sum_all}, min: {min_value}\")\n"
-            },
-            {
-              "type": "text",
-              "text": "\n"
             }
           ],
           "startMessage": "Ah, I see your colleague is a fan of \"artisanal, hand-crafted loops\" - painstakingly constructing each calculation from scratch like it's 1995!\n\nThey probably also churn their own butter and forge their own paperclips. Let's introduce them to revolutionary concept of \"built-in functions\" that Python has had since... forever.",
@@ -672,10 +628,6 @@
               "event": "with_open",
               "explanation": "The 'with' statement auto-closes files, even after exceptions. No more resource leaks!",
               "hint": "Forgetting to close files? There's a 'with' for that!"
-            },
-            {
-              "type": "text",
-              "text": "\n"
             }
           ],
           "startMessage": "Oh look, another \"for loop enthusiast\" who never met a loop they didn't like! \n\nThis code has more unnecessary loops than a roller coaster factory. It's like watching someone dig a hole with a spoon when there's a perfectly good shovel nearby. Let's introduce them to some Pythonic constructs that can save both keystrokes and sanity!",
@@ -697,10 +649,6 @@
               "event": "in_operator",
               "explanation": "Why reinvent the wheel? The 'in' operator is concise, optimized, and already built-in.",
               "hint": "Python has a built-in way to check string containment. No loops needed!"
-            },
-            {
-              "type": "text",
-              "text": "\n"
             }
           ],
           "startMessage": "Wait a minute... didn't we just fix a 'contains' function in another file? \n\nOh, I see what happened. Your colleague fixed the bug in the previous version but still didn't realize that Python has this magical thing called the 'in' operator. It's like they fixed a leaky boat with duct tape when there was a perfectly good yacht available!\n\nLet's put this poor function out of its misery once and for all.",
@@ -722,10 +670,6 @@
               "event": "encode_decode",
               "explanation": "20 lines of manual character parsing versus a single line of built-in functionality! This is like building your own calculator when there's one right there in your pocket. Python's encoding/decoding system already handles all escape sequences, including ones your manual version doesn't even support!",
               "hint": "Unescaping strings is such a common operation that Python must have a built-in way to handle it. Think about string encoding and decoding..."
-            },
-            {
-              "type": "text",
-              "text": "\n"
             }
           ],
           "startMessage": "Unescape function? Again?! \n\nFirst we fixed the terrible variable names, and now we're back to fix the implementation itself. It's like your colleague is determined to solve problems that Python already solved years ago!\n\nThis manual character-by-character parsing is impressive in its thoroughness... and completely unnecessary. Let's see if we can replace this 20-line state machine with something more... Pythonic.",
@@ -827,10 +771,6 @@
               "event": "md",
               "explanation": "Default arguments are evaluated once — so this cheerful little set() is shared across *every* call. Like a clingy ex, it never forgets.",
               "hint": "If your function remembers things you didn't tell it to… it's haunted."
-            },
-            {
-              "type": "text",
-              "text": "\n"
             }
           ],
           "startMessage": "Déjà-vu detection gone rogue!\nBecause the function’s default `set()` is shared across calls, words remembered from round #1 vanish in round #2.\nLet’s stop that silent memory leak before it confuses the next intern.",
@@ -923,10 +863,6 @@
               "event": "rename",
               "explanation": "Shadowing built-ins starts turf wars. Give the poor 'dict' its name back.",
               "hint": "Why pick a fight with a core type?"
-            },
-            {
-              "type": "text",
-              "text": "\n"
             }
           ],
           "startMessage": "Grab your hazmat suit, Junior — this function comes with its own built-in foot-guns:\nClick fast before someone deploys it to production Slack bots.",
@@ -1114,10 +1050,6 @@
             {
               "type": "text",
               "text": "    # ...\n"
-            },
-            {
-              "type": "text",
-              "text": "\n"
             }
           ],
           "startMessage": "Welcome back, Junior! Today's code review is from our intern who seems to have a copy-paste addiction.\n\nIt seems, he forces us to use copy-paste a lot in our code review notes!",
@@ -1165,10 +1097,6 @@
               "event": "score_val",
               "explanation": "Yes, not just score — any value goes!",
               "hint": "What is so special in scores?"
-            },
-            {
-              "type": "text",
-              "text": "\n"
             }
           ],
           "startMessage": "I clearly can see some helpful primitive here, valuable not only for scores processing.",
@@ -1202,10 +1130,6 @@
               "event": "id-1",
               "explanation": "Join score processing and reporting into one operation and put it in a loop. Much cleaner now!",
               "hint": "Look, each topic is handled in the same way."
-            },
-            {
-              "type": "text",
-              "text": "\n"
             }
           ],
           "startMessage": "Okay, what can you fix here?",

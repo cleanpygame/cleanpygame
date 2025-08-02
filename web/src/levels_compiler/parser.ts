@@ -445,7 +445,7 @@ function validateEventReferences(level: LevelData): string | null {
 
 // Main parsing function
 export function parseLevelText(content: string): ParseResult {
-    const lines = content.split(/\r?\n/);
+    const lines = content.trimEnd().split(/\r?\n/);
     resetIdGenerator();
 
     const outputLevel: LevelData = {

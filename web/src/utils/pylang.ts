@@ -1,5 +1,288 @@
 import {EventRegion} from "./regions";
-import {LevelBlock} from "../types";
+import {LevelBlock, LevelData} from "../types";
+
+/**
+ * Converts a LevelData object to PyLevels format text
+ *
+ * This function takes a LevelData object and converts it to a string in PyLevels format.
+ * It handles all the different block types (text, replace-span, replace, replace-on)
+ * and special cases like add-on and remove-on blocks.
+ *
+ * @param level - The LevelData object to convert
+ * @returns - The PyLevels format text
+ */
+export function renderToPyLevel(level: LevelData): string {
+    if (!level || !level.filename) {
+        console.error('Invalid level data: missing filename');
+        return '';
+    }
+
+    const referencedEvents = [];
+    for (const block of level.blocks) {
+        if (block.type === 'replace-on' || block.type === 'add-on' || block.type === 'remove-on') {
+            if (Array.isArray(block.event))
+                referencedEvents.push(...block.event);
+            else
+                referencedEvents.push(block.event);
+        }
+    }
+
+    let result = '';
+
+    // Add file header (required)
+    result += `##file ${level.filename}\n`;
+
+    // Add start message if present (required)
+    if (level.startMessage) {
+        result += '"""start\n';
+        result += level.startMessage + '\n';
+        result += '"""\n';
+
+        // Add start reply if present (optional)
+        if (level.startReply) {
+            result += `##start-reply "${level.startReply}"\n`;
+        }
+    }
+
+    // Process blocks
+    if (level.blocks && level.blocks.length > 0) {
+        for (const block of level.blocks) {
+            result += renderBlock(block, referencedEvents);
+        }
+    }
+
+    // Add final message if present (required)
+    if (level.finalMessage) {
+        result += '"""final\n';
+        result += level.finalMessage + '\n';
+        result += '"""\n';
+
+        // Add final reply if present (optional)
+        if (level.endReply) {
+            result += `##final-reply "${level.endReply}"\n`;
+        }
+    }
+
+    return result;
+}
+
+/**
+ * Renders a single block to PyLevels format
+ *
+ * @param block - The block to render
+ * @returns - The PyLevels format text for the block
+ */
+function renderBlock(block: LevelBlock, referencedEvents: any[]): string {
+    if (!block || !block.type) {
+        return '';
+    }
+
+    let result = '';
+
+    switch (block.type) {
+        case 'text':
+            result = renderTextBlock(block);
+            break;
+
+        case 'replace-span':
+            result = renderReplaceSpanBlock(block, referencedEvents);
+            break;
+
+        case 'replace':
+            result = renderReplaceBlock(block, referencedEvents);
+            break;
+
+        case 'replace-on':
+            result = renderReplaceOnBlock(block);
+            break;
+
+        default:
+            console.warn(`Unknown block type: ${block.type}`);
+            break;
+    }
+
+    return result;
+}
+
+/**
+ * Renders a text block to PyLevels format
+ *
+ * @param block - The text block to render
+ * @returns - The PyLevels format text for the block
+ */
+function renderTextBlock(block: LevelBlock): string {
+    if (!block.text) {
+        return '';
+    }
+
+    let result = block.text;
+
+    // Ensure there's a newline at the end if not already present
+    if (!result.endsWith('\n')) {
+        result += '\n';
+    }
+
+    return result;
+}
+
+function quoteIfNeeded(s: string): string {
+    if (s.includes(' ') || s.includes('\n') || s.includes('\t') || s.includes('\r')) {
+        const escapedS = s.replace(/"/g, '\\"').replace(/\n/g, '\\n').replace(/\t/g, '\\t').replace(/\r/g, '\\r');
+        return `"${escapedS}"`;
+    }
+    return s;
+}
+
+function addHintAndExplain(block: LevelBlock, result: string) {
+    if (block.hint) {
+        result += `##hint ${quoteIfNeeded(block.hint)}\n`;
+    }
+    if (block.explanation) {
+        result += `##explain ${quoteIfNeeded(block.explanation)}\n`;
+    }
+    return result;
+}
+
+/**
+ * Renders a replace-span block to PyLevels format
+ *
+ * @param block - The replace-span block to render
+ * @returns - The PyLevels format text for the block
+ */
+function renderReplaceSpanBlock(block: LevelBlock, referencedEvents: any[]): string {
+    // Skip if required fields are missing
+    if (!block.event || !block.clickable || !block.replacement) {
+        return '';
+    }
+    const event = referencedEvents.includes(block.event) ? block.event : '-';
+    let result = `##replace-span ${event} ${quoteIfNeeded(block.clickable)} ${quoteIfNeeded(block.replacement)}\n`;
+    result = addHintAndExplain(block, result);
+    return result;
+}
+
+/**
+ * Renders a replace block to PyLevels format
+ *
+ * @param block - The replace block to render
+ * @returns - The PyLevels format text for the block
+ */
+function renderReplaceBlock(block: LevelBlock, referencedEvents: any[]): string {
+    // Skip if required fields are missing
+    if (!block.event) {
+        return '';
+    }
+
+    let result = '';
+
+    const event = referencedEvents.includes(block.event) ? block.event : '-';
+    // Add replace directive with optional clickable substring
+    if (block.clickable) {
+        result += `##replace ${event} ${quoteIfNeeded(block.clickable)}\n`;
+    } else if (event !== '-') {
+        result += `##replace ${event}\n`;
+    } else {
+        result += `##replace\n`;
+    }
+
+    // Add text to replace
+    if (block.text) {
+        result += block.text;
+        // Ensure there's no extra newline
+        if (result.endsWith('\n')) {
+            result = result.slice(0, -1);
+        }
+    }
+
+    // Add with directive
+    result += '\n##with\n';
+
+    // Add replacement text
+    // Note: In JavaScript, an empty string is falsy, so we need to check if block.replacement is defined
+    // rather than truthy
+    if (block.replacement !== undefined) {
+        result += block.replacement;
+        // Ensure there's no extra newline
+        if (result.endsWith('\n')) {
+            result = result.slice(0, -1);
+        }
+    }
+
+    // Add end directive
+    result += '\n##end\n';
+
+    result = addHintAndExplain(block, result);
+
+    return result;
+}
+
+/**
+ * Renders a replace-on block to PyLevels format
+ *
+ * @param block - The replace-on block to render
+ * @returns - The PyLevels format text for the block
+ */
+function renderReplaceOnBlock(block: LevelBlock): string {
+    // Skip if required fields are missing
+    if (!block.event) {
+        return '';
+    }
+
+    let result = '';
+
+    // Handle both string and array event types
+    const eventStr = Array.isArray(block.event)
+        ? block.event.join(' ')
+        : block.event;
+
+    // Check if this is actually an add-on or remove-on
+    // Note: In JavaScript, empty strings are falsy, so we need to explicitly check for empty strings
+    // We also need to check if the property is defined
+    const hasEmptyText = block.text === '';
+    const hasEmptyReplacement = block.replacement === '';
+    const hasText = block.text !== undefined && block.text !== '';
+    const hasReplacement = block.replacement !== undefined && block.replacement !== '';
+
+    if (hasEmptyText && hasReplacement) {
+        // This is an add-on
+        result += `##add-on ${eventStr}\n`;
+        result += block.replacement;
+        // Ensure there's no extra newline
+        if (result.endsWith('\n')) {
+            result = result.slice(0, -1);
+        }
+        result += '\n##end\n';
+    } else if (hasText && hasEmptyReplacement) {
+        // This is a remove-on
+        result += `##remove-on ${eventStr}\n`;
+        result += block.text;
+        // Ensure there's no extra newline
+        if (result.endsWith('\n')) {
+            result = result.slice(0, -1);
+        }
+        result += '\n##end\n';
+    } else {
+        // This is a regular replace-on
+        result += `##replace-on ${eventStr}\n`;
+        if (block.text !== undefined) {
+            result += block.text;
+            // Ensure there's no extra newline
+            if (result.endsWith('\n')) {
+                result = result.slice(0, -1);
+            }
+        }
+        result += '\n##with\n';
+        if (block.replacement !== undefined) {
+            result += block.replacement;
+            // Ensure there's no extra newline
+            if (result.endsWith('\n')) {
+                result = result.slice(0, -1);
+            }
+        }
+        result += '\n##end\n';
+    }
+
+    return result;
+}
 
 /**
  * Processes blocks and applies events to generate final code with interactive regions
