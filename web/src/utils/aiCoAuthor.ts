@@ -53,6 +53,35 @@ export async function generateHintAndExplanation(code: string, eventId: string, 
 }
 
 /**
+ * JSON schema for start and final messages
+ */
+const startFinalMessagesSchema = {
+    "type": "OBJECT",
+    "properties": {
+        "analysis": {
+            "type": "STRING"
+        },
+        "problems": {
+            "type": "STRING"
+        },
+        "startMessage": {
+            "type": "STRING"
+        },
+        "startReply": {
+            "type": "STRING"
+        },
+        "finalMessage": {
+            "type": "STRING"
+        },
+        "endReply": {
+            "type": "STRING"
+        }
+    },
+    "required": ["analysis", "problems", "startMessage", "startReply", "finalMessage", "endReply"],
+    "propertyOrdering": ["analysis", "problems", "startMessage", "startReply", "finalMessage", "endReply"]
+};
+
+/**
  * Updates the level with generated start and final messages using the Gemini API
  * @param level The level data to update
  * @param apiKey The API key for authentication
@@ -71,13 +100,14 @@ async function updateStartAndFinalMessages(level: LevelData, apiKey: string, mod
     const finalState = applyEvents(level.blocks, allEvents);
     const finalCode = finalState.code;
 
-    // Construct the prompt for the Gemini API
-    const prompt = constructStartAndFinalPrompt(initialCode, finalCode);
-    console.log(prompt)
+    // Get system prompt and user prompt
+    const {systemPrompt, userPrompt} = constructStartAndFinalPrompt(initialCode, finalCode);
+    console.log("System prompt:", systemPrompt);
+    console.log("User prompt:", userPrompt);
 
-    // Call the Gemini API
-    const response = await callGeminiApi(prompt, apiKey, model);
-    console.log(response)
+    // Call the Gemini API with structured output
+    const response = await callGeminiApi(userPrompt, apiKey, model, systemPrompt, startFinalMessagesSchema);
+    console.log("Response:", response);
 
     // Parse the response and update the level
     return parseStartAndFinalResponse(level, response);
@@ -111,6 +141,29 @@ function getCodeBeforeAndAfterOneStep(level: LevelData, eventId: string, prevEve
 
 
 /**
+ * JSON schema for hint and explanation
+ */
+const hintExplanationSchema = {
+    "type": "object",
+    "properties": {
+        "analysis": {
+            "type": "string"
+        },
+        "change": {
+            "type": "string"
+        },
+        "hint": {
+            "type": "string"
+        },
+        "explanation": {
+            "type": "string"
+        }
+    },
+    "required": ["analysis", "change", "hint", "explanation"],
+    "propertyOrdering": ["analysis", "change", "hint", "explanation"]
+};
+
+/**
  * Updates the level with generated hint and explanation for a specific event using the Gemini API
  * @param level The level data to update
  * @param eventId The event ID to generate hint and explanation for
@@ -122,14 +175,15 @@ async function updateHintAndExplanation(level: LevelData, eventId: string, apiKe
     console.log('Updating hint and explanation for event:', eventId);
     const {beforeCode, afterCode} = getCodeBeforeAndAfter(level, eventId);
 
-    // Construct the prompt for the Gemini API
-    const prompt = constructHintAndExplanationPrompt(beforeCode, afterCode);
-    console.log(prompt);
+    // Get system prompt and user prompt
+    const {systemPrompt, userPrompt} = constructHintAndExplanationPrompt(beforeCode, afterCode);
+    console.log("System prompt:", systemPrompt);
+    console.log("User prompt:", userPrompt);
 
-    // Call the Gemini API
+    // Call the Gemini API with structured output
     try {
-        const response = await callGeminiApi(prompt, apiKey, model);
-        console.log(response);
+        const response = await callGeminiApi(userPrompt, apiKey, model, systemPrompt, hintExplanationSchema);
+        console.log("Response:", response);
 
         // Parse the response and update the level
         return parseHintAndExplanationResponse(level, eventId, response);
@@ -185,115 +239,128 @@ export function getSelectedGeminiModel(): string {
     return 'gemini-2.5-flash-lite';
 }
 
-/**
- * Calls the Gemini API with the given prompt
- * @param prompt The prompt to send to the API
- * @param apiKey The API key for authentication
- * @param model The Gemini model to use (defaults to gemini-2.5-flash-lite)
- * @returns The API response
- */
-async function callGeminiApi(prompt: string, apiKey: string, model: string = 'gemini-2.5-flash-lite'): Promise<string> {
+async function callGeminiApi(
+    prompt: string,
+    apiKey: string,
+    model: string = 'gemini-2.5-flash-lite',
+    systemPrompt: string,
+    jsonSchema: object
+): Promise<string> {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
 
-    const requestBody = {
-        contents: [
-            {
-                parts: [
-                    {
-                        text: prompt
-                    }
-                ]
-            }
-        ],
+    const requestBody: any = {
+        system_instruction: {
+            parts: [
+                {
+                    text: systemPrompt
+                }
+            ]
+        },
+        contents: [{
+            parts: [
+                {
+                    text: prompt
+                }]
+        }],
         generationConfig: {
             temperature: 0.7,
             topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 1024,
+            topP: 0.90,
+            maxOutputTokens: 4048,
+            responseMimeType: "application/json",
+            responseSchema: jsonSchema
         }
     };
 
-    try {
-        const response = await fetch(`${url}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-goog-api-key': apiKey
-            },
-            body: JSON.stringify(requestBody)
-        });
+    const response = await fetch(`${url}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-goog-api-key': apiKey
+        },
+        body: JSON.stringify(requestBody)
+    });
 
-        if (!response.ok) {
-            throw new Error(`API request failed with status ${response.status}`);
+    if (!response.ok) {
+        let errorDescription = await response.text()
+        console.error(errorDescription);
+        throw new Error(`API request failed with status ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    // Extract the text or structured content from the response
+    if (data.candidates && data.candidates.length > 0 && data.candidates[0].content) {
+        if (jsonSchema) {
+            // For structured output, return the structured content
+            if (data.candidates[0].content.parts &&
+                data.candidates[0].content.parts.length > 0 &&
+                data.candidates[0].content.parts[0].structuredValue) {
+                return JSON.stringify(data.candidates[0].content.parts[0].structuredValue);
+            }
         }
 
-        const data = await response.json();
-
-        // Extract the text from the response
-        if (data.candidates && data.candidates.length > 0 &&
-            data.candidates[0].content &&
-            data.candidates[0].content.parts &&
-            data.candidates[0].content.parts.length > 0) {
+        // For text output, return the text content
+        if (data.candidates[0].content.parts &&
+            data.candidates[0].content.parts.length > 0 &&
+            data.candidates[0].content.parts[0].text) {
             return data.candidates[0].content.parts[0].text;
-        } else {
-            throw new Error('Invalid response format from Gemini API');
         }
-    } catch (error) {
-        console.error('Error calling Gemini API:', error);
-        throw error;
+
+        throw new Error('Response does not contain expected content format');
+    } else {
+        throw new Error('Invalid response format from Gemini API');
     }
 }
 
 /**
- * Constructs a prompt for the Gemini API to generate start and final messages
+ * Constructs system and user prompts for the Gemini API to generate start and final messages
  * @param initialCode The initial code of the level
  * @param finalCode The final code of the level after all events are triggered
- * @returns The prompt for the Gemini API
+ * @returns Object containing system prompt and user prompt
  */
-function constructStartAndFinalPrompt(initialCode: string, finalCode: string): string {
-    return `
-You are a text  writer for a coding game that teaches clean code principles. 
-You have  to write replicas for a Buddy — player's mentor, and a player response replicas.
+function constructStartAndFinalPrompt(initialCode: string, finalCode: string): {
+    systemPrompt: string,
+    userPrompt: string
+} {
+    const systemPrompt = `
+You are a text writer for a coding game that teaches clean code principles. 
+You write replicas for a Buddy — player's mentor, and player response replicas.
 
-On each level player has to fix some clean-code issues in the code.
-Before the level starts Buddy says a start message to the player.
-After player fixes all issues Buddy says a final message to the player.
+On each level, the player receives a code, written by some other programmer, and has to fix clean-code issues in the code.
+Before the level starts, Buddy says a start message to the player.
+After the player fixes all issues, Buddy says a final message.
 
-This is the INITIAL CODE, with issues:
+As a reply, generate a json response with the following fields:
+
+1. analysis. Internal analysis of the initial and final code in the free form. This analysis should help to generate further replicas.
+2. problems. Internal field. A list of problems in the code that were solved. Be precise and objective. 
+3. startMessage. A smart, funny, sarcastic start message from Buddy, commenting the initial code (150-400 characters). Add newLine character ('\n') after each sentence to split the message into multiple lines.
+4. startReply. A short player reply (10-25 characters) for the reply button
+5. finalMessage. Smart, funny, sarcastic but educational final message from Buddy, commenting the change from the initial to the final code (100-300 characters)
+6. endReply. Text for the "Next" button (10-25 characters). Add newLine character ('\n') after each sentence to split the message into multiple lines.
+
+Use B1 or B2 level English without fancy words. The text should be understandable for non-native speakers.
+`;
+
+    const userPrompt = `
+I need to generate messages for a level in our clean code game.
+
+This is the INITIAL CODE with issues:
 \`\`\`python
 ${initialCode}
 \`\`\`
 
-This is the FINAL CODE (after player fixes all issues):
+This is the FINAL CODE after all issues are fixed:
 \`\`\`python
 ${finalCode}
 \`\`\`
 
-Please generate the following messages in JSON format:
+Please analyze the differences and generate appropriate messages that will help players understand the clean code principles being taught.
 
-0. The list of problems in the code, that was solved in the final code. Do not refer to problems that was not solved in the final code. It is not replicas, they are not visible for the player, just for internal usage — be precise, objective and concise, no sarcasm and humor in this field.
-
-1. startMessage: A smart and slightly sarcastic message from Buddy commenting on the problems in the initial code. This should be 200-400 characters and should NOT provide strong hints about what to fix.
-
-2. startReply: A short player's reply (10-25 characters) that will be the text on the reply button.
-
-3. finalMessage: A message from Buddy after all issues are fixed, commenting on the improvements. This should be 100-300 characters and have educational value.
-
-4. endReply: Text for the "Next" button (10-25 characters) after completing the level.
-
-## Restrictions:
-
-1. Use B1 or B2 level without fancy words. The replicas should be understandable for non native speakers.
-
-Example response format:
-{
-  "problems": "Variable names do not reflect the meaning of the data and use oversimplified patters for the names.",
-  "startMessage": "Behold! Our senior developer's "typing efficiency" naming convention:\n- String variables: 's', 's1', 'ss' (saves keystrokes!)\n- Booleans: always 'flag' (saves thinking time!)\n\nThis is a pure efficiency of x10 developers!",
-  "startReply": "Don't think so...",
-  "finalMessage": "Not bad! You've transformed this code from a cryptic puzzle into self-documenting code.\nNow anyone reading it can immediately understand what each variable represents without having to trace through the execution.\nRemember: the goal of variable naming isn't to save keystrokes while typing - it's to save brain cycles while reading!",
-  "endReply": "Names fixed!"
-}
 `;
+
+    return {systemPrompt, userPrompt};
 }
 
 /**
@@ -304,17 +371,8 @@ Example response format:
  */
 function parseStartAndFinalResponse(level: LevelData, response: string): LevelData {
     try {
-        // Try to parse the response as JSON
-        let parsedResponse;
-
-        // Extract JSON from the response if it's wrapped in markdown code blocks
-        const jsonMatch = response.match(/```(?:json)?\s*(\{[\s\S]*?})\s*```/);
-        if (jsonMatch && jsonMatch[1]) {
-            parsedResponse = JSON.parse(jsonMatch[1]);
-        } else {
-            // Try to parse the entire response as JSON
-            parsedResponse = JSON.parse(response);
-        }
+        // Parse the response as JSON (should be already in JSON format from structured output)
+        const parsedResponse = JSON.parse(response);
 
         // Create a new level object with the updated messages
         return {
@@ -332,21 +390,39 @@ function parseStartAndFinalResponse(level: LevelData, response: string): LevelDa
 }
 
 /**
- * Constructs a prompt for the Gemini API to generate hint and explanation for a specific event
+ * Constructs system and user prompts for the Gemini API to generate hint and explanation for a specific event
  * @param beforeCode The code before applying the event
  * @param afterCode The code after applying the event
- * @returns The prompt for the Gemini API
+ * @returns Object containing system prompt and user prompt
  */
-function constructHintAndExplanationPrompt(beforeCode: string, afterCode: string): string {
-    return `
+function constructHintAndExplanationPrompt(beforeCode: string, afterCode: string): {
+    systemPrompt: string,
+    userPrompt: string
+} {
+    const systemPrompt = `
 You are a text writer for a coding game that teaches clean code principles.
-You have to write hints and explanations for a Buddy — player's mentor.
+You write hints and explanations for a Buddy — player's mentor.
 
-On each level player has to fix some clean-code issues in the code.
-When player clicks on a problematic code element, it gets replaced with a better version.
+On each level, the player has to fix clean-code issues in the code.
+When a player clicks on a problematic code element, it gets replaced with a better version.
 After the replacement, Buddy explains why the change was good.
 
-This is the CODE BEFORE the player fixed a problem in code:
+As a reply, generate a json response with the following fields:
+
+1. analysis. Internal analysis of the initial and final code in the free form. This analysis should help to generate further replicas.
+2. changes. A concise description of what changed in the code. This text should help to generate further replicas.
+2. hint.A subtle hint to help the player identify the problematic code (20-80 characters). The hint should be subtle and not give away the exact solution. In particular, MUST NOT mention any identifiers from the code.
+3. explanation. A sarcastic but educational explanation of why the change was good (50-100 characters)
+
+Use B1 or B2 level English without fancy words. The text should be understandable for non-native speakers.
+
+The explanation should be educational and explain the clean code principle that was applied.
+`;
+
+    const userPrompt = `
+I need to generate a hint and explanation for a specific code change in our clean code game.
+
+This is the CODE BEFORE the player fixed the problem:
 \`\`\`python
 ${beforeCode}
 \`\`\`
@@ -356,27 +432,10 @@ This is the CODE AFTER the player fixed the problem:
 ${afterCode}
 \`\`\`
 
-Please generate the following in JSON format:
-
-0. change: What exactly changed: describe it in one short sentence. It is not a part of text shown to player, just for internal usage. Be concise and precise, do not use humor or sarcasm in this field.
-
-1. hint: A smart and subtle hint that helps the player identify the code that was changed (see change) without giving away the answer directly. This should be 20-80 characters and should guide the player to look at the right part of the code.
-
-2. explanation: A sarcastic but educational explanation of why the change was good. This should be 50-100 characters and should explain the clean code principle that was applied.
-
-## Restrictions:
-
-1. Use B1 or B2 level without fancy words. The text should be understandable for non-native speakers.
-2. The hint should be subtle and not give away the exact solution.
-3. The explanation should be educational and explain the clean code principle.
-
-Example response format:
-{
-  "change": "Undescriptive variable lst1 was renamed to empty_positions.",
-  "hint": "What is stored in this list?",
-  "explanation": "lst1? Is this a sequel to lst? Variable names should tell a story, not just be numbered placeholders."
-}
+Please analyze the differences and generate an appropriate hint and explanation that will help players understand the clean code principle being taught.
 `;
+
+    return {systemPrompt, userPrompt};
 }
 
 /**
@@ -388,17 +447,8 @@ Example response format:
  */
 function parseHintAndExplanationResponse(level: LevelData, eventId: string, response: string): LevelData {
     try {
-        // Try to parse the response as JSON
-        let parsedResponse;
-
-        // Extract JSON from the response if it's wrapped in markdown code blocks
-        const jsonMatch = response.match(/```(?:json)?\s*(\{[\s\S]*?})\s*```/);
-        if (jsonMatch && jsonMatch[1]) {
-            parsedResponse = JSON.parse(jsonMatch[1]);
-        } else {
-            // Try to parse the entire response as JSON
-            parsedResponse = JSON.parse(response);
-        }
+        // Parse the response as JSON (should be already in JSON format from structured output)
+        const parsedResponse = JSON.parse(response);
 
         // Find the block with the matching event ID and update its hint and explanation
         const updatedBlocks = level.blocks.map(block => {
