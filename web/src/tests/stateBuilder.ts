@@ -45,7 +45,8 @@ export class StateBuilder {
                 isAuthenticated: false,
                 isLoading: false,
                 error: null,
-                isAdmin: false
+                isAdmin: false,
+                isAnonymous: false
             },
             playerStats: {
                 summary: {
@@ -178,7 +179,8 @@ export class StateBuilder {
             isAuthenticated: true,
             isLoading: false,
             error: null,
-            isAdmin
+            isAdmin,
+            isAnonymous: false
         };
         return this;
     }

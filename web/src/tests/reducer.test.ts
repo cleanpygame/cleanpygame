@@ -138,7 +138,8 @@ describe('Game Reducer', () => {
                 isAuthenticated: true,
                 isLoading: false,
                 error: null,
-                isAdmin: false
+                isAdmin: false,
+                isAnonymous: false
             }
         };
 

@@ -233,7 +233,7 @@ export function getSelectedGeminiModel(): string {
     return 'gemini-2.5-flash-lite';
 }
 
-function extractResponse(data, jsonSchema: object) {
+function extractResponse(data: any, jsonSchema?: object): any {
     // Extract the text or structured content from the response
     if (data.candidates && data.candidates.length > 0 && data.candidates[0].content) {
         if (jsonSchema) {
@@ -264,7 +264,7 @@ async function callGeminiApi(
     model: string = 'gemini-2.5-flash-lite',
     systemPrompt: string,
     jsonSchema: object
-): Promise<object> {
+): Promise<any> {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
 
     const requestBody: any = {
@@ -363,13 +363,7 @@ Please analyze the differences and generate appropriate messages that will help 
     return {systemPrompt, userPrompt};
 }
 
-/**
- * Parses the Gemini API response and updates the level with the generated messages
- * @param level The level data to update
- * @param response The API response to parse
- * @returns The updated level data
- */
-function parseStartAndFinalResponse(level: LevelData, parsedResponse: string): LevelData {
+function parseStartAndFinalResponse(level: LevelData, parsedResponse: any): LevelData {
     try {
         return {
             ...level,
@@ -380,7 +374,7 @@ function parseStartAndFinalResponse(level: LevelData, parsedResponse: string): L
         };
     } catch (error) {
         console.error('Error parsing Gemini API response:', error);
-        console.error('Response:', response);
+        console.error('Response:', parsedResponse);
         return level;
     }
 }
@@ -434,14 +428,7 @@ Please analyze the differences and generate an appropriate hint and explanation 
     return {systemPrompt, userPrompt};
 }
 
-/**
- * Parses the Gemini API response and updates the level with the generated hint and explanation
- * @param level The level data to update
- * @param eventId The event ID to update hint and explanation for
- * @param response The API response to parse
- * @returns The updated level data
- */
-function parseHintAndExplanationResponse(level: LevelData, eventId: string, parsedResponse: object): LevelData {
+function parseHintAndExplanationResponse(level: LevelData, eventId: string, parsedResponse: any): LevelData {
     try {
         // Find the block with the matching event ID and update its hint and explanation
         const updatedBlocks = level.blocks.map(block => {
@@ -469,7 +456,7 @@ function parseHintAndExplanationResponse(level: LevelData, eventId: string, pars
         };
     } catch (error) {
         console.error('Error parsing Gemini API response:', error);
-        console.error('Response:', response);
+        console.error('Response:', parsedResponse);
         return level;
     }
 }
@@ -549,7 +536,7 @@ The code should be realistic and demonstrate the issue clearly. Make sure the co
 `;
 
     try {
-        const parsedResponse = await callGeminiApi(userPrompt, apiKey, model, systemPrompt, randomPythonCodeSchema);
+        const parsedResponse: any = await callGeminiApi(userPrompt, apiKey, model, systemPrompt, randomPythonCodeSchema);
         const parts = [
             "##file " + parsedResponse.filename,
             '"""start',
