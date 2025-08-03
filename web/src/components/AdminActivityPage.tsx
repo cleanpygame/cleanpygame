@@ -31,6 +31,7 @@ export function AdminActivityPage(): React.ReactElement {
 
             fetchRecentlyActiveUsers(50)
                 .then((activeUsers) => {
+                    console.log(activeUsers)
                     setUsers(activeUsers);
                     setIsLoading(false);
                 })
@@ -142,11 +143,11 @@ export function AdminActivityPage(): React.ReactElement {
                                 >
                                     <td className="p-2">{user.displayName}</td>
                                     <td className="p-2">{user.email}</td>
-                                    <td className="p-2">{user.levelsCompleted || 0}</td>
-                                    <td className="p-2">{user.totalLevelsPlayed || 0}</td>
+                                    <td className="p-2">{user.totalLevelCompletions || 0}</td>
+                                    <td className="p-2">{user.totalLevelsSolved || 0}</td>
                                     <td className="p-2">{user.totalTimeSpent || 0}s</td>
                                     <td className="p-2">{user.totalHintsUsed || 0}</td>
-                                    <td className="p-2">{user.totalWrongClicks || 0}</td>
+                                    <td className="p-2">{user.totalMistakesMade || 0}</td>
                                     <td className="p-2"
                                         title={user.lastPlayedAt ? formatDate(user.lastPlayedAt, 'Never', true) : 'Never'}>
                                         {user.lastPlayedAt ? formatDate(user.lastPlayedAt) : 'Never'}
@@ -163,10 +164,10 @@ export function AdminActivityPage(): React.ReactElement {
                                 <td className="p-2 font-medium">Total</td>
                                 <td className="p-2"></td>
                                 <td className="p-2">
-                                    {users.reduce((sum, u) => sum + (u.levelsCompleted || 0), 0)}
+                                    {users.reduce((sum, u) => sum + (u.totalLevelCompletions || 0), 0)}
                                 </td>
                                 <td className="p-2">
-                                    {users.reduce((sum, u) => sum + (u.totalLevelsPlayed || 0), 0)}
+                                    {users.reduce((sum, u) => sum + (u.totalLevelsSolved || 0), 0)}
                                 </td>
                                 <td className="p-2">
                                     {users.reduce((sum, u) => sum + (u.totalTimeSpent || 0), 0)}s
@@ -175,7 +176,7 @@ export function AdminActivityPage(): React.ReactElement {
                                     {users.reduce((sum, u) => sum + (u.totalHintsUsed || 0), 0)}
                                 </td>
                                 <td className="p-2">
-                                    {users.reduce((sum, u) => sum + (u.totalWrongClicks || 0), 0)}
+                                    {users.reduce((sum, u) => sum + (u.totalMistakesMade || 0), 0)}
                                 </td>
                                 <td className="p-2"></td>
                                 <td className="p-2"></td>

@@ -1035,11 +1035,11 @@ export const fetchRecentlyActiveUsers = async (limitCount: number = 50): Promise
                 uid: doc.id,
                 displayName: data.displayName || 'Unknown',
                 email: data.email || 'No email',
-                levelsCompleted: data.summary?.levelsCompleted || 0,
-                totalLevelsPlayed: data.summary?.totalLevelsPlayed || 0,
+                totalLevelCompletions: data.summary?.totalLevelCompletions || 0,
+                totalLevelsSolved: data.summary?.totalLevelsSolved || 0,
                 totalTimeSpent: data.summary?.totalTimeSpent || 0,
                 totalHintsUsed: data.summary?.totalHintsUsed || 0,
-                totalWrongClicks: data.summary?.totalWrongClicks || 0,
+                totalMistakesMade: data.summary?.totalMistakesMade || 0,
                 lastPlayedAt: data.updatedAt?.toDate().toISOString() || null,
                 createdAt: data.createdAt?.toDate().toISOString() || null
             };

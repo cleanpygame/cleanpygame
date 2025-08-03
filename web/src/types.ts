@@ -178,11 +178,11 @@ export interface UserActivity {
     uid: string;
     displayName: string;
     email: string;
-    levelsCompleted: number;
-    totalLevelsPlayed: number;
+    totalLevelCompletions: number;
+    totalLevelsSolved: number;
     totalTimeSpent: number;
     totalHintsUsed: number;
-    totalWrongClicks: number;
+    totalMistakesMade: number;
     lastPlayedAt: string | null;
     createdAt: string | null;
 }
