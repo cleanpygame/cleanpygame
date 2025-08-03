@@ -146,82 +146,52 @@ export function AiCoAuthor(): React.ReactElement {
         <div className={`ai-tab p-2`}>
             <h2 className="text-lg font-semibold mb-4">AI Co-Author</h2>
 
-            {/* API Key Input */}
+            {/* API Key and Model Selection in one line */}
             <div className="mb-6">
-                <label htmlFor="api-key" className="block text-sm font-medium mb-2">
-                    Gemini API Key
-                </label>
-                <input
-                    id="api-key"
-                    type="password"
-                    value={apiKey}
-                    onChange={handleApiKeyChange}
-                    className="w-full px-3 py-2 bg-[#2d2d2d] border border-gray-700 rounded text-white"
-                    placeholder="Enter your Gemini API key"
-                />
+                <div className="flex gap-4">
+                    {/* API Key Input */}
+                    <div className="flex-1">
+                        <label htmlFor="api-key" className="block text-sm font-medium mb-2">
+                            Gemini API Key
+                        </label>
+                        <input
+                            id="api-key"
+                            type="password"
+                            value={apiKey}
+                            onChange={handleApiKeyChange}
+                            className="w-full px-3 py-2 bg-[#2d2d2d] border border-gray-700 rounded text-white"
+                            placeholder="Enter your Gemini API key"
+                        />
+                    </div>
+
+                    {/* Model Selection */}
+                    <div className="w-1/3">
+                        <label htmlFor="model-select" className="block text-sm font-medium mb-2">
+                            Model (big models are more expensive)
+                        </label>
+                        <select
+                            id="model-select"
+                            value={selectedModel}
+                            onChange={handleModelChange}
+                            className="w-full px-3 py-2 bg-[#2d2d2d] border border-gray-700 rounded text-white"
+                        >
+                            {models.map((model) => (
+                                <option key={model} value={model}>
+                                    {model}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
                 <p className="text-xs text-gray-400 mt-1">
                     Your API key is stored only in your browser's local storage. It is not stored on our server and is
                     not even transferred to us.
-                    It is used to directly call LLM API from your browser.
                 </p>
-            </div>
-
-            {/* Model Selection */}
-            <div className="mb-6">
-                <label htmlFor="model-select" className="block text-sm font-medium mb-2">
-                    Select Model
-                </label>
-                <select
-                    id="model-select"
-                    value={selectedModel}
-                    onChange={handleModelChange}
-                    className="w-full px-3 py-2 bg-[#2d2d2d] border border-gray-700 rounded text-white"
-                >
-                    {models.map((model) => (
-                        <option key={model} value={model}>
-                            {model}
-                        </option>
-                    ))}
-                </select>
-                <p className="text-xs text-gray-400 mt-1">
-                    More powerful models — better results, but more expensive.
-                </p>
-            </div>
-
-            {/* Generate Buttons */}
-            <div className="mb-6">
-                <h3 className="text-md font-medium mb-3">Generate Content</h3>
-
-                {/* Start and Final Messages Button */}
-                <button
-                    className="w-full px-4 py-2 mb-3 bg-[#3c3c3c] hover:bg-[#4c4c4c] rounded text-left"
-                    onClick={handleGenerateStartAndFinalMessages}
-                >
-                    Generate Start and Final Messages
-                </button>
-
-                {/* Event Buttons */}
-                <h4 className="text-sm font-medium mb-2 mt-4">Generate Hints and Explanations</h4>
-                {events.length > 0 ? (
-                    events.map((event, index) => (
-                        <button
-                            key={index}
-                            className="w-full px-4 py-2 mb-2 bg-[#3c3c3c] hover:bg-[#4c4c4c] rounded text-left"
-                            onClick={() => handleGenerateHintAndExplanation(event)}
-                        >
-                            Generate for event: {event}
-                        </button>
-                    ))
-                ) : (
-                    <p className="text-sm text-gray-400">
-                        No events found in the current code.
-                    </p>
-                )}
             </div>
 
             {/* Code Style Issues Section */}
             <div className="mb-6">
-                <h3 className="text-md font-medium mb-3">Code Style Issues</h3>
+                <h3 className="text-md font-medium mb-3">Generate Python Code</h3>
 
                 {/* Code Style Issue Input */}
                 <div className="mb-4">
@@ -239,11 +209,46 @@ export function AiCoAuthor(): React.ReactElement {
 
                 {/* Random Python Code Button */}
                 <button
-                    className="w-full px-4 py-2 mb-3 bg-[#3c3c3c] hover:bg-[#4c4c4c] rounded text-left"
+                    className="inline-block px-4 py-2 mb-3 bg-[#3c3c3c] hover:bg-[#4c4c4c] rounded text-left"
                     onClick={handleGenerateRandomPythonCode}
                 >
-                    Generate Random Python Code
+                    Generate Code
                 </button>
+            </div>
+
+            {/* Generate Start and Final Messages */}
+            <div className="mb-6">
+                <h3 className="text-md font-medium mb-3">Generate Start and Final Messages</h3>
+
+                {/* Start and Final Messages Button */}
+                <button
+                    className="inline-block px-4 py-2 mb-3 bg-[#3c3c3c] hover:bg-[#4c4c4c] rounded text-left"
+                    onClick={handleGenerateStartAndFinalMessages}
+                >
+                    Generate Messages
+                </button>
+            </div>
+
+            {/* Generate Hints and Explanations */}
+            <div className="mb-6">
+                <h3 className="text-md font-medium mb-3">Generate hints and explanations for events:</h3>
+                {events.length > 0 ? (
+                    events.map((event, index) => (
+                        <div>
+                            <button
+                                key={index}
+                                className="inline-block px-4 py-2 mb-2 bg-[#3c3c3c] hover:bg-[#4c4c4c] rounded text-left"
+                                onClick={() => handleGenerateHintAndExplanation(event)}
+                            >
+                                '{event}'
+                            </button>
+                        </div>
+                    ))
+                ) : (
+                    <p className="text-sm text-gray-400">
+                        No events found in the current code.
+                    </p>
+                )}
             </div>
         </div>
     );
