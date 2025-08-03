@@ -90,7 +90,19 @@ export function TopBar(): React.ReactElement {
                             email: result.user.email,
                             photoURL: result.user.photoURL
                         };
-                        dispatch(loginSuccess(user));
+
+                        // If account was linked, show a success message
+                        if (result.wasLinked) {
+                            console.log('Anonymous account successfully linked with Google account');
+                        }
+
+                        // If anonymous progress was discarded, log it
+                        if (result.anonymousProgressDiscarded) {
+                            console.log('Anonymous progress was discarded due to conflict resolution');
+                        }
+
+                        // Update auth state with the user (not anonymous anymore)
+                        dispatch(loginSuccess(user, false));
                     }
                 } catch (error) {
                     dispatch(loginFailure(error instanceof Error ? error.message : 'An unknown error occurred'));
@@ -201,7 +213,7 @@ export function TopBar(): React.ReactElement {
             </div>
             <div className="flex gap-4">
                 {(isMainPage || isCommunityLevelsPage) && renderNavigationButtons()}
-                {auth.isAuthenticated ? renderLogoutButton() : renderLoginButton()}
+                {auth.isAuthenticated && !auth.isAnonymous ? renderLogoutButton() : renderLoginButton()}
             </div>
         </div>
     );

@@ -102,9 +102,11 @@ export const savePlayerStats = async (user: User, playerStats: PlayerStatsState)
         if (docSnap.exists()) {
             // Update existing document
             await updateDoc(playerDocRef, {
-                'summary': playerStats.summary,
-                'levels': playerStats.levels,
-                'updatedAt': serverTimestamp()
+                displayName: user.displayName,
+                email: user.email,
+                summary: playerStats.summary,
+                levels: playerStats.levels,
+                updatedAt: serverTimestamp()
             });
         } else {
             // Create new document
@@ -1013,11 +1015,6 @@ export const isUserAdmin = async (userId: string): Promise<boolean> => {
     }
 };
 
-/**
- * Fetch recently active users for admin view
- * @param limit - Maximum number of users to fetch (default: 50)
- * @returns Promise that resolves with an array of UserActivity objects
- */
 export const fetchRecentlyActiveUsers = async (limitCount: number = 50): Promise<UserActivity[]> => {
     try {
         const playerStatsRef = collection(db, 'playerStats');

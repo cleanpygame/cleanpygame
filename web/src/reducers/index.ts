@@ -64,7 +64,8 @@ export const initialState: GameState = {
         isAuthenticated: false,
         isLoading: false,
         error: null,
-        isAdmin: false
+        isAdmin: false,
+        isAnonymous: false
     },
     playerStats: {
         summary: {
@@ -376,7 +377,7 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
         }
 
         case LOGIN_SUCCESS: {
-            const {user} = action.payload;
+            const {user, isAnonymous = false} = action.payload;
             return {
                 ...state,
                 auth: {
@@ -384,7 +385,8 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
                     isAuthenticated: true,
                     isLoading: false,
                     error: null,
-                    isAdmin: state.auth.isAdmin
+                    isAdmin: state.auth.isAdmin,
+                    isAnonymous
                 }
             };
         }
@@ -410,7 +412,8 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
                     isAuthenticated: false,
                     isLoading: false,
                     error: null,
-                    isAdmin: false
+                    isAdmin: false,
+                    isAnonymous: false
                 }
             };
         }

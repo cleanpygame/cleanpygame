@@ -138,7 +138,7 @@ export function GroupJoinPage(): React.ReactElement {
                     </p>
                 </div>
 
-                {!auth.isAuthenticated ? (
+                {!auth.isAuthenticated || auth.isAnonymous ? (
                     <div>
                         <p className="mb-4">You need to sign in to join this group.</p>
                         <button
@@ -154,6 +154,18 @@ export function GroupJoinPage(): React.ReactElement {
                                             email: result.user.email,
                                             photoURL: result.user.photoURL
                                         };
+
+                                        // If account was linked, show a success message
+                                        if (result.wasLinked) {
+                                            console.log('Anonymous account successfully linked with Google account');
+                                        }
+
+                                        // If anonymous progress was discarded, log it
+                                        if (result.anonymousProgressDiscarded) {
+                                            console.log('Anonymous progress was discarded due to conflict resolution');
+                                        }
+
+                                        // Update auth state with the user (not anonymous anymore)
                                         dispatch(loginSuccess(user));
 
                                         // Set the display name from the user profile
@@ -169,7 +181,7 @@ export function GroupJoinPage(): React.ReactElement {
                             className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors disabled:opacity-50"
                             disabled={auth.isLoading}
                         >
-                            {auth.isLoading ? 'Signing in...' : 'Sign in with Google'}
+                            {auth.isLoading ? 'Signing in...' : 'Login'}
                         </button>
                     </div>
                 ) : (

@@ -144,6 +144,7 @@ export interface LoginSuccessAction {
     type: typeof LOGIN_SUCCESS;
     payload: {
         user: User;
+        isAnonymous?: boolean;
     };
 }
 
@@ -481,9 +482,9 @@ export const loginRequest = (): LoginRequestAction => ({
     type: LOGIN_REQUEST
 });
 
-export const loginSuccess = (user: User): LoginSuccessAction => ({
+export const loginSuccess = (user: User, isAnonymous: boolean = false): LoginSuccessAction => ({
     type: LOGIN_SUCCESS,
-    payload: {user}
+    payload: {user, isAnonymous}
 });
 
 export const loginFailure = (error: string): LoginFailureAction => ({
