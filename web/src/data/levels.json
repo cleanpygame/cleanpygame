@@ -1135,9 +1135,95 @@
           "startMessage": "Okay, what can you fix here?",
           "finalMessage": "Wow, not an intern-looking-code anymore!",
           "endReply": "I like it too, thanks!"
+        },
+        {
+          "filename": "convey.py",
+          "blocks": [
+            {
+              "type": "text",
+              "text": "from collections import Counter\n\n"
+            },
+            {
+              "type": "replace-on",
+              "event": "point",
+              "text": "",
+              "replacement": "Point = tuple[int,int]\n\n"
+            },
+            {
+              "type": "replace-on",
+              "event": "will_be_alive",
+              "text": "",
+              "replacement": "def will_live(alive_neighbors_count: int, is_alive: bool) -> bool:\n    return alive_neighbors_count == 3 or (alive_neighbors_count == 2 and is_alive)\n\n"
+            },
+            {
+              "type": "replace-on",
+              "event": "iter",
+              "text": "",
+              "replacement": "def neighbors(x: int, y: int) -> Iterator[Point]:\n    for dx in (-1, 0, 1):\n        for dy in (-1, 0, 1):\n            if dx or dy:\n                yield (x + dx, y + dy)\n\n"
+            },
+            {
+              "type": "text",
+              "text": "def game_of_life_step(alive: set[tuple[int, int]]) -> set[tuple[int, int]]:\n    nbrs = Counter()\n    for x, y in alive:\n"
+            },
+            {
+              "type": "replace",
+              "text": "        for dx in (-1, 0, 1):\n            for dy in (-1, 0, 1):\n                if dx or dy:\n                    pos = (x + dx, y + dy)\n",
+              "replacement": "        for pos in neighbors(x, y):\n",
+              "event": "iter",
+              "hint": "Can a specific, repeating calculation be put into its own helper?",
+              "explanation": "Extracting a specific task into its own function makes the main code clearer. Now, your loop is not a mystery anymore!"
+            },
+            {
+              "type": "replace-on",
+              "text": "                    nbrs[pos] += 1\n",
+              "replacement": "          nbrs[pos] += 1\n",
+              "event": "iter"
+            },
+            {
+              "type": "text",
+              "text": "\n"
+            },
+            {
+              "type": "replace",
+              "text": "    new_alive: set[tuple[int, int]] = set()\n    for cell, count in nbrs.items():\n        if count == 3 or (count == 2 and cell in alive):\n            new_alive.add(cell)\n    return new_alive\n",
+              "replacement": "    return {cell for cell, count in nbrs.items() \n        if count == 3 or (count == 2 and cell in alive)}\n",
+              "event": "forcellcountin",
+              "clickable": "for cell, count in",
+              "hint": "Is there a more direct way to build a collection based on a condition?",
+              "explanation": "Why take extra steps? Set comprehensions let you build new sets in one clear line!"
+            },
+            {
+              "type": "replace-span",
+              "clickable": "tuple[int, int]",
+              "replacement": "Point",
+              "event": "point",
+              "hint": "Some complex types could have a more descriptive name",
+              "explanation": "Nice. This type alias really made code cleaner!"
+            },
+            {
+              "type": "replace-span",
+              "clickable": "nbrs",
+              "replacement": "neighbor_counts",
+              "event": "nbrs",
+              "hint": "Could this name be more rdbl?",
+              "explanation": "Abbreviations in code? Bad idea! Readable names make your code a joy to read, not a puzzle."
+            },
+            {
+              "type": "replace-span",
+              "clickable": "count == 3 or (count == 2 and cell in alive)",
+              "replacement": "will_live(count, cell in alive)",
+              "event": "will_be_alive",
+              "hint": "Complex bool expressions usually have some simple meaning",
+              "explanation": "It's like giving a label to a mystery box!"
+            }
+          ],
+          "startMessage": "Look at this 'Game of Life' implementation.\nIt's one giant function that does everything.\nIt's like reading a recipe where all the steps are mixed into a single sentence.",
+          "startReply": "I'll untangle this.",
+          "finalMessage": "By breaking the logic into smaller functions like `will_live` and `neighbors`, you made the code tell a story.",
+          "endReply": "Ready to the next one!"
         }
       ],
-      "inDevelopment": true
+      "inDevelopment": false
     }
   ]
 }
