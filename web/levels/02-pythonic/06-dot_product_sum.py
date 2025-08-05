@@ -11,8 +11,11 @@ def dot_product(vector1, vector2):
 ##with
     return sum(x*y for (x, y) in zip(vector1, vector2))
 ##end
+##hint loop?
 ##explain "Often you can avoid not only indexes but also for loops!"
-##hint "loop?"
+##option good good "Use 'sum'"
+##option bad bad-1 "Use 'fold'"
+##option bad bad-2 "Use 'enumerate'"
 """final
 Perfect! `zip` pairs elements safely, reads like English,
 and kicks index acrobatics to the curb.

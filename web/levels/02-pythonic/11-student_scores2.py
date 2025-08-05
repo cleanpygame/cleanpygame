@@ -14,8 +14,12 @@ def analyze_scores(student_scores):
         for name, scores in data
     }
 ##end
-##explain "This loop just builds a dictionary. A comprehension does the same job with less ceremony and more clarity."
 ##hint "Loops are COMPREHENSIVE! :winking:"
+##explain "This loop just builds a dictionary. A comprehension does the same job with less ceremony and more clarity."
+##option bad bad-0 "Use list comprehension"
+##option good good "Use dictionary comprehension"
+##option bad bad-2 "Extract function"
+##option bad bad-3 "Use Counter"
     for name in sorted(result):
         avg = result[name]
         print(f"{name}: {round(avg, 2)}")

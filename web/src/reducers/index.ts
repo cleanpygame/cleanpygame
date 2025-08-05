@@ -148,11 +148,12 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
             if (region) {
                 // Check if clicked block has context options
                 const eventId = region.eventId;
-                const block = state.currentLevel.level.blocks.find(b => {
+                const blockWithOptions = state.currentLevel.level.blocks.find(b => {
                     if (!b.event) return false;
+                    if (!b.options) return false;
                     return Array.isArray(b.event) ? b.event.includes(eventId) : b.event === eventId;
                 });
-                if (block && block.options && block.options.length > 0) {
+                if (blockWithOptions && blockWithOptions.options && blockWithOptions.options.length > 0) {
                     const {clientX, clientY} = (action as any).payload;
                     const anchor = (typeof clientX === 'number' && typeof clientY === 'number') ? {
                         x: clientX + 8,
@@ -163,7 +164,7 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
                         optionsMenu: {
                             visible: true,
                             event: eventId,
-                            options: block.options,
+                            options: blockWithOptions.options,
                             anchor
                         }
                     };

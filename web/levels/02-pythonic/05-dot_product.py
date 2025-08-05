@@ -15,8 +15,11 @@ def dot_product(a, b):
         result += x * y
     return result
 ##end
-##explain "Avoid indexes! Use zip for parallel iteration."
 ##hint "Two lists walk into a bar… together."
+##explain "Avoid indexes! Use zip for parallel iteration."
+##option good good "Use 'zip'"
+##option bad bad-1 "Use 'filter'"
+##option bad bad-2 "Use 'fold'"
 ##replace-span - a vector1
 ##hint a?
 ##explain "Single letters in the function signature?"

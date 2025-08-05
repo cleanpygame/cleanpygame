@@ -9,7 +9,7 @@ Let's put this poor function out of its misery once and for all.
 ##start-reply "Use built-ins!"
 
 def contains(text, pattern):
-##replace in_operator
+##replace
     pattern_len = len(pattern)
     for i in range(len(text)):
         if text[i:i+pattern_len] == pattern:
@@ -19,8 +19,12 @@ def contains(text, pattern):
     # Do we really need this function?!
     return pattern in text
 ##end
-##explain "Why reinvent the wheel? The 'in' operator is concise, optimized, and already built-in."
 ##hint "Python has a built-in way to check string containment. No loops needed!"
+##explain "Why reinvent the wheel? The 'in' operator is concise, optimized, and already built-in."
+##option bad bad-0 "Use generator"
+##option good good "Use 'in' operator"
+##option bad bad-1 "Use list comprehensions"
+##option bad bad-2 "Use text.find()"
 """final
 Perfect! You've replaced a manual algorithm with Python's built-in 'in' operator.
 

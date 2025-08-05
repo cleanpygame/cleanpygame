@@ -17,8 +17,11 @@ def some_duplication(scores):
     return res
 ##end
 ##replace-span - some_duplication clamp_scores
-##explain "Okay, now it's finally clear what this function is"
 ##hint "Time to get rid of temporary names!"
+##explain "Okay, now it's finally clear what this function is"
+##option good good "Rename to 'clamp_scores'"
+##option bad bad-1 "Rename to 'put_scores_in_range_0_100'"
+##option bad bad-2 "Rename to 'normalize_scores'"
 
 def process_exam_scores(raw_scores):
 ##replace block1
@@ -32,8 +35,8 @@ def process_exam_scores(raw_scores):
 ##with
     math_scores = some_duplication(raw_scores['math'])
 ##end
-##explain "This code is duplicating!"
 ##hint "math... programmers don't need math!"
+##explain "This code is duplicating!"
 ##replace block2
     science_scores = []
     for score in raw_scores['science']:
@@ -45,8 +48,8 @@ def process_exam_scores(raw_scores):
 ##with
     science_scores = some_duplication(raw_scores['science'])
 ##end
-##explain "D-D-Duplication!"
 ##hint "science... the only science I like is Computer Science!"
+##explain D-D-Duplication!
 ##replace block3
     history_scores = []
     for score in raw_scores['history']:
@@ -58,8 +61,8 @@ def process_exam_scores(raw_scores):
 ##with
     history_scores = some_duplication(raw_scores['history'])
 ##end
-##explain "DRY (Don't Repeat Yourself) isn't just about saving keystrokes - it's about having a single source of truth. Now if the normalization logic changes, you only need to update it in one place!"
 ##hint "I hope they mean git history?"
+##explain "DRY (Don't Repeat Yourself) isn't just about saving keystrokes - it's about having a single source of truth. Now if the normalization logic changes, you only need to update it in one place!"
     # ...
 """final
 Good start! What is next?

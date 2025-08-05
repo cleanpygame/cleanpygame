@@ -2,20 +2,25 @@
 """start
 Okay, what can you fix here?
 """
+def clamp(val, min_val, max_val):
+  return min(max_val, max(min_val, val))
+
 def clamp_scores(scores):
-##replace -
+##replace
     res = []
     for score in scores:
-      res.append(clamp_score(score, 0, 100))
+      res.append(clamp(score, 0, 100))
     return res
 ##with
-    return [clamp_score(score, 0, 100) for score in scores]
+    return [clamp(score, 0, 100) for score in scores]
 ##end
-##explain "List comprehensions are faster, cleaner, and easier to read than loops."
 ##hint "Loops are for the weak!"
+##explain "List comprehensions are faster, cleaner, and easier to read than loops."
+##option good good "Use list comprehension"
+##option bad bad-2 "Extract to new function"
 
 def process_exam_scores(raw_scores):
-##replace -
+##replace
     math_scores = clamp_scores(raw_scores['math'])
     science_scores = clamp_scores(raw_scores['science'])
     history_scores = clamp_scores(raw_scores['history'])
@@ -28,8 +33,11 @@ def process_exam_scores(raw_scores):
         subject_scores = clamp_scores(raw_scores[subject])
         add_to_report(subject, subject_scores)
 ##end
-##explain "Join score processing and reporting into one operation and put it in a loop. Much cleaner now!"
 ##hint "Look, each topic is handled in the same way."
+##explain "Join score processing and reporting into one operation and put it in a loop. Much cleaner now!"
+##option bad bad-0 "Reorder statemtns"
+##option good good "Loop all subjects"
+##option bad bad-2 "Extract function"
 """final
 Wow, not an intern-looking-code anymore!
 """

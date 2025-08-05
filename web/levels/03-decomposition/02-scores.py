@@ -20,8 +20,10 @@ def clamp_scores(scores):
 ##with
       res.append(clamp_score(score, 0, 100))
 ##end
-##explain "Sometimes you extract function not because of duplication!"
 ##hint "We just put score value in certain bound..."
+##explain "Sometimes you extract function not because of duplication!"
+##option bad bad-0 "Find built-in function"
+##option good good "Extract function"
     return res
 
 def process_exam_scores(raw_scores):
@@ -30,11 +32,13 @@ def process_exam_scores(raw_scores):
     history_scores = clamp_scores(raw_scores['history'])
     # ...
 ##replace-span - clamp_score clamp
-##explain "Nothing special in scores. Any number can be clamped"
 ##hint "Not only scores deserves to be clamped!"
+##explain "Nothing special in scores. Any number can be clamped"
+##option bad bad-1 "Rename to 'clamp_value'"
+##option good good "Rename to 'clamp'"
 ##replace-span - score_val value
-##explain "Yes, not just score — any value goes!"
 ##hint "What is so special in scores?"
+##explain "Yes, not just score — any value goes!"
 """final
 No we can move this clamp function to our math library and use it everywhere!
 

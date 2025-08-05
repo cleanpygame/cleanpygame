@@ -13,8 +13,11 @@ def merge_sort(arr):
 ##with
     left, right = _split(arr)
 ##end
-##explain "Splitting a list in-place isn’t that self-explanatory. Give it a name."
 ##hint "That mid-slicing logic? It deserves its own home."
+##explain "Splitting a list in-place isn’t that self-explanatory. Give it a name."
+##option good good "Extract function _split"
+##option bad bad-2 "Inline variable mid"
+##option bad bad-3 "Add comments"
     merge_sort(left)
     merge_sort(right)
 ##replace extract-merge
@@ -38,8 +41,11 @@ def merge_sort(arr):
 ##with
     _merge(arr, left, right)
 ##end
-##explain "That merge block was screaming to be its own function."
 ##hint "That 20-line merge? Make it disappear."
+##explain "That merge block was screaming to be its own function."
+##option bad bad-1 "Add spaces"
+##option bad bad-2 "Add comments"
+##option good good "Extract function"
 ##add-on extract-split
 
 def _split(arr):

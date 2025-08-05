@@ -9,7 +9,7 @@ This manual character-by-character parsing is impressive in its thoroughness... 
 ##start-reply "There must be a built-in way to do this!"
 
 def unescape(text):
-##replace encode_decode
+##replace
     result = ""
     escaping = False
     for char in text:
@@ -33,8 +33,11 @@ def unescape(text):
     # Python rule 101: everything is already implemented in some standard function!
     return text.encode('utf-8').decode('unicode_escape')
 ##end
-##explain "20 lines of manual character parsing versus a single line of built-in functionality! This is like building your own calculator when there's one right there in your pocket. Python's encoding/decoding system already handles all escape sequences, including ones your manual version doesn't even support!"
 ##hint "Unescaping strings is such a common operation that Python must have a built-in way to handle it. Think about string encoding and decoding..."
+##explain "20 lines of manual character parsing versus a single line of built-in functionality! This is like building your own calculator when there's one right there in your pocket. Python's encoding/decoding system already handles all escape sequences, including ones your manual version doesn't even support!"
+##option bad bad-0 "Use pattern-matching"
+##option good good "Use built-in methods"
+##option bad bad-2 "Decompose to several functions"
 """final
 Excellent! You've replaced a complex manual implementation with Python's built-in functionality.
 

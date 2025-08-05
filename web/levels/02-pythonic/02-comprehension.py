@@ -7,7 +7,7 @@ This code has more unnecessary loops than a roller coaster factory. It's like wa
 ##start-reply "Let's Pythonize it!"
 
 def list_to_csv(nums):
-##replace csv_join
+##replace csv
     csv = ""
     for n in nums:
         csv += str(n) + ","
@@ -17,11 +17,14 @@ def list_to_csv(nums):
 ##with
     return ",".join(str(n) for n in nums)
 ##end
-##explain "String concatenation in loops is inefficient. join() is faster and handles edge cases."
 ##hint "Concatenating strings in a loop? That's so 1990s!"
+##explain "String concatenation in loops is inefficient. join() is faster and handles edge cases."
+##option good good "Use 'join' method"
+##option bad bad-1 "Extract auxiliary function"
+##option bad bad-3 "Use f-strings for concatenation"
 
 def count_zeros(values):
-##replace count_zeros
+##replace count
     count = 0
     for v in values:
         if v == 0:
@@ -30,11 +33,14 @@ def count_zeros(values):
 ##with
     return sum(1 for v in values if v == 0)
 ##end
-##explain "Generator expressions are elegant and efficient. Count zeros without the loop bloat."
 ##hint "Why count manually when Python can do the math for you?"
+##explain "Generator expressions are elegant and efficient. Count zeros without the loop bloat."
+##option good good "Use sum with generator"
+##option bad bad-1 "Rename to count_elements"
+##option bad bad-2 "Extract loop to function"
 
 def uppercase_file(filename):
-##replace with_open
+##replace file
     file_obj = open(filename, 'r', encoding='utf-8')
     big_text = file_obj.read().upper()
     file_obj.close()
@@ -43,8 +49,12 @@ def uppercase_file(filename):
     with open(filename, 'r', encoding='utf-8') as f:
         return f.read().upper()
 ##end
-##explain "The 'with' statement auto-closes files, even after exceptions. No more resource leaks!"
 ##hint "Forgetting to close files? There's a 'with' for that!"
+##explain "The 'with' statement auto-closes files, even after exceptions. No more resource leaks!"
+##option bad bad-0 "Use generator"
+##option bad bad-3 "Use iterator"
+##option good good "Use 'with'"
+##option bad bad-2 "Use 'do'"
 """final
 Bravo! You've transformed verbose code into elegant, Pythonic expressions.
 

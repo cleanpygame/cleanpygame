@@ -37,6 +37,9 @@ def game_of_life_step(alive: set[tuple[int, int]]) -> set[tuple[int, int]]:
 ##end
 ##hint "Can a specific, repeating calculation be put into its own helper?"
 ##explain "Extracting a specific task into its own function makes the main code clearer. Now, your loop is not a mystery anymore!"
+##option bad bad-0 "Use list comprehensions"
+##option good good "Extract function 'neighbors(...)'"
+##option bad bad-2 "Use 'filter()'"
 ##replace-on iter
                     nbrs[pos] += 1
 ##with
@@ -50,20 +53,29 @@ def game_of_life_step(alive: set[tuple[int, int]]) -> set[tuple[int, int]]:
             new_alive.add(cell)
     return new_alive
 ##with
-    return {cell for cell, count in nbrs.items() 
+    return {cell for cell, count in nbrs.items()
         if count == 3 or (count == 2 and cell in alive)}
 ##end
 ##hint "Is there a more direct way to build a collection based on a condition?"
 ##explain "Why take extra steps? Set comprehensions let you build new sets in one clear line!"
+##option good good "Use set comprehension"
+##option bad bad-1 "Extract to function"
+##option bad bad-2 "Rename to 'new_cells'"
 ##replace-span point "tuple[int, int]" Point
 ##hint "Some complex types could have a more descriptive name"
 ##explain "Nice. This type alias really made code cleaner!"
+##option bad bad-0 "Remove type hints"
+##option good good "Create type alias"
 ##replace-span - nbrs neighbor_counts
 ##hint "Could this name be more rdbl?"
 ##explain "Abbreviations in code? Bad idea! Readable names make your code a joy to read, not a puzzle."
+##option good good "Rename to 'neighbor_counts'"
+##option bad bad-2 "Rename to 'count_neighbors'"
 ##replace-span will_be_alive "count == 3 or (count == 2 and cell in alive)" "will_live(count, cell in alive)"
 ##hint "Complex bool expressions usually have some simple meaning"
 ##explain "It's like giving a label to a mystery box!"
+##option good good "Extract function 'will_live'"
+##option bad bad-2 "Split expression to several lines"
 """final
 By breaking the logic into smaller functions like `will_live` and `neighbors`, you made the code tell a story.
 """

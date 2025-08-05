@@ -12,16 +12,21 @@ def report_errors(lines):
 ##with
     for i, line in enumerate(lines):
 ##end
-##explain "Manual indexing is fragile and clunky. enumerate() gives you the index and the item in one clean shot."
 ##hint "Let Python count for you — it’s good at it."
+##explain "Manual indexing is fragile and clunky. enumerate() gives you the index and the item in one clean shot."
+##option good good "Use 'enumerate'"
+##option bad bad-1 "Use 'zip'"
+##option bad bad-2 "Use 'for line in lines:'"
         if "ERROR" in line:
 ##replace - "Line \" + str(i + 1) + \": \" + line"
             print("Line " + str(i + 1) + ": " + line)
 ##with
             print(f"Line {i+1}: {line}")
 ##end
-##explain "f-strings are faster, cleaner, and easier to read than string concatenation."
 ##hint "Why concatenate when you can interpolate?"
+##explain "f-strings are faster, cleaner, and easier to read than string concatenation."
+##option bad bad-0 "Use format()"
+##option good good "Use f-string"
 """final
 P-p-p... Pythonic!
 """

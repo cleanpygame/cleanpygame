@@ -1109,17 +1109,53 @@
               "type": "replace",
               "text": "    sum_all = 0\n    for i in values:\n        sum_all += i\n",
               "replacement": "    sum_all = sum(values)\n",
-              "event": "sum_loop",
-              "explanation": "Why use an abacus when you have a calculator? Python's sum() is faster and less error-prone.",
-              "hint": "Why build a calculator when there's one in your pocket?"
+              "event": "sum",
+              "clickable": "for",
+              "hint": "What for do we use 'for' here?",
+              "explanation": "Python's sum() is faster and less error-prone.",
+              "options": [
+                {
+                  "id": "bad-0",
+                  "label": "Use while loop",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Use built-in function",
+                  "correct": true
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Rename 'i'",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "replace",
               "text": "    min_value = values[0]\n    for v in values[1:]:\n        if v < min_value:\n            min_value = v\n",
               "replacement": "    min_value = min(values)\n",
-              "event": "min_loop",
-              "explanation": "Manual min-finding is dangerous and verbose. Python's min() is safer and cleaner.",
-              "hint": "Finding minimums manually? What is this, the stone age?"
+              "event": "min",
+              "clickable": "for",
+              "hint": "Finding minimums manually? What is this, the stone age?",
+              "explanation": "Python's min() is safer and cleaner.",
+              "options": [
+                {
+                  "id": "bad-0",
+                  "label": "Explain the code in comments",
+                  "correct": false
+                },
+                {
+                  "id": "bad-1",
+                  "label": "Add else-clause",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Use built-in function",
+                  "correct": true
+                }
+              ]
             },
             {
               "type": "text",
@@ -1142,9 +1178,26 @@
               "type": "replace",
               "text": "    csv = \"\"\n    for n in nums:\n        csv += str(n) + \",\"\n    if csv.endswith(\",\"):\n        csv = csv[:-1]\n    return csv\n",
               "replacement": "    return \",\".join(str(n) for n in nums)\n",
-              "event": "csv_join",
+              "event": "csv",
+              "hint": "Concatenating strings in a loop? That's so 1990s!",
               "explanation": "String concatenation in loops is inefficient. join() is faster and handles edge cases.",
-              "hint": "Concatenating strings in a loop? That's so 1990s!"
+              "options": [
+                {
+                  "id": "good",
+                  "label": "Use 'join' method",
+                  "correct": true
+                },
+                {
+                  "id": "bad-1",
+                  "label": "Extract auxiliary function",
+                  "correct": false
+                },
+                {
+                  "id": "bad-3",
+                  "label": "Use f-strings for concatenation",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "text",
@@ -1154,9 +1207,26 @@
               "type": "replace",
               "text": "    count = 0\n    for v in values:\n        if v == 0:\n            count += 1\n    return count\n",
               "replacement": "    return sum(1 for v in values if v == 0)\n",
-              "event": "count_zeros",
+              "event": "count",
+              "hint": "Why count manually when Python can do the math for you?",
               "explanation": "Generator expressions are elegant and efficient. Count zeros without the loop bloat.",
-              "hint": "Why count manually when Python can do the math for you?"
+              "options": [
+                {
+                  "id": "good",
+                  "label": "Use sum with generator",
+                  "correct": true
+                },
+                {
+                  "id": "bad-1",
+                  "label": "Rename to count_elements",
+                  "correct": false
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Extract loop to function",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "text",
@@ -1166,9 +1236,31 @@
               "type": "replace",
               "text": "    file_obj = open(filename, 'r', encoding='utf-8')\n    big_text = file_obj.read().upper()\n    file_obj.close()\n    return big_text\n",
               "replacement": "    with open(filename, 'r', encoding='utf-8') as f:\n        return f.read().upper()\n",
-              "event": "with_open",
+              "event": "file",
+              "hint": "Forgetting to close files? There's a 'with' for that!",
               "explanation": "The 'with' statement auto-closes files, even after exceptions. No more resource leaks!",
-              "hint": "Forgetting to close files? There's a 'with' for that!"
+              "options": [
+                {
+                  "id": "bad-0",
+                  "label": "Use generator",
+                  "correct": false
+                },
+                {
+                  "id": "bad-3",
+                  "label": "Use iterator",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Use 'with'",
+                  "correct": true
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Use 'do'",
+                  "correct": false
+                }
+              ]
             }
           ],
           "startMessage": "Oh look, another \"for loop enthusiast\" who never met a loop they didn't like! \n\nThis code has more unnecessary loops than a roller coaster factory. It's like watching someone dig a hole with a spoon when there's a perfectly good shovel nearby. Let's introduce them to some Pythonic constructs that can save both keystrokes and sanity!",
@@ -1187,9 +1279,31 @@
               "type": "replace",
               "text": "    pattern_len = len(pattern)\n    for i in range(len(text)):\n        if text[i:i+pattern_len] == pattern:\n            return True\n    return False\n",
               "replacement": "    # Do we really need this function?!\n    return pattern in text\n",
-              "event": "in_operator",
+              "event": "id",
+              "hint": "Python has a built-in way to check string containment. No loops needed!",
               "explanation": "Why reinvent the wheel? The 'in' operator is concise, optimized, and already built-in.",
-              "hint": "Python has a built-in way to check string containment. No loops needed!"
+              "options": [
+                {
+                  "id": "bad-0",
+                  "label": "Use generator",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Use 'in' operator",
+                  "correct": true
+                },
+                {
+                  "id": "bad-1",
+                  "label": "Use list comprehensions",
+                  "correct": false
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Use text.find()",
+                  "correct": false
+                }
+              ]
             }
           ],
           "startMessage": "Wait a minute... didn't we just fix a 'contains' function in another file? \n\nOh, I see what happened. Your colleague fixed the bug in the previous version but still didn't realize that Python has this magical thing called the 'in' operator. It's like they fixed a leaky boat with duct tape when there was a perfectly good yacht available!\n\nLet's put this poor function out of its misery once and for all.",
@@ -1208,9 +1322,26 @@
               "type": "replace",
               "text": "    result = \"\"\n    escaping = False\n    for char in text:\n        if escaping:\n            if char == 'n':\n                result += '\\n'\n            elif char == 't':\n                result += '\\t'\n            elif char == '\\\\':\n                result += '\\\\'\n            # ... other escape sequences here...\n            else:\n                result += '\\\\' + char  # unknown escape — keep as-is\n            escaping = False\n        elif char == '\\\\':\n            escaping = True\n        else:\n            result += char\n    return result\n",
               "replacement": "    # Python rule 101: everything is already implemented in some standard function!\n    return text.encode('utf-8').decode('unicode_escape')\n",
-              "event": "encode_decode",
+              "event": "id",
+              "hint": "Unescaping strings is such a common operation that Python must have a built-in way to handle it. Think about string encoding and decoding...",
               "explanation": "20 lines of manual character parsing versus a single line of built-in functionality! This is like building your own calculator when there's one right there in your pocket. Python's encoding/decoding system already handles all escape sequences, including ones your manual version doesn't even support!",
-              "hint": "Unescaping strings is such a common operation that Python must have a built-in way to handle it. Think about string encoding and decoding..."
+              "options": [
+                {
+                  "id": "bad-0",
+                  "label": "Use pattern-matching",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Use built-in methods",
+                  "correct": true
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Decompose to several functions",
+                  "correct": false
+                }
+              ]
             }
           ],
           "startMessage": "Unescape function? Again?! \n\nFirst we fixed the terrible variable names, and now we're back to fix the implementation itself. It's like your colleague is determined to solve problems that Python already solved years ago!\n\nThis manual character-by-character parsing is impressive in its thoroughness... and completely unnecessary. Let's see if we can replace this 20-line state machine with something more... Pythonic.",
@@ -1231,8 +1362,25 @@
               "replacement": "    for x, y in zip(a, b):\n        result += x * y\n    return result\n",
               "event": "iinrange",
               "clickable": "i in range",
+              "hint": "Two lists walk into a bar… together.",
               "explanation": "Avoid indexes! Use zip for parallel iteration.",
-              "hint": "Two lists walk into a bar… together."
+              "options": [
+                {
+                  "id": "good",
+                  "label": "Use 'zip'",
+                  "correct": true
+                },
+                {
+                  "id": "bad-1",
+                  "label": "Use 'filter'",
+                  "correct": false
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Use 'fold'",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "replace-span",
@@ -1268,8 +1416,25 @@
               "text": "    result = 0\n    for x, y in zip(vector1, vector2):\n        result += x * y\n",
               "replacement": "    return sum(x*y for (x, y) in zip(vector1, vector2))\n",
               "event": "id",
+              "hint": "loop?",
               "explanation": "Often you can avoid not only indexes but also for loops!",
-              "hint": "loop?"
+              "options": [
+                {
+                  "id": "good",
+                  "label": "Use 'sum'",
+                  "correct": true
+                },
+                {
+                  "id": "bad-1",
+                  "label": "Use 'fold'",
+                  "correct": false
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Use 'enumerate'",
+                  "correct": false
+                }
+              ]
             }
           ],
           "startMessage": "Maybe one final fix...",
@@ -1297,7 +1462,24 @@
               "type": "replace-span",
               "clickable": "list(seen).count(word) == 0",
               "replacement": "not (word in seen)",
-              "event": "listseencountword0"
+              "event": "listseencountword0",
+              "options": [
+                {
+                  "id": "good",
+                  "label": "Use 'in'",
+                  "correct": true
+                },
+                {
+                  "id": "bad-1",
+                  "label": "Use list.count() method",
+                  "correct": false
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Extract function",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "replace-span",
@@ -1310,8 +1492,25 @@
               "clickable": "seen=set()",
               "replacement": "seen=None",
               "event": "md",
+              "hint": "If your function remembers things you didn't tell it to… it's haunted.",
               "explanation": "Default arguments are evaluated once — so this cheerful little set() is shared across *every* call. Like a clingy ex, it never forgets.",
-              "hint": "If your function remembers things you didn't tell it to… it's haunted."
+              "options": [
+                {
+                  "id": "good",
+                  "label": "Change default 'seen' to None",
+                  "correct": true
+                },
+                {
+                  "id": "bad1",
+                  "label": "Change default 'seen' to {}",
+                  "correct": false
+                },
+                {
+                  "id": "bad2",
+                  "label": "Change default 'seen' to []",
+                  "correct": false
+                }
+              ]
             }
           ],
           "startMessage": "Déjà-vu detection gone rogue!\nBecause the function’s default `set()` is shared across calls, words remembered from round #1 vanish in round #2.\nLet’s stop that silent memory leak before it confuses the next intern.",
@@ -1331,8 +1530,25 @@
               "text": "    for i in range(len(lines)):\n        line = lines[i]\n",
               "replacement": "    for i, line in enumerate(lines):\n",
               "event": "id",
+              "hint": "Let Python count for you — it’s good at it.",
               "explanation": "Manual indexing is fragile and clunky. enumerate() gives you the index and the item in one clean shot.",
-              "hint": "Let Python count for you — it’s good at it."
+              "options": [
+                {
+                  "id": "good",
+                  "label": "Use 'enumerate'",
+                  "correct": true
+                },
+                {
+                  "id": "bad-1",
+                  "label": "Use 'zip'",
+                  "correct": false
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Use 'for line in lines:'",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "text",
@@ -1344,8 +1560,20 @@
               "replacement": "            print(f\"Line {i+1}: {line}\")\n",
               "event": "Linestri1line",
               "clickable": "Line \" + str(i + 1) + \": \" + line",
+              "hint": "Why concatenate when you can interpolate?",
               "explanation": "f-strings are faster, cleaner, and easier to read than string concatenation.",
-              "hint": "Why concatenate when you can interpolate?"
+              "options": [
+                {
+                  "id": "bad-0",
+                  "label": "Use format()",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Use f-string",
+                  "correct": true
+                }
+              ]
             }
           ],
           "startMessage": "This function works... but feels like it time-traveled from 2002.\nLet’s give it a Pythonic glow-up!",
@@ -1374,10 +1602,22 @@
               "type": "replace",
               "text": "    for i in range(len(words)):\n        word = words[i]\n",
               "replacement": "    for word in words:\n",
-              "event": "loop",
+              "event": "iinrange",
               "clickable": "i in range",
+              "hint": "Drop the index juggling act.",
               "explanation": "range(len()) is a 1990s dance move. Loop directly and stay readable.",
-              "hint": "Drop the index juggling act."
+              "options": [
+                {
+                  "id": "bad-0",
+                  "label": "Use a while loop",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Stop using indexes",
+                  "correct": true
+                }
+              ]
             },
             {
               "type": "text",
@@ -1387,23 +1627,74 @@
               "type": "replace",
               "text": "    result = []\n    for k in dict.keys():\n        result.append((k, dict[k]))\n    return result\n",
               "replacement": "    return list(dict.items())\n",
-              "event": "id"
+              "event": "id",
+              "options": [
+                {
+                  "id": "bad-1",
+                  "label": "Use list comprehensions",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Use dict.items()",
+                  "correct": true
+                },
+                {
+                  "id": "bad-3",
+                  "label": "Use a default dictionary",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "replace-span",
               "clickable": "stop_words=[]",
               "replacement": "stop_words=None",
               "event": "md",
+              "hint": "Look carefully at the first line!",
               "explanation": "Mutable defaults are time bombs. Much safer to avoid them totally",
-              "hint": "Look carefully at the first line!"
+              "options": [
+                {
+                  "id": "bad-0",
+                  "label": "Rename porameter",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Use None as default value",
+                  "correct": true
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Use {} as default value",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "replace-span",
               "clickable": "dict",
               "replacement": "frequencies",
-              "event": "rename",
+              "event": "dict",
+              "hint": "Why pick a fight with a core type?",
               "explanation": "Shadowing built-ins starts turf wars. Give the poor 'dict' its name back.",
-              "hint": "Why pick a fight with a core type?"
+              "options": [
+                {
+                  "id": "bad-0",
+                  "label": "Rename to 'd'",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Rename to 'frequencies'",
+                  "correct": true
+                },
+                {
+                  "id": "bad-3",
+                  "label": "Rename to 'word_len'",
+                  "correct": false
+                }
+              ]
             }
           ],
           "startMessage": "Grab your hazmat suit, Junior — this function comes with its own built-in foot-guns:\nClick fast before someone deploys it to production Slack bots.",
@@ -1424,8 +1715,25 @@
               "replacement": "    for name, scores in data:\n",
               "event": "foriinrange0lendata",
               "clickable": "for i in range(0, len(data))",
+              "hint": "Indices?",
               "explanation": "No indices! Let the data tell the story, not the loop counter.",
-              "hint": "Indices?"
+              "options": [
+                {
+                  "id": "good",
+                  "label": "Unpack data directly in loop",
+                  "correct": true
+                },
+                {
+                  "id": "bad-1",
+                  "label": "Use enumerate for index",
+                  "correct": false
+                },
+                {
+                  "id": "bad-3",
+                  "label": "Convert to dictionary first",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "replace",
@@ -1433,8 +1741,25 @@
               "replacement": "",
               "event": "loop",
               "clickable": "for j in range(0, len(scores))",
+              "hint": "Built-ins... Remember them?",
               "explanation": "Let Python do the math.",
-              "hint": "Built-ins... Remember them?"
+              "options": [
+                {
+                  "id": "bad-0",
+                  "label": "Rename total",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Use sum() for scores",
+                  "correct": true
+                },
+                {
+                  "id": "bad-3",
+                  "label": "Use enumerable",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "replace-on",
@@ -1452,8 +1777,25 @@
               "replacement": "    for name in sorted(result):\n",
               "event": "foriinrange0lenkeys",
               "clickable": "for i in range(0, len(keys))",
+              "hint": "Sorted loops don’t require pre-sorting the keys.",
               "explanation": "for name in `sorted(result)` and -3 lines of code.",
-              "hint": "Sorted loops don’t require pre-sorting the keys."
+              "options": [
+                {
+                  "id": "bad-0",
+                  "label": "Simplify range call",
+                  "correct": false
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Change data structure",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Use 'sorted()' in for",
+                  "correct": true
+                }
+              ]
             },
             {
               "type": "text",
@@ -1465,8 +1807,8 @@
               "replacement": "        print(f\"{name}: {round(avg, 2)}\")\n",
               "event": "namestr",
               "clickable": "name + \": \" + str",
-              "explanation": "f-strings. Remember them?",
-              "hint": "a, b, c, d, e, ... What's next?"
+              "hint": "a, b, c, d, e, ... What's next?",
+              "explanation": "f-strings. Remember them?"
             },
             {
               "type": "text",
@@ -1478,8 +1820,25 @@
               "replacement": "    top, top_score = max(result.items(), key=lambda item: item[1])\n",
               "event": "forkinresult",
               "clickable": "for k in result:",
+              "hint": "Stop reinventing wheels!",
               "explanation": "One more built-in! max(..., key=...) with lambda!",
-              "hint": "Stop reinventing wheels!"
+              "options": [
+                {
+                  "id": "good",
+                  "label": "Use max() with lambda",
+                  "correct": true
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Inverse comparison",
+                  "correct": false
+                },
+                {
+                  "id": "bad-3",
+                  "label": "Extract function",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "text",
@@ -1491,16 +1850,33 @@
               "replacement": "    print(f\"Top student is {top} with score {top_score}\")\n",
               "event": "Topstudentistopwiths",
               "clickable": "Top student is \" + top + \" with score \" + str(top_score)",
-              "explanation": "f-strings again — they handle variables and formatting gracefully.",
-              "hint": "You’re better than chained string concatenation."
+              "hint": "You’re better than chained string concatenation.",
+              "explanation": "f-strings again — they handle variables and formatting gracefully."
             },
             {
               "type": "replace-span",
               "clickable": "data",
               "replacement": "student_scores",
               "event": "data",
+              "hint": "data is everywhere!",
               "explanation": "You say data, when you don't know what else to say",
-              "hint": "data is everywhere!"
+              "options": [
+                {
+                  "id": "good",
+                  "label": "Rename to 'student_scores'",
+                  "correct": true
+                },
+                {
+                  "id": "bad-1",
+                  "label": "Rename to 'player_scores'",
+                  "correct": false
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Rename to 'products'",
+                  "correct": false
+                }
+              ]
             }
           ],
           "startMessage": "This code technically works... but so does assembling IKEA furniture with your forehead.\nManual indexing, verbose accumulation, and enough string glue to open a kindergarten.\nLet’s apply some Pythonic polish before someone copy-pastes this into production.",
@@ -1521,8 +1897,30 @@
               "replacement": "    result = {\n        name: sum(scores) / len(scores)\n        for name, scores in data\n    }\n",
               "event": "fornamescoresinstude",
               "clickable": "for name, scores in student_scores",
+              "hint": "Loops are COMPREHENSIVE! :winking:",
               "explanation": "This loop just builds a dictionary. A comprehension does the same job with less ceremony and more clarity.",
-              "hint": "Loops are COMPREHENSIVE! :winking:"
+              "options": [
+                {
+                  "id": "bad-0",
+                  "label": "Use list comprehension",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Use dictionary comprehension",
+                  "correct": true
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Extract function",
+                  "correct": false
+                },
+                {
+                  "id": "bad-3",
+                  "label": "Use Counter",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "text",
@@ -1557,8 +1955,25 @@
               "clickable": "some_duplication",
               "replacement": "clamp_scores",
               "event": "some_duplication",
+              "hint": "Time to get rid of temporary names!",
               "explanation": "Okay, now it's finally clear what this function is",
-              "hint": "Time to get rid of temporary names!"
+              "options": [
+                {
+                  "id": "good",
+                  "label": "Rename to 'clamp_scores'",
+                  "correct": true
+                },
+                {
+                  "id": "bad-1",
+                  "label": "Rename to 'put_scores_in_range_0_100'",
+                  "correct": false
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Rename to 'normalize_scores'",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "text",
@@ -1569,24 +1984,24 @@
               "text": "    math_scores = []\n    for score in raw_scores['math']:\n        if score < 0:\n            score = 0\n        elif score > 100:\n            score = 100\n        math_scores.append(score)\n",
               "replacement": "    math_scores = some_duplication(raw_scores['math'])\n",
               "event": "block1",
-              "explanation": "This code is duplicating!",
-              "hint": "math... programmers don't need math!"
+              "hint": "math... programmers don't need math!",
+              "explanation": "This code is duplicating!"
             },
             {
               "type": "replace",
               "text": "    science_scores = []\n    for score in raw_scores['science']:\n        if score < 0:\n            score = 0\n        elif score > 100:\n            score = 100\n        science_scores.append(score)\n",
               "replacement": "    science_scores = some_duplication(raw_scores['science'])\n",
               "event": "block2",
-              "explanation": "D-D-Duplication!",
-              "hint": "science... the only science I like is Computer Science!"
+              "hint": "science... the only science I like is Computer Science!",
+              "explanation": "D-D-Duplication!"
             },
             {
               "type": "replace",
               "text": "    history_scores = []\n    for score in raw_scores['history']:\n        if score < 0:\n            score = 0\n        elif score > 100:\n            score = 100\n        history_scores.append(score)\n",
               "replacement": "    history_scores = some_duplication(raw_scores['history'])\n",
               "event": "block3",
-              "explanation": "DRY (Don't Repeat Yourself) isn't just about saving keystrokes - it's about having a single source of truth. Now if the normalization logic changes, you only need to update it in one place!",
-              "hint": "I hope they mean git history?"
+              "hint": "I hope they mean git history?",
+              "explanation": "DRY (Don't Repeat Yourself) isn't just about saving keystrokes - it's about having a single source of truth. Now if the normalization logic changes, you only need to update it in one place!"
             },
             {
               "type": "text",
@@ -1616,8 +2031,20 @@
               "text": "      if score < 0:\n        score = 0\n      elif score > 100:\n        score = 100\n      res.append(score)\n",
               "replacement": "      res.append(clamp_score(score, 0, 100))\n",
               "event": "clamp",
+              "hint": "We just put score value in certain bound...",
               "explanation": "Sometimes you extract function not because of duplication!",
-              "hint": "We just put score value in certain bound..."
+              "options": [
+                {
+                  "id": "bad-0",
+                  "label": "Find built-in function",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Extract function",
+                  "correct": true
+                }
+              ]
             },
             {
               "type": "text",
@@ -1628,16 +2055,28 @@
               "clickable": "clamp_score",
               "replacement": "clamp",
               "event": "clamp_score",
+              "hint": "Not only scores deserves to be clamped!",
               "explanation": "Nothing special in scores. Any number can be clamped",
-              "hint": "Not only scores deserves to be clamped!"
+              "options": [
+                {
+                  "id": "bad-1",
+                  "label": "Rename to 'clamp_value'",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Rename to 'clamp'",
+                  "correct": true
+                }
+              ]
             },
             {
               "type": "replace-span",
               "clickable": "score_val",
               "replacement": "value",
               "event": "score_val",
-              "explanation": "Yes, not just score — any value goes!",
-              "hint": "What is so special in scores?"
+              "hint": "What is so special in scores?",
+              "explanation": "Yes, not just score — any value goes!"
             }
           ],
           "startMessage": "I clearly can see some helpful primitive here, valuable not only for scores processing.",
@@ -1650,15 +2089,27 @@
           "blocks": [
             {
               "type": "text",
-              "text": "def clamp_scores(scores):\n"
+              "text": "def clamp(val, min_val, max_val):\n  return min(max_val, max(min_val, val))\n\ndef clamp_scores(scores):\n"
             },
             {
               "type": "replace",
-              "text": "    res = []\n    for score in scores:\n      res.append(clamp_score(score, 0, 100))\n    return res\n",
-              "replacement": "    return [clamp_score(score, 0, 100) for score in scores]\n",
+              "text": "    res = []\n    for score in scores:\n      res.append(clamp(score, 0, 100))\n    return res\n",
+              "replacement": "    return [clamp(score, 0, 100) for score in scores]\n",
               "event": "id",
+              "hint": "Loops are for the weak!",
               "explanation": "List comprehensions are faster, cleaner, and easier to read than loops.",
-              "hint": "Loops are for the weak!"
+              "options": [
+                {
+                  "id": "good",
+                  "label": "Use list comprehension",
+                  "correct": true
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Extract to new function",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "text",
@@ -1669,8 +2120,25 @@
               "text": "    math_scores = clamp_scores(raw_scores['math'])\n    science_scores = clamp_scores(raw_scores['science'])\n    history_scores = clamp_scores(raw_scores['history'])\n\n    add_to_report('math', math_scores)\n    add_to_report('science', science_scores)\n    add_to_report('history', history_scores)\n",
               "replacement": "    for subject in ['math', 'science', 'history']:\n        subject_scores = clamp_scores(raw_scores[subject])\n        add_to_report(subject, subject_scores)\n",
               "event": "id-1",
+              "hint": "Look, each topic is handled in the same way.",
               "explanation": "Join score processing and reporting into one operation and put it in a loop. Much cleaner now!",
-              "hint": "Look, each topic is handled in the same way."
+              "options": [
+                {
+                  "id": "bad-0",
+                  "label": "Reorder statemtns",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Loop all subjects",
+                  "correct": true
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Extract function",
+                  "correct": false
+                }
+              ]
             }
           ],
           "startMessage": "Okay, what can you fix here?",
@@ -1712,7 +2180,24 @@
               "replacement": "        for pos in neighbors(x, y):\n",
               "event": "iter",
               "hint": "Can a specific, repeating calculation be put into its own helper?",
-              "explanation": "Extracting a specific task into its own function makes the main code clearer. Now, your loop is not a mystery anymore!"
+              "explanation": "Extracting a specific task into its own function makes the main code clearer. Now, your loop is not a mystery anymore!",
+              "options": [
+                {
+                  "id": "bad-0",
+                  "label": "Use list comprehensions",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Extract function 'neighbors(...)'",
+                  "correct": true
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Use 'filter()'",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "replace-on",
@@ -1727,11 +2212,28 @@
             {
               "type": "replace",
               "text": "    new_alive: set[tuple[int, int]] = set()\n    for cell, count in nbrs.items():\n        if count == 3 or (count == 2 and cell in alive):\n            new_alive.add(cell)\n    return new_alive\n",
-              "replacement": "    return {cell for cell, count in nbrs.items() \n        if count == 3 or (count == 2 and cell in alive)}\n",
+              "replacement": "    return {cell for cell, count in nbrs.items()\n        if count == 3 or (count == 2 and cell in alive)}\n",
               "event": "forcellcountin",
               "clickable": "for cell, count in",
               "hint": "Is there a more direct way to build a collection based on a condition?",
-              "explanation": "Why take extra steps? Set comprehensions let you build new sets in one clear line!"
+              "explanation": "Why take extra steps? Set comprehensions let you build new sets in one clear line!",
+              "options": [
+                {
+                  "id": "good",
+                  "label": "Use set comprehension",
+                  "correct": true
+                },
+                {
+                  "id": "bad-1",
+                  "label": "Extract to function",
+                  "correct": false
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Rename to 'new_cells'",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "replace-span",
@@ -1739,7 +2241,19 @@
               "replacement": "Point",
               "event": "point",
               "hint": "Some complex types could have a more descriptive name",
-              "explanation": "Nice. This type alias really made code cleaner!"
+              "explanation": "Nice. This type alias really made code cleaner!",
+              "options": [
+                {
+                  "id": "bad-0",
+                  "label": "Remove type hints",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Create type alias",
+                  "correct": true
+                }
+              ]
             },
             {
               "type": "replace-span",
@@ -1747,7 +2261,19 @@
               "replacement": "neighbor_counts",
               "event": "nbrs",
               "hint": "Could this name be more rdbl?",
-              "explanation": "Abbreviations in code? Bad idea! Readable names make your code a joy to read, not a puzzle."
+              "explanation": "Abbreviations in code? Bad idea! Readable names make your code a joy to read, not a puzzle.",
+              "options": [
+                {
+                  "id": "good",
+                  "label": "Rename to 'neighbor_counts'",
+                  "correct": true
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Rename to 'count_neighbors'",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "replace-span",
@@ -1755,7 +2281,19 @@
               "replacement": "will_live(count, cell in alive)",
               "event": "will_be_alive",
               "hint": "Complex bool expressions usually have some simple meaning",
-              "explanation": "It's like giving a label to a mystery box!"
+              "explanation": "It's like giving a label to a mystery box!",
+              "options": [
+                {
+                  "id": "good",
+                  "label": "Extract function 'will_live'",
+                  "correct": true
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Split expression to several lines",
+                  "correct": false
+                }
+              ]
             }
           ],
           "startMessage": "Look at this 'Game of Life' implementation.\nIt's one giant function that does everything.\nIt's like reading a recipe where all the steps are mixed into a single sentence.",
@@ -1775,8 +2313,25 @@
               "text": "    mid = len(arr) // 2\n    left = arr[:mid]\n    right = arr[mid:]\n",
               "replacement": "    left, right = _split(arr)\n",
               "event": "extract-split",
+              "hint": "That mid-slicing logic? It deserves its own home.",
               "explanation": "Splitting a list in-place isn’t that self-explanatory. Give it a name.",
-              "hint": "That mid-slicing logic? It deserves its own home."
+              "options": [
+                {
+                  "id": "good",
+                  "label": "Extract function _split",
+                  "correct": true
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Inline variable mid",
+                  "correct": false
+                },
+                {
+                  "id": "bad-3",
+                  "label": "Add comments",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "text",
@@ -1787,8 +2342,25 @@
               "text": "    i = j = k = 0\n    while i < len(left) and j < len(right):\n        if left[i] < right[j]:\n            arr[k] = left[i]\n            i += 1\n        else:\n            arr[k] = right[j]\n            j += 1\n        k += 1\n    while i < len(left):\n        arr[k] = left[i]\n        i += 1\n        k += 1\n    while j < len(right):\n        arr[k] = right[j]\n        j += 1\n        k += 1\n",
               "replacement": "    _merge(arr, left, right)\n",
               "event": "extract-merge",
+              "hint": "That 20-line merge? Make it disappear.",
               "explanation": "That merge block was screaming to be its own function.",
-              "hint": "That 20-line merge? Make it disappear."
+              "options": [
+                {
+                  "id": "bad-1",
+                  "label": "Add spaces",
+                  "correct": false
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Add comments",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Extract function",
+                  "correct": true
+                }
+              ]
             },
             {
               "type": "replace-on",

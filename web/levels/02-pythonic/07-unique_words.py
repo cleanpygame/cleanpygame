@@ -19,10 +19,16 @@ def unique_words(text, seen=set()):
             yield word
 
 ##replace-span - "list(seen).count(word) == 0" "not (word in seen)"
+##option good good "Use 'in'"
+##option bad bad-1 "Use list.count() method"
+##option bad bad-2 "Extract function"
 ##replace-span - "not (word in seen)" "word not in seen"
-##replace-span md "seen=set()" "seen=None"
-##explain "Default arguments are evaluated once — so this cheerful little set() is shared across *every* call. Like a clingy ex, it never forgets."
+##replace-span md seen=set() seen=None
 ##hint "If your function remembers things you didn't tell it to… it's haunted."
+##explain "Default arguments are evaluated once — so this cheerful little set() is shared across *every* call. Like a clingy ex, it never forgets."
+##option good good "Change default 'seen' to None"
+##option bad bad1 "Change default 'seen' to {}"
+##option bad bad2 "Change default 'seen' to []"
 """final
 Now that we’ve exorcised the memory-leaking default,
 unique_words behaves like a normal function — not a long-term surveillance device.
