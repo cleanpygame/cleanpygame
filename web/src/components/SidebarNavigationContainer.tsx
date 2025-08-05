@@ -22,7 +22,7 @@ export function SidebarNavigationContainer(): React.ReactElement {
     const {state, dispatch} = context;
     const [expandedTopics, setExpandedTopics] = useState<Record<string, boolean>>({
         [state.currentLevelId.topic]: true,
-        'My Levels': true // Always expand My Levels topic
+        'My Levels': state.currentLevelId.topic === 'community'
     });
 
     // Fetch user levels when auth state changes (user logs in/out)
@@ -65,6 +65,14 @@ export function SidebarNavigationContainer(): React.ReactElement {
         // Clean up listener when component unmounts
         return () => unsubscribe();
     }, []); // No dependencies to prevent flickering when switching topics
+
+    // Collapse all topics except the one containing the current level
+    useEffect(() => {
+        setExpandedTopics({
+            [state.currentLevelId.topic]: true,
+            'My Levels': state.currentLevelId.topic === 'community'
+        });
+    }, [state.currentLevelId.topic]);
 
     const toggleTopic = (topicName: string): void => {
         setExpandedTopics(prev => ({
