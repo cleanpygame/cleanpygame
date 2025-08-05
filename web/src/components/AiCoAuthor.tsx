@@ -5,7 +5,8 @@ import {
     generateHintAndExplanation,
     generateRandomPythonCode,
     generateStartAndFinalMessages,
-    getSelectedGeminiModel
+    getSelectedGeminiModel,
+    RegenerationMode
 } from '../utils/aiCoAuthor';
 
 /**
@@ -94,18 +95,18 @@ export function AiCoAuthor(): React.ReactElement {
         }
     };
 
-    // Handle generating hint and explanation for a specific event
-    const handleGenerateHintAndExplanation = async (eventId: string) => {
+    // Handle generating hint and explanation/options for a specific event
+    const handleGenerateHintAndExplanation = async (eventId: string, mode: RegenerationMode = 'both') => {
         try {
             if (!apiKey) {
                 alert('Please enter a Gemini API key');
                 return;
             }
-            const updatedCode = await generateHintAndExplanation(code, eventId, apiKey, selectedModel);
+            const updatedCode = await generateHintAndExplanation(code, eventId, apiKey, selectedModel, mode);
             setCode(updatedCode);
         } catch (error) {
-            console.error('Error generating hint and explanation:', error);
-            alert('Failed to generate hint and explanation. Please check the console for details.');
+            console.error('Error generating hint/explanation/options:', error);
+            alert('Failed to generate hint/explanation/options. Please check the console for details.');
         }
     };
 
@@ -234,14 +235,31 @@ export function AiCoAuthor(): React.ReactElement {
                 <h3 className="text-md font-medium mb-3">Generate hints and explanations for events:</h3>
                 {events.length > 0 ? (
                     events.map((event, index) => (
-                        <div>
-                            <button
-                                key={index}
-                                className="inline-block px-4 py-2 mb-2 bg-[#3c3c3c] hover:bg-[#4c4c4c] rounded text-left"
-                                onClick={() => handleGenerateHintAndExplanation(event)}
-                            >
-                                '{event}'
-                            </button>
+                        <div key={index} className="mb-2">
+                            <div className="text-sm text-gray-300 mb-1">Event: '{event}'</div>
+                            <div className="flex gap-2 flex-wrap">
+                                <button
+                                    className="inline-block px-3 py-1 bg-[#3c3c3c] hover:bg-[#4c4c4c] rounded text-left"
+                                    onClick={() => handleGenerateHintAndExplanation(event, 'both')}
+                                    title="Regenerate hint, explanation and context menu options"
+                                >
+                                    Both
+                                </button>
+                                <button
+                                    className="inline-block px-3 py-1 bg-[#3c3c3c] hover:bg-[#4c4c4c] rounded text-left"
+                                    onClick={() => handleGenerateHintAndExplanation(event, 'hint')}
+                                    title="Regenerate only hint and explanation"
+                                >
+                                    Hint + Explanation
+                                </button>
+                                <button
+                                    className="inline-block px-3 py-1 bg-[#3c3c3c] hover:bg-[#4c4c4c] rounded text-left"
+                                    onClick={() => handleGenerateHintAndExplanation(event, 'options')}
+                                    title="Regenerate only context menu options"
+                                >
+                                    Options
+                                </button>
+                            </div>
                         </div>
                     ))
                 ) : (

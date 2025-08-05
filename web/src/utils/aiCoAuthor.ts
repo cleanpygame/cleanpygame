@@ -35,7 +35,15 @@ export async function generateStartAndFinalMessages(code: string, apiKey: string
  * @param model The Gemini model to use
  * @returns The updated level code with generated hint and explanation
  */
-export async function generateHintAndExplanation(code: string, eventId: string, apiKey: string, model: string): Promise<string> {
+export type RegenerationMode = 'both' | 'hint' | 'options';
+
+export async function generateHintAndExplanation(
+    code: string,
+    eventId: string,
+    apiKey: string,
+    model: string,
+    mode: RegenerationMode = 'both'
+): Promise<string> {
     // Parse the level code
     const parseResult = parseLevelText(code);
 
@@ -48,7 +56,7 @@ export async function generateHintAndExplanation(code: string, eventId: string, 
     const level = parseResult.level;
 
     // Update the level with hint and explanation for the event
-    const newLevel = await updateHintAndExplanation(level, eventId, apiKey, model);
+    const newLevel = await updateHintAndExplanation(level, eventId, apiKey, model, mode);
     return renderToPyLevel(newLevel);
 }
 
@@ -171,8 +179,14 @@ const hintExplanationSchema = {
  * @param model The Gemini model to use
  * @returns The updated level data with generated hint and explanation
  */
-async function updateHintAndExplanation(level: LevelData, eventId: string, apiKey: string, model: string): Promise<LevelData> {
-    console.log('Updating hint and explanation for event:', eventId);
+async function updateHintAndExplanation(
+    level: LevelData,
+    eventId: string,
+    apiKey: string,
+    model: string,
+    mode: RegenerationMode = 'both'
+): Promise<LevelData> {
+    console.log('Updating hint and explanation for event:', eventId, 'mode:', mode);
     const {beforeCode, afterCode} = getCodeBeforeAndAfter(level, eventId);
 
     // Get system prompt and user prompt
@@ -183,7 +197,7 @@ async function updateHintAndExplanation(level: LevelData, eventId: string, apiKe
     // Call the Gemini API with structured output
     try {
         const response = await callGeminiApi(userPrompt, apiKey, model, systemPrompt, hintExplanationSchema);
-        return parseHintAndExplanationResponse(level, eventId, response);
+        return parseHintAndExplanationResponse(level, eventId, response, mode);
     } catch (error) {
         console.error('Error calling Gemini API:', error);
         return level;
@@ -465,7 +479,12 @@ If unsure, still provide sensible distractors for options based on common mistak
     return {systemPrompt, userPrompt};
 }
 
-function parseHintAndExplanationResponse(level: LevelData, eventId: string, parsedResponse: any): LevelData {
+function parseHintAndExplanationResponse(
+    level: LevelData,
+    eventId: string,
+    parsedResponse: any,
+    mode: RegenerationMode = 'both'
+): LevelData {
     try {
         const normalizedOptions = normalizeOptionsFromLLM(parsedResponse.options);
 
@@ -476,13 +495,16 @@ function parseHintAndExplanationResponse(level: LevelData, eventId: string, pars
                     : block.event.includes(eventId);
 
                 if (eventMatches) {
-                    return {
-                        ...block,
-                        hint: parsedResponse.hint || block.hint,
-                        explanation: parsedResponse.explanation || block.explanation,
-                        // Replace existing options with newly generated ones
-                        options: normalizedOptions
-                    } as any;
+                    const updated: any = {...block};
+
+                    if (mode === 'both' || mode === 'hint') {
+                        updated.hint = parsedResponse.hint || (block as any).hint;
+                        updated.explanation = parsedResponse.explanation || (block as any).explanation;
+                    }
+                    if ((mode === 'both' || mode === 'options') && normalizedOptions.length > 0) {
+                        updated.options = normalizedOptions;
+                    }
+                    return updated;
                 }
             }
             return block;
