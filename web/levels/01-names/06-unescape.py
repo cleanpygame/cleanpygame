@@ -25,14 +25,23 @@ def unescape(s):
     return ss
 
 ##replace-span - flag after_slash
-##explain "Flag for what? A country? A ship? 'after_slash' actually tells us what it's tracking."
 ##hint "What condition is this boolean tracking? Think about the previous character."
+##explain "Flag for what? A country? A ship? 'after_slash' actually tells us what it's tracking."
+##option bad bad-2 "Add comment explaining 'flag'"
+##option good good "Rename to 'after_slash'"
+##option bad bad-1 "Rename to 'slash'"
 ##replace-span - ss unescaped
-##explain "'ss'? A snake hissing? Variable names should tell a story, not just duplicate other names."
 ##hint "What transformation is happening to this string as it's being built?"
+##explain "'ss'? A snake hissing? Variable names should tell a story, not just duplicate other names."
+##option bad bad-1 "Rename to 'escaped'"
+##option bad bad-2 "Rename to 'parsed'"
+##option good good "Rename to 'unescaped'"
 ##replace-span - s escaped
-##explain "Single-letter variables are mysterious characters never properly introduced. Parameters deserve full identity."
 ##hint "What kind of string is being passed to this function?"
+##explain "Single-letter variables are mysterious characters never properly introduced. Parameters deserve full identity."
+##option bad bad-1 "Rename to 'unescaped'"
+##option bad bad-2 "Rename to 'parsed'"
+##option good good "Rename to 'escaped'"
 """final
 Excellent work! You've transformed this code from a cryptic puzzle into self-documenting code. Now anyone reading it can immediately understand what each variable represents without having to trace through the execution. Remember: the goal of variable naming isn't to save keystrokes while typing - it's to save brain cycles while reading!
 """

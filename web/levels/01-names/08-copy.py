@@ -24,18 +24,34 @@ def copy(xs, ys, j, k, n):
 ##replace-span - xs destination
 ##explain "Ah, 'xs'! Is that a clothing size? An abbreviation for 'excess'? The documentation already calls it 'destination' - why not use that in the code too? Consistency between docs and code prevents confusion."
 ##hint "The docstring is practically screaming the answer at you!"
+##option good good "Rename to 'destination'"
+##option bad bad-1 "Rename to 'source'"
+##option bad bad-2 "Rename to 'array'"
 ##replace-span - ys source
-##explain "'ys'? Are we playing a game of 'Name That Variable: Vowel-Free Edition'? Again, the documentation already has a perfectly good name for this parameter."
 ##hint "The answer is right above you. No, literally, look up!"
+##explain "'ys'? Are we playing a game of 'Name That Variable: Vowel-Free Edition'? Again, the documentation already has a perfectly good name for this parameter."
+##option bad bad-1 "Rename to 'destination'"
+##option good - "Rename to 'source'"
+##option bad bad-2 "Rename to 'array'"
 ##replace-span - j dest_start
-##explain "Single-letter variables like 'j' are perfect when you want your code to be as mysterious as possible. For everyone else, descriptive names like 'dest_start' make the code self-documenting."
 ##hint "j for... jumping? juggling? The docstring knows!"
+##explain "Single-letter variables like 'j' are perfect when you want your code to be as mysterious as possible. For everyone else, descriptive names like 'dest_start' make the code self-documenting."
+##option bad bad-1 "Rename to 'start'"
+##option good - "Rename to 'dest_start'"
+##option bad bad-2 "Rename to 'end'"
 ##replace-span - k src_start
-##explain "The letter 'k' - saving valuable keystrokes since the invention of programming! But at what cost to readability? The few extra characters in 'src_start' make the code instantly more understandable."
 ##hint "k is for... konsult the docstring!"
+##explain "The letter 'k' - saving valuable keystrokes since the invention of programming! But at what cost to readability? The few extra characters in 'src_start' make the code instantly more understandable."
+##option good - "Rename to 'src_start'"
+##option bad bad-2 "Rename to 'dest_start'"
+##option bad bad-1 "Rename to 'src_end'"
+##option bad bad-3 "Rename to 'dest_end'"
 ##replace-span - n count
-##explain "'n' could stand for 'number', 'node', 'noodle'... The documentation says 'number of elements to copy', so why not use a name that actually conveys that meaning?"
 ##hint "n = noodles? narwhals? The docstring has the scoop!"
+##explain "'n' could stand for 'number', 'node', 'noodle'... The documentation says 'number of elements to copy', so why not use a name that actually conveys that meaning?"
+##option good - "Rename to 'count'"
+##option bad bad-2 "Rename to 'src_len'"
+##option bad bad-1 "Rename to 'len'"
 """final
 Excellent! You've transformed this function from cryptic to crystal clear. Now the code matches the quality of its documentation, making it immediately obvious what each parameter does without having to refer to the docstring. 
 

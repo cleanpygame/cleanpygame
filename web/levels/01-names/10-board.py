@@ -14,17 +14,29 @@ def initialization(board_json):
     board_reader(board_json, board)
 
 ##replace-span - n board_size
-##explain "Ah, the mysterious 'n'! Is it a secret agent? The 14th letter of the alphabet? Or perhaps... the size of the board? Single-letter variables are like secret codes that only the original developer understands."
 ##hint "nitrogen? narnia? nirvana?"
+##explain "Ah, the mysterious 'n'! Is it a secret agent? The 14th letter of the alphabet? Or perhaps... the size of the board? Single-letter variables are like secret codes that only the original developer understands."
+##option good good "Rename to 'board_size'"
+##option bad bad-1 "Rename to 'size'"
+##option bad bad-2 "Rename to 'dimension'"
 ##replace-span - initialization initialize_board
-##explain "Functions should be verbs because they DO things! 'initialization' is the noun form - like saying 'swimming' instead of 'swim'. Your functions should sound like commands: 'create', 'calculate', 'destroy', not 'creation', 'calculation', 'destruction'."
 ##hint "Functions DO things!"
+##explain "Functions should be verbs because they DO things! 'initialization' is the noun form - like saying 'swimming' instead of 'swim'. Your functions should sound like commands: 'create', 'calculate', 'destroy', not 'creation', 'calculation', 'destruction'."
+##option good good "Rename to initialize_board"
+##option bad bad-1 "Rename to initializing_board"
+##option bad bad-2 "Rename to board_initializer"
 ##replace-span - creating_board create_board
-##explain "'creating_board' sounds like you're narrating what you're doing: 'I am creating board now'. Function names should be direct commands: 'create_board!' It's more efficient and follows standard conventions."
 ##hint "building, running, processing — are nouns!"
+##explain "'creating_board' sounds like you're narrating what you're doing: 'I am creating board now'. Function names should be direct commands: 'create_board!' It's more efficient and follows standard conventions."
+##option bad bad-1 "Rename to board_creation"
+##option bad bad-2 "Rename to board_creator"
+##option good good "Rename to create_board"
 ##replace-span - board_reader read_board
-##explain "'board_reader' sounds like a job title, not an action. Is it a person who reads boards professionally? Functions should be verbs that describe the action they perform."
 ##hint "Writer, reader, manager — are nouns!"
+##explain "'board_reader' sounds like a job title, not an action. Is it a person who reads boards professionally? Functions should be verbs that describe the action they perform."
+##option bad bad-1 "Rename to reading_board"
+##option good good "Rename to read_board"
+##option bad bad-2 "Rename to board_read"
 """final
 Excellent work! You've transformed these function and variable names to follow proper naming conventions. Functions are now verbs (actions) and variables are nouns (things), making the code much more intuitive to read.
 

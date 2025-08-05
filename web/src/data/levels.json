@@ -245,32 +245,95 @@
               "clickable": "get",
               "replacement": "get_empty_positions",
               "event": "get",
-              "explanation": "The mysterious 'get' function! Get what? The name 'get_empty_positions' actually tells us what it returns.",
-              "hint": "get... what?!"
+              "hint": "Is the function's purpose immediately clear from its name?",
+              "explanation": "Perfect! A function's name should explain its purpose. We're not playing charades here.",
+              "options": [
+                {
+                  "id": "bad-2",
+                  "label": "Add comment for function",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Rename to 'get_empty_positions'",
+                  "correct": true
+                },
+                {
+                  "id": "bad-1",
+                  "label": "Rename to 'find_empty_data'",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "replace-span",
               "clickable": "lst1",
               "replacement": "empty_positions",
               "event": "lst1",
-              "explanation": "lst1? Is this a sequel to lst? Variable names should tell a story, not just be numbered placeholders.",
-              "hint": "List contains positions. Name it to reflect its purpose, not its sequence."
+              "hint": "Does that name clearly tell you what kind of data it holds?",
+              "explanation": "Ah, 'lst1', the pinnacle of descriptive naming! Now, 'empty_positions' actually tells us what it holds. Much clearer, isn't it?",
+              "options": [
+                {
+                  "id": "bad-1",
+                  "label": "Rename to 'result_list'",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Rename to 'empty_positions'",
+                  "correct": true
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Rename to 'filtered_cells'",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "replace-span",
               "clickable": "lst",
               "replacement": "cells",
               "event": "lst",
-              "explanation": "Naming a list of cells 'lst' forces developers to guess. Descriptive names save brain cycles.",
-              "hint": "This parameter has objects with 'is_empty' property. What are these objects?"
+              "hint": "Does this name clearly tell you what kind of items are inside?",
+              "explanation": "Calling a list 'lst' is like calling your dog 'animal'. 'Cells' tells you exactly what you're dealing with. Much clearer, right?",
+              "options": [
+                {
+                  "id": "bad-1",
+                  "label": "Rename to 'items'",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Rename to 'cells'",
+                  "correct": true
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Explain in a comment",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "replace-span",
               "clickable": "c",
               "replacement": "cell",
               "event": "c",
-              "explanation": "Single-letter loop variables are mysterious characters never properly introduced. Clarity beats brevity.",
-              "hint": "What is each item in this collection? Name it properly to aid understanding."
+              "hint": "Does that single letter really tell you what it is?",
+              "explanation": "Using single letters is great for puzzles, but terrible for code. Now 'cell' actually tells us what it is!",
+              "options": [
+                {
+                  "id": "good",
+                  "label": "Rename to 'cell'",
+                  "correct": true
+                },
+                {
+                  "id": "bad-1",
+                  "label": "Rename to 'item'",
+                  "correct": false
+                }
+              ]
             }
           ],
           "startMessage": "Well done on your previous fixes! Now your colleague has sent you this \"masterpiece\" of clarity. \n\n\"It's short and simple,\" they said. \"Probably doesn't need any changes,\" they said. Let's see about that... I spy with my little eye some variables that are playing hide-and-seek with their meanings!",
@@ -299,24 +362,53 @@
               "clickable": "86400",
               "replacement": "(24*60*60)",
               "event": "86400",
-              "explanation": "Magic numbers like 86400 are inside jokes - funny if you're in on it, confusing for everyone else.",
-              "hint": "What does this specific number represent? Think about time measurement."
+              "hint": "What does this specific number represent? Think about time measurement.",
+              "explanation": "Magic numbers like 86400 are inside jokes - funny if you're in on it, confusing for everyone else."
             },
             {
               "type": "replace-span",
               "clickable": "(24*60*60)",
               "replacement": "n",
               "event": "MAGIC",
-              "explanation": "You've replaced one magic number with another! At least now it's calculated, showing your reasoning.",
-              "hint": "Names usually helps to explain calculations!"
+              "hint": "Does that calculation explain itself?",
+              "explanation": "Good job! Naming that number makes the code much easier to understand. No more head-scratching!",
+              "options": [
+                {
+                  "id": "good",
+                  "label": "Extract variable",
+                  "correct": true
+                },
+                {
+                  "id": "bad-1",
+                  "label": "Add comment for calculation",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "replace-span",
               "clickable": "n",
               "replacement": "seconds_in_24h",
               "event": "n",
-              "explanation": "Finally! A variable name that explains what the value represents. No more reverse-engineering needed.",
-              "hint": "What exactly are you calculating with 24*60*60?."
+              "hint": "Can you tell what that number represents just by looking at its name?",
+              "explanation": "Good job! Now, instead of guessing what 'n' stands for, we know it's not a secret code for 'nothing useful'.",
+              "options": [
+                {
+                  "id": "bad-1",
+                  "label": "Rename to 'total_seconds'",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Rename to 'seconds_in_24h'",
+                  "correct": true
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Add a comment for clarity",
+                  "correct": false
+                }
+              ]
             }
           ],
           "startMessage": "⚠️ IMPORTANT NOTICE ⚠️\nDo NOT change any constants here! They are magically calculated by our resident wizard who refuses to document anything.\n\nThe code works perfectly through some arcane sorcery. Touching it might summon demons or worse - break production. Proceed with extreme caution!",
@@ -335,16 +427,45 @@
               "clickable": "l",
               "replacement": "pattern_len",
               "event": "l",
+              "hint": "Single character name often are source of troubles!",
               "explanation": "Lowercase 'l' as a variable name? Good way to mess it with `1` and `I`!",
-              "hint": "Single character name often are source of troubles!"
+              "options": [
+                {
+                  "id": "bad-1",
+                  "label": "Rename to 'len'",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Rename to 'pattern_len'",
+                  "correct": true
+                }
+              ]
             },
             {
               "type": "replace-span",
               "clickable": "i+1",
               "replacement": "i+l",
               "event": "i1",
+              "hint": "The slice is a bit... thin...",
               "explanation": "Off-by-many error? Is it a new level of the off-by-one?",
-              "hint": "The slice is a bit... thin..."
+              "options": [
+                {
+                  "id": "bad-1",
+                  "label": "Replace i",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Use pattern_len",
+                  "correct": true
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Rename 'text'",
+                  "correct": false
+                }
+              ]
             }
           ],
           "startMessage": "Your colleague just pushed this \"perfectly working\" string search function to production. Customers are already complaining that the search doesn't work properly.\n\nCan you find what's lurking in this seemingly innocent code before the support team stages a revolt?",
@@ -364,24 +485,75 @@
               "clickable": "flag",
               "replacement": "after_slash",
               "event": "flag",
+              "hint": "What condition is this boolean tracking? Think about the previous character.",
               "explanation": "Flag for what? A country? A ship? 'after_slash' actually tells us what it's tracking.",
-              "hint": "What condition is this boolean tracking? Think about the previous character."
+              "options": [
+                {
+                  "id": "bad-2",
+                  "label": "Add comment explaining 'flag'",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Rename to 'after_slash'",
+                  "correct": true
+                },
+                {
+                  "id": "bad-1",
+                  "label": "Rename to 'slash'",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "replace-span",
               "clickable": "ss",
               "replacement": "unescaped",
               "event": "ss",
+              "hint": "What transformation is happening to this string as it's being built?",
               "explanation": "'ss'? A snake hissing? Variable names should tell a story, not just duplicate other names.",
-              "hint": "What transformation is happening to this string as it's being built?"
+              "options": [
+                {
+                  "id": "bad-1",
+                  "label": "Rename to 'escaped'",
+                  "correct": false
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Rename to 'parsed'",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Rename to 'unescaped'",
+                  "correct": true
+                }
+              ]
             },
             {
               "type": "replace-span",
               "clickable": "s",
               "replacement": "escaped",
               "event": "s",
+              "hint": "What kind of string is being passed to this function?",
               "explanation": "Single-letter variables are mysterious characters never properly introduced. Parameters deserve full identity.",
-              "hint": "What kind of string is being passed to this function?"
+              "options": [
+                {
+                  "id": "bad-1",
+                  "label": "Rename to 'unescaped'",
+                  "correct": false
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Rename to 'parsed'",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Rename to 'escaped'",
+                  "correct": true
+                }
+              ]
             }
           ],
           "startMessage": "Behold! Our senior developer's \"typing efficiency\" naming convention:\n- String variables: 's', 's1', 'ss' (saves keystrokes!)\n- Booleans: always 'flag' (saves thinking time!)\n\nThis is a pure efficiency of x10 developers!",
@@ -401,48 +573,145 @@
               "clickable": "GetBigramsFrequency",
               "replacement": "get_bigrams_frequency",
               "event": "GetBigramsFrequency",
+              "hint": "This function name is dressed in CamelCase, but Python functions prefer to slither in snake_case.",
               "explanation": "CamelCase in Python? That's like wearing socks with sandals - technically functional but culturally questionable. Python has its own style guide (PEP 8) that recommends snake_case for functions. Consistency in style makes code more readable for the community.",
-              "hint": "This function name is dressed in CamelCase, but Python functions prefer to slither in snake_case."
+              "options": [
+                {
+                  "id": "good",
+                  "label": "Rename to 'get_bigrams_frequency'",
+                  "correct": true
+                },
+                {
+                  "id": "bad-1",
+                  "label": "Rename to 'getBigramsFrequency'",
+                  "correct": false
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Rename to 'getbigramsfrequency'",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "replace-span",
               "clickable": "bigramsCount",
               "replacement": "bigrams_count",
               "event": "bigramsCount",
+              "hint": "CamelCase in Python? That's cultural appropriation!",
               "explanation": "Another CamelCase refugee! In Python, we separate our words with underscores, not capital letters. It's not just pedantry - consistent style makes code easier to scan and understand.",
-              "hint": "CamelCase in Python? That's cultural appropriation!"
+              "options": [
+                {
+                  "id": "good",
+                  "label": "Rename to 'bigrams_count'",
+                  "correct": true
+                },
+                {
+                  "id": "bad-1",
+                  "label": "Rename to 'counts'",
+                  "correct": false
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Rename to 'bigrams'",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "replace-span",
               "clickable": "I",
               "replacement": "i",
               "event": "I",
+              "hint": "Why is this loop counter SHOUTING at me?",
               "explanation": "A capital 'I' as a loop counter? That's just asking to be confused with the number 1 in many fonts! Single-letter variables should be lowercase, especially common ones like loop counters.",
-              "hint": "Why is this loop counter SHOUTING at me?"
+              "options": [
+                {
+                  "id": "good",
+                  "label": "Rename to 'i'",
+                  "correct": true
+                },
+                {
+                  "id": "bad-1",
+                  "label": "Rename to 'wordIndex'",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "replace-span",
               "clickable": "ws",
               "replacement": "words",
               "event": "ws",
+              "hint": "ws? Web Services? Weighted Sums? Wild Stallions?",
               "explanation": "The mysterious 'ws'! Is it 'web services'? 'work sheets'? 'wild stallions'? Abbreviations save you 3 seconds typing and cost the next developer 3 minutes of confusion.",
-              "hint": "ws? Web Services? Weighted Sums? Wild Stallions?"
+              "options": [
+                {
+                  "id": "bad-1",
+                  "label": "Rename to 'web_service'",
+                  "correct": false
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Rename to 'worksheet'",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Rename to 'words'",
+                  "correct": true
+                }
+              ]
             },
             {
               "type": "replace-span",
               "clickable": "bg",
               "replacement": "bigram",
               "event": "bg",
+              "hint": "bg = Bulgaria? Background? Bill Gates? Buy Gold?",
               "explanation": "'bg' could be 'background', 'bodyguard', or 'Bulgarian'. In a function specifically about bigrams, using the full term 'bigram' makes the code instantly more readable.",
-              "hint": "bg = Bulgaria? Background? Bill Gates? Buy Gold?"
+              "options": [
+                {
+                  "id": "bad-1",
+                  "label": "Rename to 'bug'",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Rename to 'bigram'",
+                  "correct": true
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Rename to 'backgram'",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "replace-span",
               "clickable": "bigramsfrequency",
               "replacement": "bigrams_frequency",
               "event": "bigramsfrequency",
+              "hint": "This name needs some snake_case surgery. Stat!",
               "explanation": "This variable name is having an identity crisis - it can't decide if it wants to be camelCase or snake_case, so it chose neither! Consistency in naming style makes code much easier to read.",
-              "hint": "This name needs some snake_case surgery. Stat!"
+              "options": [
+                {
+                  "id": "good",
+                  "label": "Rename to 'bigrams_frequency'",
+                  "correct": true
+                },
+                {
+                  "id": "bad-1",
+                  "label": "Rename to 'bi_grams_frequency'",
+                  "correct": false
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Rename to 'bigramsFrequency'",
+                  "correct": false
+                }
+              ]
             }
           ],
           "startMessage": "Ah, the joys of cross-language developers! Anders and Nicolaus just transferred from the C# team and brought their naming conventions with them. They insist their style is \"perfectly readable\" and \"who cares about PEP 8 anyway?\"\n\nTheir code works, but it's like showing up to a Python conference wearing a tuxedo - technically dressed, but clearly missed the memo about the dress code. Can you help them blend in with the Python community?",
@@ -463,39 +732,129 @@
               "replacement": "destination",
               "event": "xs",
               "explanation": "Ah, 'xs'! Is that a clothing size? An abbreviation for 'excess'? The documentation already calls it 'destination' - why not use that in the code too? Consistency between docs and code prevents confusion.",
-              "hint": "The docstring is practically screaming the answer at you!"
+              "hint": "The docstring is practically screaming the answer at you!",
+              "options": [
+                {
+                  "id": "good",
+                  "label": "Rename to 'destination'",
+                  "correct": true
+                },
+                {
+                  "id": "bad-1",
+                  "label": "Rename to 'source'",
+                  "correct": false
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Rename to 'array'",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "replace-span",
               "clickable": "ys",
               "replacement": "source",
               "event": "ys",
+              "hint": "The answer is right above you. No, literally, look up!",
               "explanation": "'ys'? Are we playing a game of 'Name That Variable: Vowel-Free Edition'? Again, the documentation already has a perfectly good name for this parameter.",
-              "hint": "The answer is right above you. No, literally, look up!"
+              "options": [
+                {
+                  "id": "bad-1",
+                  "label": "Rename to 'destination'",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Rename to 'source'",
+                  "correct": true
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Rename to 'array'",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "replace-span",
               "clickable": "j",
               "replacement": "dest_start",
               "event": "j",
+              "hint": "j for... jumping? juggling? The docstring knows!",
               "explanation": "Single-letter variables like 'j' are perfect when you want your code to be as mysterious as possible. For everyone else, descriptive names like 'dest_start' make the code self-documenting.",
-              "hint": "j for... jumping? juggling? The docstring knows!"
+              "options": [
+                {
+                  "id": "bad-1",
+                  "label": "Rename to 'start'",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Rename to 'dest_start'",
+                  "correct": true
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Rename to 'end'",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "replace-span",
               "clickable": "k",
               "replacement": "src_start",
               "event": "k",
+              "hint": "k is for... konsult the docstring!",
               "explanation": "The letter 'k' - saving valuable keystrokes since the invention of programming! But at what cost to readability? The few extra characters in 'src_start' make the code instantly more understandable.",
-              "hint": "k is for... konsult the docstring!"
+              "options": [
+                {
+                  "id": "good",
+                  "label": "Rename to 'src_start'",
+                  "correct": true
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Rename to 'dest_start'",
+                  "correct": false
+                },
+                {
+                  "id": "bad-1",
+                  "label": "Rename to 'src_end'",
+                  "correct": false
+                },
+                {
+                  "id": "bad-3",
+                  "label": "Rename to 'dest_end'",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "replace-span",
               "clickable": "n",
               "replacement": "count",
               "event": "n",
+              "hint": "n = noodles? narwhals? The docstring has the scoop!",
               "explanation": "'n' could stand for 'number', 'node', 'noodle'... The documentation says 'number of elements to copy', so why not use a name that actually conveys that meaning?",
-              "hint": "n = noodles? narwhals? The docstring has the scoop!"
+              "options": [
+                {
+                  "id": "good",
+                  "label": "Rename to 'count'",
+                  "correct": true
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Rename to 'src_len'",
+                  "correct": false
+                },
+                {
+                  "id": "bad-1",
+                  "label": "Rename to 'len'",
+                  "correct": false
+                }
+              ]
             }
           ],
           "startMessage": "Well, well, well... someone actually wrote documentation for their code! How quaint! \n\nBut wait - they used clear, descriptive terms in the docs, then proceeded to name their actual parameters like they were rationing letters during a keyboard shortage. It's like writing a detailed restaurant menu in beautiful prose, then serving the food in unmarked paper bags.\n\nLet's see if we can make the code as descriptive as its documentation, shall we?",
@@ -516,7 +875,24 @@
               "replacement": "every_order_has_discounted_item",
               "event": "flag",
               "explanation": "Flags are for countries! Only!",
-              "hint": "if flag? or if not flag? always difficult to decide..."
+              "hint": "if flag? or if not flag? always difficult to decide...",
+              "options": [
+                {
+                  "id": "good",
+                  "label": "Rename to something with both 'every_order' and 'discount' in the name",
+                  "correct": true
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Rename to 'discounted'",
+                  "correct": false
+                },
+                {
+                  "id": "bad-1",
+                  "label": "Rename to 'all_orders'",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "replace-span",
@@ -524,7 +900,19 @@
               "replacement": "has_discount",
               "event": "flag2",
               "explanation": "flag2? Is that the sequel to flag1? Coming soon to theaters near you! Numbered variables are like mystery boxes - exciting until you realize you have to open them to know what's inside.",
-              "hint": "flag2 = ... or flag = ...?"
+              "hint": "flag2 = ... or flag = ...?",
+              "options": [
+                {
+                  "id": "good",
+                  "label": "Rename to 'has_discount'",
+                  "correct": true
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Rename to 'no_discount'",
+                  "correct": false
+                }
+              ]
             }
           ],
           "startMessage": "When you already have a variable called 'flag' and need another one, do you go with:\nA) flag and flag2\nB) flag and flag1\nC) flag1 and flag2\nD) Your option...\n\nOur developer chose option A!",
@@ -544,32 +932,100 @@
               "clickable": "n",
               "replacement": "board_size",
               "event": "n",
+              "hint": "nitrogen? narnia? nirvana?",
               "explanation": "Ah, the mysterious 'n'! Is it a secret agent? The 14th letter of the alphabet? Or perhaps... the size of the board? Single-letter variables are like secret codes that only the original developer understands.",
-              "hint": "nitrogen? narnia? nirvana?"
+              "options": [
+                {
+                  "id": "good",
+                  "label": "Rename to 'board_size'",
+                  "correct": true
+                },
+                {
+                  "id": "bad-1",
+                  "label": "Rename to 'size'",
+                  "correct": false
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Rename to 'dimension'",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "replace-span",
               "clickable": "initialization",
               "replacement": "initialize_board",
               "event": "initialization",
+              "hint": "Functions DO things!",
               "explanation": "Functions should be verbs because they DO things! 'initialization' is the noun form - like saying 'swimming' instead of 'swim'. Your functions should sound like commands: 'create', 'calculate', 'destroy', not 'creation', 'calculation', 'destruction'.",
-              "hint": "Functions DO things!"
+              "options": [
+                {
+                  "id": "good",
+                  "label": "Rename to initialize_board",
+                  "correct": true
+                },
+                {
+                  "id": "bad-1",
+                  "label": "Rename to initializing_board",
+                  "correct": false
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Rename to board_initializer",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "replace-span",
               "clickable": "creating_board",
               "replacement": "create_board",
               "event": "creating_board",
+              "hint": "building, running, processing — are nouns!",
               "explanation": "'creating_board' sounds like you're narrating what you're doing: 'I am creating board now'. Function names should be direct commands: 'create_board!' It's more efficient and follows standard conventions.",
-              "hint": "building, running, processing — are nouns!"
+              "options": [
+                {
+                  "id": "bad-1",
+                  "label": "Rename to board_creation",
+                  "correct": false
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Rename to board_creator",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Rename to create_board",
+                  "correct": true
+                }
+              ]
             },
             {
               "type": "replace-span",
               "clickable": "board_reader",
               "replacement": "read_board",
               "event": "board_reader",
+              "hint": "Writer, reader, manager — are nouns!",
               "explanation": "'board_reader' sounds like a job title, not an action. Is it a person who reads boards professionally? Functions should be verbs that describe the action they perform.",
-              "hint": "Writer, reader, manager — are nouns!"
+              "options": [
+                {
+                  "id": "bad-1",
+                  "label": "Rename to reading_board",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Rename to read_board",
+                  "correct": true
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Rename to board_read",
+                  "correct": false
+                }
+              ]
             }
           ],
           "startMessage": "Your colleague, who apparently skipped the \"Parts of Speech\" day in English class, has written some board game initialization code.\n\nThey proudly explained: \"It is simple! The 'initialization' consists of 'creating a board' and filling it with the 'board_reader'!\"\n\nTime to teach them the sacred rule of naming: functions — verbs, variables — nouns.",

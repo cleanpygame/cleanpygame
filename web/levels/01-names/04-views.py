@@ -14,14 +14,19 @@ def get_views_per_second(views, date):
     return daily_views / 86400
 
 ##replace-span - 86400 (24*60*60)
-##explain "Magic numbers like 86400 are inside jokes - funny if you're in on it, confusing for everyone else."
 ##hint "What does this specific number represent? Think about time measurement."
+##explain "Magic numbers like 86400 are inside jokes - funny if you're in on it, confusing for everyone else."
 ##replace-span MAGIC (24*60*60) n
-##explain "You've replaced one magic number with another! At least now it's calculated, showing your reasoning."
-##hint "Names usually helps to explain calculations!"
+##hint "Does that calculation explain itself?"
+##explain "Good job! Naming that number makes the code much easier to understand. No more head-scratching!"
+##option good good "Extract variable"
+##option bad bad-1 "Add comment for calculation"
 ##replace-span - n seconds_in_24h
-##explain "Finally! A variable name that explains what the value represents. No more reverse-engineering needed."
-##hint "What exactly are you calculating with 24*60*60?."
+##hint "Can you tell what that number represents just by looking at its name?"
+##explain "Good job! Now, instead of guessing what 'n' stands for, we know it's not a secret code for 'nothing useful'."
+##option bad bad-1 "Rename to 'total_seconds'"
+##option good good "Rename to 'seconds_in_24h'"
+##option bad bad-2 "Add a comment for clarity"
 """final
 Congratulations on defying the "don't touch the magic constants" warning!
 Sometimes the most important rules to break are the ones that lead to unmaintainable code.
