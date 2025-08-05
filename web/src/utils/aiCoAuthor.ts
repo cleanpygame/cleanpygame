@@ -143,21 +143,24 @@ function getCodeBeforeAndAfterOneStep(level: LevelData, eventId: string, prevEve
 const hintExplanationSchema = {
     "type": "object",
     "properties": {
-        "analysis": {
-            "type": "string"
-        },
-        "change": {
-            "type": "string"
-        },
-        "hint": {
-            "type": "string"
-        },
-        "explanation": {
-            "type": "string"
+        "analysis": {"type": "string"},
+        "change": {"type": "string"},
+        "hint": {"type": "string"},
+        "explanation": {"type": "string"},
+        "options": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "label": {"type": "string"},
+                    "correct": {"type": "boolean"}
+                },
+                "required": ["label", "correct"]
+            }
         }
     },
     "required": ["analysis", "change", "hint", "explanation"],
-    "propertyOrdering": ["analysis", "change", "hint", "explanation"]
+    "propertyOrdering": ["analysis", "change", "hint", "explanation", "options"]
 };
 
 /**
@@ -231,6 +234,20 @@ export function getSelectedGeminiModel(): string {
 
     // Default model
     return 'gemini-2.5-flash-lite';
+}
+
+// Normalize options produced by LLM into valid context menu entries
+function normalizeOptionsFromLLM(options: any): { id: string; label: string; correct: boolean }[] {
+    const arr: any[] = Array.isArray(options) ? options : [];
+
+    // Map incoming to normalized shape, drop invalid entries
+    let mapped = arr.map((o, idx) => ({
+        id: o.correct ? 'good' : ('bad-' + idx),
+        label: String(o?.label ?? '').trim(),
+        correct: Boolean(o?.correct)
+    })).filter(o => o.label.length > 0);
+
+    return mapped;
 }
 
 function extractResponse(data: any, jsonSchema?: object): any {
@@ -400,13 +417,28 @@ After the replacement, Buddy explains why the change was good.
 As a reply, generate a json response with the following fields:
 
 1. analysis. Internal analysis of the initial and final code in the free form. This analysis should help to generate further replicas.
-2. changes. A concise description of what changed in the code. This text should help to generate further replicas.
-2. hint.A subtle hint to help the player identify the problematic code (20-80 characters). The hint should be subtle and not give away the exact solution. In particular, MUST NOT mention any identifiers from the code.
-3. explanation. A sarcastic but educational explanation of why the change was good (50-100 characters)
+2. change. A concise description of what changed in the code. This text should help to generate further replicas.
+3. hint. A subtle hint to help the player identify the problematic code (20-80 characters). The hint should be subtle and MUST NOT mention any identifiers from the code.
+4. explanation. A sarcastic but educational explanation of why the change was good (50-100 characters)
+5. options. An array of 1–3 items for a multiple-choice context menu. Each item has:
+   - label (string shown to player; 10–30 characters; e.g. "Rename to 'users' or 'Inline variable' or 'Use list comprehensions'),
+   - correct (boolean; exactly one item must be true).
+
+Rules for options:
+- Exactly one option must have correct=true.
+- Labels must be short, very specific. Examples: 
+    - 'Rename to ...'
+    - 'Explain in comments'
+    - 'Inline variable' or 'Inline function'
+    - 'Extract variable' or 'Extract function'
+    - 'Use list comprehensions'
+    - 'Search for built-in function'
+    - ...
+- If correct option is 'Rename to ...', than at least one incorrect alternative also should be 'Rename to {something slightly worse than a correct option}'.
+- Use actual variable/function names from the final code in correct labels.
+- Create 2-3 incorrect labels that should force player to think choosing the right one.
 
 Use B1 or B2 level English without fancy words. The text should be understandable for non-native speakers.
-
-The explanation should be educational and explain the clean code principle that was applied.
 `;
 
     const userPrompt = `
@@ -422,7 +454,12 @@ This is the CODE AFTER the player fixed the problem:
 ${afterCode}
 \`\`\`
 
-Please analyze the differences and generate an appropriate hint and explanation that will help players understand the clean code principle being taught.
+Please analyze the differences and generate:
+- a concise 'change' description;
+- a subtle 'hint' (no identifiers);
+- an educational 'explanation';
+- and 3–4 realistic 'options' for a context menu with exactly one correct=true.
+If unsure, still provide sensible distractors for options based on common mistakes.
 `;
 
     return {systemPrompt, userPrompt};
@@ -430,10 +467,10 @@ Please analyze the differences and generate an appropriate hint and explanation 
 
 function parseHintAndExplanationResponse(level: LevelData, eventId: string, parsedResponse: any): LevelData {
     try {
-        // Find the block with the matching event ID and update its hint and explanation
+        const normalizedOptions = normalizeOptionsFromLLM(parsedResponse.options);
+
         const updatedBlocks = level.blocks.map(block => {
             if ((block.type === 'replace' || block.type === 'replace-span') && block.event) {
-                // Check if the block's event matches the target event ID
                 const eventMatches = typeof block.event === 'string'
                     ? block.event === eventId
                     : block.event.includes(eventId);
@@ -442,14 +479,15 @@ function parseHintAndExplanationResponse(level: LevelData, eventId: string, pars
                     return {
                         ...block,
                         hint: parsedResponse.hint || block.hint,
-                        explanation: parsedResponse.explanation || block.explanation
-                    };
+                        explanation: parsedResponse.explanation || block.explanation,
+                        // Replace existing options with newly generated ones
+                        options: normalizedOptions
+                    } as any;
                 }
             }
             return block;
         });
 
-        // Create a new level object with the updated blocks
         return {
             ...level,
             blocks: updatedBlocks

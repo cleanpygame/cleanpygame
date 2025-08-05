@@ -143,6 +143,18 @@ function addHintAndExplain(block: LevelBlock, result: string) {
     return result;
 }
 
+function addOptions(block: LevelBlock, result: string) {
+    if (block.options && block.options.length > 0) {
+        for (const opt of block.options) {
+            const correctness = opt.correct ? 'good' : 'bad';
+            const id = opt.id || 'id';
+            const label = quoteIfNeeded(opt.label || '');
+            result += `##option ${correctness} ${id} ${label}\n`;
+        }
+    }
+    return result;
+}
+
 /**
  * Renders a replace-span block to PyLevels format
  *
@@ -157,6 +169,7 @@ function renderReplaceSpanBlock(block: LevelBlock, referencedEvents: any[]): str
     const event = referencedEvents.includes(block.event) ? block.event : '-';
     let result = `##replace-span ${event} ${quoteIfNeeded(block.clickable)} ${quoteIfNeeded(block.replacement)}\n`;
     result = addHintAndExplain(block, result);
+    result = addOptions(block, result);
     return result;
 }
 
@@ -211,6 +224,7 @@ function renderReplaceBlock(block: LevelBlock, referencedEvents: any[]): string 
     result += '\n##end\n';
 
     result = addHintAndExplain(block, result);
+    result = addOptions(block, result);
 
     return result;
 }

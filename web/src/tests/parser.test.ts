@@ -16,8 +16,7 @@ Great job!
 
 describe('parseLevelText required instructions tests', () => {
     test('should parse a complete level with all required instructions', () => {
-        const content = baseLevel;
-        const result = parseLevelText(content);
+        const result = parseLevelText(baseLevel);
 
         expect(result.error).toBeUndefined();
         expect(result.level).toBeDefined();
