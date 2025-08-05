@@ -82,7 +82,24 @@
               "replacement": "greeting",
               "event": "BaD_VAriABLE_NAME",
               "explanation": "Much better! Variable names should be readable by humans, not just compilers with low standards.",
-              "hint": "That variable name is begging for mercy. Click it before my eyes bleed!"
+              "hint": "That variable name is begging for mercy. Click it before my eyes bleed!",
+              "options": [
+                {
+                  "id": "bad",
+                  "label": "Rename to 'bad_variable_name'",
+                  "correct": false
+                },
+                {
+                  "id": "bad-1",
+                  "label": "Rename to 'GrEeTiNG'",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Rename to 'greeting'",
+                  "correct": true
+                }
+              ]
             }
           ],
           "startMessage": "Welcome to the coding trenches, Junior!\nAccording to our team traditions (and manager's trust issues), you're not allowed to write code yet. Your sacred duty is to review your colleagues' masterpieces and fix \"small, insignificant issues\".\n\nLet's start with something even you can't mess up. See that variable name that looks like someone fell asleep on their keyboard? Click to fix it before my eyes start bleeding!",

@@ -9,6 +9,12 @@ export interface LevelId {
 }
 
 
+export interface BlockOption {
+    id: string;
+    label: string;
+    correct: boolean;
+}
+
 export interface LevelBlock {
     type: string;
     text?: string;
@@ -17,6 +23,7 @@ export interface LevelBlock {
     event?: string | string[];
     explanation?: string;
     hint?: string;
+    options?: BlockOption[];
 }
 
 export interface LevelData {

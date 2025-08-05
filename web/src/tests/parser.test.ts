@@ -1,9 +1,7 @@
 import {describe, expect, test} from 'vitest';
 import {parseLevelText} from '../levels_compiler/parser';
 
-describe('parseLevelText required instructions tests', () => {
-    test('should parse a complete level with all required instructions', () => {
-        const content = `##file test.py
+const baseLevel = `##file test.py
 """start
 Welcome to the level!
 """
@@ -15,6 +13,10 @@ Welcome to the level!
 Great job!
 """
 ##final-reply "Finish"`;
+
+describe('parseLevelText required instructions tests', () => {
+    test('should parse a complete level with all required instructions', () => {
+        const content = baseLevel;
         const result = parseLevelText(content);
 
         expect(result.error).toBeUndefined();
@@ -251,19 +253,6 @@ describe('parseLevelText negative tests', () => {
 
 describe('parseLevelText event reference validation tests', () => {
     // Base level content with all required instructions
-    const baseLevel = `##file test.py
-"""start
-Welcome to the level!
-"""
-##start-reply "Let's begin"
-
-# Code here
-
-"""final
-Great job!
-"""
-##final-reply "Finish"`;
-
     test('should parse a level with valid event references', () => {
         const content = `${baseLevel}
 
@@ -524,5 +513,54 @@ print("new")
         expect(result.level).toBeUndefined();
         expect(result.error).toContain('Events referenced but not defined');
         expect(result.error).toContain('undefined_event');
+    });
+});
+
+describe('options parsing for replace-span and replace', () => {
+    test('parse replace-span with 1-3 options', () => {
+        const content = `${baseLevel}
+##replace-span evt "bad" "good"
+##option good opt1 "Pick good"
+##option bad opt2 "Pick bad"
+`;
+        const result = parseLevelText(content);
+        expect(result.error).toBeUndefined();
+        const block = result.level!.blocks.find(b => b.type === 'replace-span')!;
+        expect(block.options).toBeDefined();
+        expect(block.options!.length).toBe(2);
+        expect(block.options![0]).toEqual({id: 'opt1', label: 'Pick good', correct: true});
+        expect(block.options![1]).toEqual({id: 'opt2', label: 'Pick bad', correct: false});
+    });
+
+    test('parse replace with options and auto-id generation using -', () => {
+        const content = `${baseLevel}
+##replace evt2 "clickable"
+print("old")
+##with
+print("new")
+##end
+##option good - "Use new"
+##option bad - "Use old"
+`;
+        const result = parseLevelText(content);
+        expect(result.error).toBeUndefined();
+        const block = result.level!.blocks.find(b => b.type === 'replace')!;
+        expect(block.options).toBeDefined();
+        expect(block.options!.length).toBe(2);
+        const ids = block.options!.map(o => o.id);
+        // ids are generated from labels, ensure unique and non-empty
+        expect(new Set(ids).size).toBe(2);
+        expect(block.options![0].label).toBe('Use new');
+        expect(block.options![0].correct).toBe(true);
+    });
+
+    test('validation requires at least one correct', () => {
+        const content = `${baseLevel}
+##replace-span evt4 "a" "b"
+##option bad o1 "1"
+`;
+        const result = parseLevelText(content);
+        expect(result.error).toBeDefined();
+        expect(result.error).toContain('At least one option');
     });
 });

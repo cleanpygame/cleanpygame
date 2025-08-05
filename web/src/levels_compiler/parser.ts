@@ -247,6 +247,50 @@ export function readReply(args: string[], context: ParseContext): string {
     return cleanArg(args.join(' '));
 }
 
+export function readOption(args: string[], context: ParseContext): void {
+    // Syntax: ##option good|bad ID "Label"
+    if (args.length < 3) {
+        throw errorWithContext('##option requires 3 arguments: good|bad id "label"', context);
+    }
+
+    const correctness = args[0];
+    if (!['good', 'bad'].includes(correctness)) {
+        throw errorWithContext('##option first argument must be "good" or "bad"', context);
+    }
+    const idRaw = args[1];
+    const label = cleanArg(args.slice(2).join(' '));
+    if (!label || label.trim().length === 0) {
+        throw errorWithContext('##option label must be non-empty', context);
+    }
+
+    const prev = getPrevBlock(context);
+    // Only allowed after replace or replace-span
+    if (!['replace', 'replace-span'].includes(prev.type)) {
+        throw errorWithContext(`##option must follow a replace or replace-span block`, context);
+    }
+
+    // Initialize options array and always work with a local reference
+    const optionsArr = prev.options ?? (prev.options = [] as any);
+
+    // Generate id if '-' provided
+    let id = idRaw;
+    if (id === '-' || id === '"-"') {
+        id = makeIdFrom(correctness);
+        // ensure uniqueness by appending counter if needed among this block's options
+        const base = id;
+        let idx = 1;
+        const existing = new Set(optionsArr.map((o: any) => o.id));
+        while (existing.has(id) || id === '') {
+            id = base ? `${base}-${idx}` : `id-${idx}`;
+            idx++;
+        }
+    }
+
+    // Push option
+    optionsArr.push({id, label, correct: correctness === 'good'} as any);
+    context.idx++;
+}
+
 function errorWithContext(message: string, context: ParseContext): Error {
     let fileInfo = context.filename ? ` in file ${context.filename}` : '';
     return new Error(`${message}. Line ${context.idx + 1}${fileInfo}`);
@@ -327,6 +371,9 @@ function readOneBlock(context: ParseContext): void {
             break;
         case 'hint':
             getPrevBlock(context).hint = readHint(args, context);
+            break;
+        case 'option':
+            readOption(args, context);
             break;
         case 'end':
             throw errorWithContext(`Unexpected ##end`, context);
@@ -444,6 +491,30 @@ function validateEventReferences(level: LevelData): string | null {
 }
 
 // Main parsing function
+function validateOptions(level: LevelData): string | null {
+    for (const block of level.blocks) {
+        if ((block.type === 'replace' || block.type === 'replace-span') && block.options) {
+            const options = block.options;
+            const ids = new Set<string>();
+            let hasCorrect = false;
+            for (const opt of options) {
+                if (!opt.label || opt.label.trim().length === 0) {
+                    return `Option label must be non-empty`;
+                }
+                if (ids.has(opt.id)) {
+                    return `Option ids must be unique within a block`;
+                }
+                ids.add(opt.id);
+                if (opt.correct) hasCorrect = true;
+            }
+            if (!hasCorrect) {
+                return `At least one option must be marked correct`;
+            }
+        }
+    }
+    return null;
+}
+
 export function parseLevelText(content: string): ParseResult {
     const lines = content.trimEnd().split(/\r?\n/);
     resetIdGenerator();
@@ -474,6 +545,11 @@ export function parseLevelText(content: string): ParseResult {
         const eventReferencesError = validateEventReferences(context.level);
         if (eventReferencesError) {
             return {error: eventReferencesError};
+        }
+        // Validate options for blocks
+        const optionsError = validateOptions(context.level);
+        if (optionsError) {
+            return {error: optionsError};
         }
     } catch (e) {
         return {error: e instanceof Error ? e.message : String(e)};

@@ -129,6 +129,42 @@ Can appear only after `replace-block` and `replace-span`. Add a hint to prev blo
 
 Contains a smart and short hint that doesn't fully reveal the issue but rather gives a slight hint.
 
+##### 5. Context Menu Options (Optional)
+
+Options can be added to `replace` and `replace-span` blocks to present a context menu instead of immediate apply.
+Must appear immediately after a `replace-span` line or after the `##end` of a `replace` block.
+
+Syntax per option:
+
+```text
+##option good|bad ID "Label"
+```
+
+- ID: string without spaces; use `-` to auto-generate
+- Label: quoted string displayed to the player
+- Between 1 and 3 options per block
+- At least one option must be marked `good`
+
+Example (replace-span):
+
+```text
+##replace-span rename-var "usr" "user"
+##option good id1 "Rename to 'user'"
+##option bad id2 "Rename to 'u'"
+```
+
+Example (replace):
+
+```text
+##replace rename-func
+<code>
+##with
+<replacement>
+##end
+##option good id1 "Rename to 'user'"
+##option bad id2 "Inline function"
+```
+
 ##### 6. Replace On
 
 Replaces a block only **after another event has triggered**. Must reuse an existing EVENT_ID. Can specify multiple

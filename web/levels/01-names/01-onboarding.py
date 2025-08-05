@@ -13,6 +13,9 @@ def main():
 ##replace-span - BaD_VAriABLE_NAME greeting
 ##explain "Much better! Variable names should be readable by humans, not just compilers with low standards."
 ##hint "That variable name is begging for mercy. Click it before my eyes bleed!"
+##option bad - "Rename to 'bad_variable_name'"
+##option bad - "Rename to 'GrEeTiNG'"
+##option good - "Rename to 'greeting'"
 """final
 Well done! Your journey to becoming slightly less junior has begun!
 """

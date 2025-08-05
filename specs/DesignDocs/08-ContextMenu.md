@@ -138,7 +138,7 @@ UI components, and tests.
 
 ### Rollout Plan
 
-- Step 1: Create a single demo level in a hidden topic (inDevelopment) to manually verify.
+- Step 1: Change the first level: add menu options there.
 - Step 2: Implement compiler parsing + validation and add docs/examples.
 - Step 3: Add frontend state + UI popover and guarded click handling.
 - Step 4: Add tests (compiler, reducers) and green build.
