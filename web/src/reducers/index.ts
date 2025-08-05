@@ -194,7 +194,8 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
                 currentLevelId: levelId,
                 currentLevel: newLevelState,
                 chatMessages: newChatMessages,
-                isTypingAnimationComplete: false
+                isTypingAnimationComplete: false,
+                optionsMenu: {visible: false}
             };
         }
 
@@ -222,7 +223,8 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
                 currentLevelId: communityLevelId,
                 currentLevel: newLevelState,
                 chatMessages: newChatMessages,
-                isTypingAnimationComplete: false
+                isTypingAnimationComplete: false,
+                optionsMenu: {visible: false}
             };
         }
 

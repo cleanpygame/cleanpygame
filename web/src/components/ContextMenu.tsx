@@ -40,6 +40,10 @@ export function ContextMenu({options, position, onSelect, onClose}: ContextMenuP
                 zIndex: 1000,
                 boxShadow: '0 8px 24px rgba(0,0,0,0.5)'
             }}>
+                <div
+                    style={{padding: '8px 12px', color: '#848484'}}
+                >Choose your action:
+                </div>
                 {options.map(opt => (
                     <div
                         key={opt.id}
