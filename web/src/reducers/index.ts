@@ -1,10 +1,11 @@
 import React, {createContext} from 'react';
 import levelsData from '../data/levels.json';
 import {GameState, LevelId, Topic} from '../types.ts';
-import {applyFix, GameAction, loadLevel, updateLevelStats, wrongClick} from './actionCreators.ts';
+import {applyFix, GameAction, loadLevel, postChatMessage, updateLevelStats, wrongClick} from './actionCreators.ts';
 import {getCurrentLevelKey} from '../utils/levelUtils';
 import {
     APPLY_FIX,
+    CLOSE_OPTIONS_MENU,
     CODE_CLICK,
     CREATE_GROUP_FAILURE,
     CREATE_GROUP_REQUEST,
@@ -29,8 +30,10 @@ import {
     LOGIN_SUCCESS,
     LOGOUT,
     NEXT_LEVEL,
+    OPEN_OPTIONS_MENU,
     POST_CHAT_MESSAGE,
     RESET_PROGRESS,
+    SELECT_CONTEXT_MENUITEM,
     SELECT_GROUP,
     SET_ADMIN_STATUS,
     SET_CUSTOM_LEVELS,
@@ -82,7 +85,8 @@ export const initialState: GameState = {
     isGroupsLoading: false,
     groupsError: undefined,
     userLevels: [],
-    customLevels: {}
+    customLevels: {},
+    optionsMenu: {visible: false}
 };
 
 /**
@@ -142,7 +146,29 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
             const region = state.currentLevel.regions?.find(r => r.contains(lineIndex, colIndex, token.length));
 
             if (region) {
-                // If a region was found, dispatch APPLY_FIX
+                // Check if clicked block has context options
+                const eventId = region.eventId;
+                const block = state.currentLevel.level.blocks.find(b => {
+                    if (!b.event) return false;
+                    return Array.isArray(b.event) ? b.event.includes(eventId) : b.event === eventId;
+                });
+                if (block && block.options && block.options.length > 0) {
+                    const {clientX, clientY} = (action as any).payload;
+                    const anchor = (typeof clientX === 'number' && typeof clientY === 'number') ? {
+                        x: clientX + 8,
+                        y: clientY + 12
+                    } : undefined;
+                    return {
+                        ...state,
+                        optionsMenu: {
+                            visible: true,
+                            event: eventId,
+                            options: block.options,
+                            anchor
+                        }
+                    };
+                }
+                // If a region was found with no options, dispatch APPLY_FIX
                 return gameReducer(state, applyFix(region.eventId));
             } else {
                 // If no region was found, dispatch WRONG_CLICK
@@ -354,6 +380,47 @@ export function gameReducer(state: GameState = initialState, action: GameAction)
                 state,
                 loadLevel(nextLevelId)
             );
+        }
+
+        case OPEN_OPTIONS_MENU: {
+            const {event, options, anchor} = (action as any).payload;
+            return {
+                ...state,
+                optionsMenu: {visible: true, event, options, anchor}
+            };
+        }
+
+        case CLOSE_OPTIONS_MENU: {
+            return {
+                ...state,
+                optionsMenu: {visible: false}
+            };
+        }
+
+        case SELECT_CONTEXT_MENUITEM: {
+            const optionId = (action as any).payload.optionId as string;
+            const menu = state.optionsMenu;
+            if (!menu || !menu.visible || !menu.options || !menu.event) {
+                return state;
+            }
+            const selected = menu.options.find(o => o.id === optionId);
+            // Close menu
+            let nextState: GameState = {
+                ...state,
+                optionsMenu: {visible: false}
+            };
+
+            if (!selected) {
+                return nextState;
+            }
+            if (selected.correct) {
+                // Apply fix
+                return gameReducer(nextState, applyFix(menu.event));
+            } else {
+                // Post buddy reject message
+                const msg = {type: 'buddy-reject', text: 'No‑no, that’s not it—please try again.'} as any;
+                return gameReducer(nextState, postChatMessage(msg));
+            }
         }
 
         case SET_TYPING_ANIMATION_COMPLETE: {

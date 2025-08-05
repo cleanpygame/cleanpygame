@@ -125,6 +125,8 @@ export interface CodeClickAction {
         lineIndex: number;
         colIndex: number;
         token: string;
+        clientX?: number;
+        clientY?: number;
     };
 }
 
@@ -383,6 +385,24 @@ export interface SetCustomLevelsAction {
     };
 }
 
+export interface OpenOptionsMenuAction {
+    type: 'OPEN_OPTIONS_MENU';
+    payload: {
+        event: string;
+        options: { id: string; label: string; correct: boolean }[];
+        anchor?: { x: number; y: number };
+    };
+}
+
+export interface CloseOptionsMenuAction {
+    type: 'CLOSE_OPTIONS_MENU';
+}
+
+export interface SelectContextMenuItemAction {
+    type: 'SELECT_CONTEXT_MENUITEM';
+    payload: { optionId: string };
+}
+
 export type GameAction =
     | LoadLevelAction
     | LoadCommunityLevelAction
@@ -427,7 +447,10 @@ export type GameAction =
     | JoinGroupSuccessAction
     | JoinGroupFailureAction
     | SetUserLevelsAction
-    | SetCustomLevelsAction;
+    | SetCustomLevelsAction
+    | OpenOptionsMenuAction
+    | CloseOptionsMenuAction
+    | SelectContextMenuItemAction;
 
 // Action creators
 export const loadLevel = (levelId: LevelId): LoadLevelAction => ({
@@ -467,9 +490,9 @@ export const nextLevel = (): NextLevelAction => ({
     type: NEXT_LEVEL
 });
 
-export const codeClick = (lineIndex: number, colIndex: number, token: string): CodeClickAction => ({
+export const codeClick = (lineIndex: number, colIndex: number, token: string, clientX?: number, clientY?: number): CodeClickAction => ({
     type: CODE_CLICK,
-    payload: {lineIndex, colIndex, token}
+    payload: {lineIndex, colIndex, token, clientX, clientY}
 });
 
 export const setTypingAnimationComplete = (isComplete: boolean): SetTypingAnimationCompleteAction => ({
@@ -686,6 +709,24 @@ export const setCustomLevels = (customLevels: Record<string, CustomLevel>): SetC
     payload: {
         customLevels
     }
+});
+
+// Context menu action creators
+export const openOptionsMenu = (event: string, options: { id: string; label: string; correct: boolean }[], anchor?: {
+    x: number;
+    y: number
+}): OpenOptionsMenuAction => ({
+    type: 'OPEN_OPTIONS_MENU',
+    payload: {event, options, anchor}
+});
+
+export const closeOptionsMenu = (): CloseOptionsMenuAction => ({
+    type: 'CLOSE_OPTIONS_MENU'
+});
+
+export const selectContextMenuItem = (optionId: string): SelectContextMenuItemAction => ({
+    type: 'SELECT_CONTEXT_MENUITEM',
+    payload: {optionId}
 });
 
 // Thunk action creator for deleting a group

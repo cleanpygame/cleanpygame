@@ -53,3 +53,8 @@ export const JOIN_GROUP_FAILURE = 'JOIN_GROUP_FAILURE';
 // Community levels action types
 export const SET_USER_LEVELS = 'SET_USER_LEVELS';
 export const SET_CUSTOM_LEVELS = 'SET_CUSTOM_LEVELS';
+
+// Context menu actions
+export const OPEN_OPTIONS_MENU = 'OPEN_OPTIONS_MENU';
+export const CLOSE_OPTIONS_MENU = 'CLOSE_OPTIONS_MENU';
+export const SELECT_CONTEXT_MENUITEM = 'SELECT_CONTEXT_MENUITEM';

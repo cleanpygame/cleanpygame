@@ -1,8 +1,9 @@
-import React, {useContext, useMemo} from 'react';
+import React, {useContext, useMemo, useRef} from 'react';
 import {GameStateContext} from '../reducers';
-import {codeClick} from '../reducers/actionCreators';
+import {closeOptionsMenu, codeClick, selectContextMenuItem} from '../reducers/actionCreators';
 import {CodeView} from './CodeView';
 import {BuddyChat} from './BuddyChat';
+import {ContextMenu} from './ContextMenu';
 
 /**
  * Level viewport container component
@@ -16,8 +17,10 @@ export function LevelViewportContainer(): React.ReactElement {
 
     const {state, dispatch} = context;
 
-    const handleCodeClick = (lineIndex: number, colIndex: number, token: string): void => {
-        dispatch(codeClick(lineIndex, colIndex, token));
+    const codeViewportRef = useRef<HTMLDivElement | null>(null);
+
+    const handleCodeClick = (lineIndex: number, colIndex: number, token: string, clientX: number, clientY: number): void => {
+        dispatch(codeClick(lineIndex, colIndex, token, clientX, clientY));
     };
 
     // Determine if the CodeView should be disabled
@@ -58,7 +61,7 @@ export function LevelViewportContainer(): React.ReactElement {
             </div>
 
             <div className="flex flex-1 overflow-hidden relative">
-                <div className="code-viewport flex-1 overflow-hidden relative">
+                <div className="code-viewport flex-1 overflow-hidden relative" ref={codeViewportRef}>
                     <CodeView
                         key={state.currentLevelId.topic + "/" + state.currentLevelId.levelId}
                         code={state.currentLevel.code}
@@ -67,6 +70,24 @@ export function LevelViewportContainer(): React.ReactElement {
                         isFinished={state.currentLevel.isFinished}
                         onClick={handleCodeClick}
                     />
+                    {state.optionsMenu?.visible && state.optionsMenu.options && (
+                        <ContextMenu
+                            options={state.optionsMenu.options}
+                            position={
+                                (() => {
+                                    const a = state.optionsMenu?.anchor;
+                                    const el = codeViewportRef.current;
+                                    if (a && el) {
+                                        const rect = el.getBoundingClientRect();
+                                        return {x: a.x - rect.left, y: a.y - rect.top};
+                                    }
+                                    return undefined;
+                                })()
+                            }
+                            onSelect={(id) => dispatch(selectContextMenuItem(id))}
+                            onClose={() => dispatch(closeOptionsMenu())}
+                        />
+                    )}
                 </div>
                 <BuddyChat/>
             </div>

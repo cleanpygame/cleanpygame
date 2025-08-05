@@ -120,7 +120,29 @@
               "replacement": "day_of_week",
               "event": "idx",
               "explanation": "Parameter names should tell a story, not play hide and seek with meaning. 'idx' saves keystrokes but costs clarity.",
-              "hint": "Index of what?!"
+              "hint": "Index of what?!",
+              "options": [
+                {
+                  "id": "bad",
+                  "label": "Rename to 'index'",
+                  "correct": false
+                },
+                {
+                  "id": "bad-1",
+                  "label": "Rename to 'day'",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Rename to 'day_of_week'",
+                  "correct": true
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Rename to 'day_of_month'",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "replace-span",
@@ -128,7 +150,24 @@
               "replacement": "temperature",
               "event": "tt",
               "explanation": "Abbreviations save seconds typing but cost minutes of confusion. What does 'tt' even mean?",
-              "hint": "Imagine that names are the only documentation on this function you have..."
+              "hint": "Imagine that names are the only documentation on this function you have...",
+              "options": [
+                {
+                  "id": "good",
+                  "label": "Rename to temperature",
+                  "correct": true
+                },
+                {
+                  "id": "bad",
+                  "label": "Rename to temp",
+                  "correct": false
+                },
+                {
+                  "id": "bad-1",
+                  "label": "Rename to t",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "replace-span",
@@ -136,7 +175,24 @@
               "replacement": "day_names",
               "event": "dnms",
               "explanation": "Vowels aren't just decorative - they make words recognizable! 'dnms' looks like a typo.",
-              "hint": "Variable lost its vowels. Perform vowel-donation surgery!"
+              "hint": "Variable lost its vowels. Perform vowel-donation surgery!",
+              "options": [
+                {
+                  "id": "bad",
+                  "label": "Inline variable",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Rename to day_names",
+                  "correct": true
+                },
+                {
+                  "id": "bad-1",
+                  "label": "Rename to daynames",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "replace-span",
@@ -144,7 +200,29 @@
               "replacement": "format_temperature",
               "event": "fmt_temp",
               "explanation": "'fmt_temp' could mean anything from formatting templates to fermenting tempeh.",
-              "hint": "Imagine that function name is the only documentation on this function you have..."
+              "hint": "Imagine that function name is the only documentation on this function you have...",
+              "options": [
+                {
+                  "id": "bad",
+                  "label": "Rename to format_temperature_for_day_of_week",
+                  "correct": false
+                },
+                {
+                  "id": "good",
+                  "label": "Rename to format_temperature",
+                  "correct": true
+                },
+                {
+                  "id": "bad-1",
+                  "label": "Rename format",
+                  "correct": false
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Rename fmt",
+                  "correct": false
+                }
+              ]
             },
             {
               "type": "text",

@@ -8,6 +8,7 @@ import {
     nextLevel,
     postChatMessage,
     resetProgress,
+    selectContextMenuItem,
     wrongClick
 } from '../reducers/actionCreators';
 import {GameState, LevelId} from '../types';
@@ -39,6 +40,14 @@ describe('Game Reducer', () => {
                         region.startCol,
                         eventId
                     ));
+
+                    // If a context menu opened, select the correct option to apply
+                    if (state.optionsMenu?.visible && state.optionsMenu.options) {
+                        const correct = state.optionsMenu.options.find(o => o.correct);
+                        if (correct) {
+                            state = gameReducer(state, selectContextMenuItem(correct.id));
+                        }
+                    }
 
                     expect(state.currentLevel.triggeredEvents).toContain(eventId);
                 }

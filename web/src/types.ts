@@ -195,6 +195,13 @@ export interface UserActivity {
     createdAt: string | null;
 }
 
+export type ContextMenuState = {
+    visible: boolean;
+    event?: string;
+    options?: { id: string; label: string; correct: boolean }[];
+    anchor?: { x: number; y: number };
+};
+
 export interface GameState {
     topics: Topic[];
     currentLevelId: LevelId;
@@ -210,4 +217,5 @@ export interface GameState {
     groupsError?: string;
     userLevels: UserLevel[];
     customLevels: Record<string, CustomLevel>;
+    optionsMenu?: ContextMenuState;
 }

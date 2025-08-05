@@ -12,7 +12,7 @@ interface CodeViewProps {
     contentId?: string;
     disable?: boolean;
     isFinished?: boolean;
-    onClick: (lineIndex: number, colIndex: number, token: string) => void;
+    onClick: (lineIndex: number, colIndex: number, token: string, clientX: number, clientY: number) => void;
 }
 
 /**
@@ -60,7 +60,7 @@ export function CodeView({
 
     const visibleCode = animate ? code.substring(0, Math.min(code.length, cursor)) : code;
 
-    const handleClick = (lineIndex: number, colIndex: number, token: Token): void => {
+    const handleClick = (lineIndex: number, colIndex: number, token: Token, e: React.MouseEvent): void => {
         if (disable || isFinished || isProcessingClick) return;
 
         setIsProcessingClick(true);
@@ -69,7 +69,7 @@ export function CodeView({
 
         setTimeout(() => {
             setFlashingKey(null);
-            onClick(lineIndex, colIndex, token.content);
+            onClick(lineIndex, colIndex, token.content, e.clientX, e.clientY);
             setIsProcessingClick(false);
         }, FLASH_DURATION_MS);
     };
@@ -93,7 +93,7 @@ export function CodeView({
                 key={key}
                 {...tokenProps}
                 className={`${tokenProps.className} ${flashingClass}`}
-                onClick={() => handleClick(lineIndex, colIndex, token)}>
+                onClick={(e) => handleClick(lineIndex, colIndex, token, e)}>
         {token.content}
       </span>
         );
