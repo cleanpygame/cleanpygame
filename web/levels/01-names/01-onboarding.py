@@ -5,7 +5,7 @@ According to our team traditions (and manager's trust issues), you're not allowe
 
 Let's start with something even you can't mess up. See that variable name that looks like someone fell asleep on their keyboard? Click to fix it before my eyes start bleeding!
 """
-##start-reply "I'll save your eyes!"
+##start-reply "OK"
 
 def main():
     BaD_VAriABLE_NAME = "Hello!"
@@ -13,8 +13,6 @@ def main():
 ##replace-span - BaD_VAriABLE_NAME greeting
 ##explain "Much better! Variable names should be readable by humans, not just compilers with low standards."
 ##hint "That variable name is begging for mercy. Click it before my eyes bleed!"
-##option bad - "Rename to 'bad_variable_name'"
-##option bad - "Rename to 'GrEeTiNG'"
 ##option good - "Rename to 'greeting'"
 """final
 Well done! Your journey to becoming slightly less junior has begun!

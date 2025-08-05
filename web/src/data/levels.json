@@ -85,16 +85,6 @@
               "hint": "That variable name is begging for mercy. Click it before my eyes bleed!",
               "options": [
                 {
-                  "id": "bad",
-                  "label": "Rename to 'bad_variable_name'",
-                  "correct": false
-                },
-                {
-                  "id": "bad-1",
-                  "label": "Rename to 'GrEeTiNG'",
-                  "correct": false
-                },
-                {
                   "id": "good",
                   "label": "Rename to 'greeting'",
                   "correct": true
@@ -103,7 +93,7 @@
             }
           ],
           "startMessage": "Welcome to the coding trenches, Junior!\nAccording to our team traditions (and manager's trust issues), you're not allowed to write code yet. Your sacred duty is to review your colleagues' masterpieces and fix \"small, insignificant issues\".\n\nLet's start with something even you can't mess up. See that variable name that looks like someone fell asleep on their keyboard? Click to fix it before my eyes start bleeding!",
-          "startReply": "I'll save your eyes!",
+          "startReply": "OK",
           "finalMessage": "Well done! Your journey to becoming slightly less junior has begun!",
           "endReply": "Bring on the next challenge!"
         },
@@ -351,7 +341,7 @@
               "type": "replace-on",
               "event": "MAGIC",
               "text": "",
-              "replacement": "    n = 24 * 60 * 60\n"
+              "replacement": "    ss = 24 * 60 * 60\n"
             },
             {
               "type": "text",
@@ -363,12 +353,12 @@
               "replacement": "(24*60*60)",
               "event": "86400",
               "hint": "What does this specific number represent? Think about time measurement.",
-              "explanation": "Magic numbers like 86400 are inside jokes - funny if you're in on it, confusing for everyone else."
+              "explanation": "Magic numbers 86400 became less magical now. But can you do even better?"
             },
             {
               "type": "replace-span",
               "clickable": "(24*60*60)",
-              "replacement": "n",
+              "replacement": "ss",
               "event": "MAGIC",
               "hint": "Does that calculation explain itself?",
               "explanation": "Good job! Naming that number makes the code much easier to understand. No more head-scratching!",
@@ -387,11 +377,11 @@
             },
             {
               "type": "replace-span",
-              "clickable": "n",
+              "clickable": "ss",
               "replacement": "seconds_in_24h",
-              "event": "n",
+              "event": "ss",
               "hint": "Can you tell what that number represents just by looking at its name?",
-              "explanation": "Good job! Now, instead of guessing what 'n' stands for, we know it's not a secret code for 'nothing useful'.",
+              "explanation": "Finally we are sure that 'ss' is not 'something secret'!",
               "options": [
                 {
                   "id": "bad-1",
