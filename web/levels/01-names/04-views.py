@@ -10,8 +10,8 @@ def get_views_per_second(views, date):
 ##add-on MAGIC
     ss = 24 * 60 * 60
 ##end
-    daily_views = sum(1 for v in views if v.date == date)
-    return daily_views / 86400
+    day_views = [v for v in views if v.date == date]
+    return len(day_views) / 86400
 
 ##replace-span - 86400 (24*60*60)
 ##hint "What does this specific number represent? Think about time measurement."

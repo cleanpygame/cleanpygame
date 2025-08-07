@@ -228,7 +228,7 @@
           "blocks": [
             {
               "type": "text",
-              "text": "def get(lst):\n    lst1 = []\n    for c in lst:\n        if c.is_empty: \n            lst1.Add(c.position)\n    return lst1\n\nlst = read_cells(\"cells.csv\")\nprint(get(lst))\n\n"
+              "text": "def get(lst):\n    lst1 = []\n    for c in lst:\n        if c.is_empty: \n            lst1.append(c.position)\n    return lst1\n\nlst = read_cells(\"cells.csv\")\nprint(get(lst))\n\n"
             },
             {
               "type": "replace-span",
@@ -345,7 +345,7 @@
             },
             {
               "type": "text",
-              "text": "    daily_views = sum(1 for v in views if v.date == date)\n    return daily_views / 86400\n\n"
+              "text": "    day_views = [v for v in views if v.date == date]\n    return len(day_views) / 86400\n\n"
             },
             {
               "type": "replace-span",
@@ -1110,7 +1110,6 @@
               "text": "    sum_all = 0\n    for i in values:\n        sum_all += i\n",
               "replacement": "    sum_all = sum(values)\n",
               "event": "sum",
-              "clickable": "for",
               "hint": "What for do we use 'for' here?",
               "explanation": "Python's sum() is faster and less error-prone.",
               "options": [
@@ -1136,7 +1135,6 @@
               "text": "    min_value = values[0]\n    for v in values[1:]:\n        if v < min_value:\n            min_value = v\n",
               "replacement": "    min_value = min(values)\n",
               "event": "min",
-              "clickable": "for",
               "hint": "Finding minimums manually? What is this, the stone age?",
               "explanation": "Python's min() is safer and cleaner.",
               "options": [
@@ -1360,8 +1358,8 @@
               "type": "replace",
               "text": "    for i in range(len(a)):\n        result += a[i] * b[i]\n    return result\n",
               "replacement": "    for x, y in zip(a, b):\n        result += x * y\n    return result\n",
-              "event": "iinrange",
-              "clickable": "i in range",
+              "event": "foriinrange",
+              "clickable": "for i in range",
               "hint": "Two lists walk into a bar… together.",
               "explanation": "Avoid indexes! Use zip for parallel iteration.",
               "options": [
@@ -1602,8 +1600,8 @@
               "type": "replace",
               "text": "    for i in range(len(words)):\n        word = words[i]\n",
               "replacement": "    for word in words:\n",
-              "event": "iinrange",
-              "clickable": "i in range",
+              "event": "foriinrange",
+              "clickable": "for i in range",
               "hint": "Drop the index juggling act.",
               "explanation": "range(len()) is a 1990s dance move. Loop directly and stay readable.",
               "options": [
@@ -1848,8 +1846,7 @@
               "type": "replace",
               "text": "    print(\"Top student is \" + top + \" with score \" + str(top_score))\n",
               "replacement": "    print(f\"Top student is {top} with score {top_score}\")\n",
-              "event": "Topstudentistopwiths",
-              "clickable": "Top student is \" + top + \" with score \" + str(top_score)",
+              "event": "id",
               "hint": "You’re better than chained string concatenation.",
               "explanation": "f-strings again — they handle variables and formatting gracefully."
             },
@@ -1930,6 +1927,65 @@
           "startMessage": "Maybe one more little fix",
           "finalMessage": "No more index wrangling, no more glue gun print statements,\nand no more DIY loops. You turned clunky code into a clean, declarative joyride.",
           "endReply": "I'm Pythonic guru!"
+        },
+        {
+          "filename": "bigrams.py",
+          "blocks": [
+            {
+              "type": "replace-on",
+              "event": "counter",
+              "text": "",
+              "replacement": "from collections import Counter\n\n"
+            },
+            {
+              "type": "text",
+              "text": "def get_bigrams_frequency(words):\n"
+            },
+            {
+              "type": "replace",
+              "text": "    counter = {}\n",
+              "replacement": "    counter = Counter()\n",
+              "event": "counter",
+              "clickable": "{}",
+              "hint": "Are you sure you need to manually count items like this?",
+              "explanation": "Great, you found `Counter`! I was worried you were about to reinvent the whole standard library.",
+              "options": [
+                {
+                  "id": "good",
+                  "label": "Use `Counter`",
+                  "correct": true
+                },
+                {
+                  "id": "bad-1",
+                  "label": "Use `Frequencies`",
+                  "correct": false
+                },
+                {
+                  "id": "bad-2",
+                  "label": "Initialize with `None`",
+                  "correct": false
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "text": "    for i in range(len(words) - 1):\n        bigram = f\"{words[i]} {words[i + 1]}\"\n"
+            },
+            {
+              "type": "replace-on",
+              "text": "        if bigram in bigrams_frequency:\n            counter[bigram] += 1\n        else:\n            counter[bigram] = 1\n",
+              "replacement": "        counter[bigram] += 1\n",
+              "event": "counter"
+            },
+            {
+              "type": "text",
+              "text": "    return counter\n"
+            }
+          ],
+          "startMessage": "Bigrams? Again?! Ok, is it even possible to improve this code any more?",
+          "startReply": "Hm... I'll try!",
+          "finalMessage": "Using `Counter` made the code shorter!",
+          "endReply": "COUNTED!"
         }
       ],
       "inDevelopment": false
@@ -2373,44 +2429,6 @@
               "event": "extract-merge",
               "text": "",
               "replacement": "\ndef _merge(target, left, right):\n    i = j = k = 0\n    while i < len(left) and j < len(right):\n        if left[i] < right[j]:\n            target[k] = left[i]\n            i += 1\n        else:\n            target[k] = right[j]\n            j += 1\n        k += 1\n\n    while i < len(left):\n        target[k] = left[i]\n        i += 1\n        k += 1\n\n    while j < len(right):\n        target[k] = right[j]\n        j += 1\n        k += 1\n"
-            }
-          ],
-          "startMessage": "This merge sort is allergic to functions. Let's break it down, one helper at a time!",
-          "startReply": "Breaking things!",
-          "finalMessage": "Now your merge sort reads like a story: split, sort, merge, done. Helpers make logic readable — and bugs easier to kill.",
-          "endReply": "Split. Sorted. Merged."
-        },
-        {
-          "filename": "mergesort_v2.py",
-          "blocks": [
-            {
-              "type": "text",
-              "text": "def merge_sort(arr):\n    if len(arr) <= 1:\n        return\n    left, right = _split(arr)\n    merge_sort(left)\n    merge_sort(right)\n    _merge(arr, left, right)\n\ndef _split(arr):\n    mid = len(arr) // 2\n    return arr[:mid], arr[mid:]\n\ndef _merge(target, left, right):\n    i = j = k = 0\n    while i < len(left) and j < len(right):\n        if left[i] < right[j]:\n            target[k] = left[i]\n            i += 1\n        else:\n            target[k] = right[j]\n            j += 1\n        k += 1\n\n"
-            },
-            {
-              "type": "replace",
-              "text": "    while i < len(left):\n        target[k] = left[i]\n        i += 1\n        k += 1\n",
-              "replacement": "    _copy_tail(target, k, left, i)\n",
-              "event": "extract-copy-left",
-              "explanation": "That loop looks familiar. Let’s abstract it.",
-              "hint": "One line instead of three. Worth it."
-            },
-            {
-              "type": "replace",
-              "text": "    while j < len(right):\n        target[k] = right[j]\n        j += 1\n        k += 1\n",
-              "replacement": "    _copy_tail(target, k, right, j)\n",
-              "event": "extract-copy-right",
-              "explanation": "Duplication is boring. Helpers are fun.",
-              "hint": "Looks just like the other one, doesn’t it?"
-            },
-            {
-              "type": "replace-on",
-              "event": [
-                "extract-copy-right",
-                "extract-copy-left"
-              ],
-              "text": "",
-              "replacement": "\ndef _copy_tail(dst, dst_index, src, src_index):\n    for value in src[src_index:]:\n        dst[dst_index] = value\n        dst_index += 1\n"
             }
           ],
           "startMessage": "This merge sort is allergic to functions. Let's break it down, one helper at a time!",

@@ -7,7 +7,7 @@ They probably also churn their own butter and forge their own paperclips. Let's 
 ##start-reply "Let's modernize!"
 
 def print_sum_and_min(values):
-##replace sum "for"
+##replace sum
     sum_all = 0
     for i in values:
         sum_all += i
@@ -19,7 +19,7 @@ def print_sum_and_min(values):
 ##option bad bad-0 "Use while loop"
 ##option good good "Use built-in function"
 ##option bad bad-2 "Rename 'i'"
-##replace min "for"
+##replace min
     min_value = values[0]
     for v in values[1:]:
         if v < min_value:

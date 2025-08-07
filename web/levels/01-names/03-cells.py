@@ -8,7 +8,7 @@ def get(lst):
     lst1 = []
     for c in lst:
         if c.is_empty: 
-            lst1.Add(c.position)
+            lst1.append(c.position)
     return lst1
 
 lst = read_cells("cells.csv")

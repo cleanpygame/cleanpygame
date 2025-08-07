@@ -12,7 +12,7 @@ def bag_of_words(text, stop_words=[]):
 ##end
     words = text.lower().split()
     dict = {}
-##replace - "i in range"
+##replace - "for i in range"
     for i in range(len(words)):
         word = words[i]
 ##with

@@ -6,7 +6,7 @@ Rumour has it this function was ported from punch-card code in Fortran.
 
 def dot_product(a, b):
     result = 0
-##replace - "i in range"
+##replace - "for i in range"
     for i in range(len(a)):
         result += a[i] * b[i]
     return result

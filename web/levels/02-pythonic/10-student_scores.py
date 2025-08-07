@@ -75,7 +75,7 @@ def analyze_scores(data):
 ##option bad bad-2 "Inverse comparison"
 ##option bad bad-3 "Extract function"
 
-##replace - "Top student is \" + top + \" with score \" + str(top_score)"
+##replace
     print("Top student is " + top + " with score " + str(top_score))
 ##with
     print(f"Top student is {top} with score {top_score}")
