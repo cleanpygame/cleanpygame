@@ -102,7 +102,7 @@ PlayerLevelStats
 
 **Local Updates**:
 
-1. Update `GameState.solvedLevels`
+1. Update `GameState.playerStats` (per-level stats and summary)
 2. Update local player per-level stats (time, hints, misclicks) and summary stats
 3. Trigger UI animations and feedback
 

@@ -35,9 +35,10 @@ interface GameState {
     topics: Topic[]                   // List of topics with levels
     currentLevelId: string            // ID of the current level
     currentLevel: LevelState          // State for the open level
-    solvedLevels: string[]            // IDs of completed levels
     chatMessages: ChatMessage[]       // Chat history from the Buddy mentor
+    isTypingAnimationComplete: boolean
     auth: AuthState                   // Authentication state
+    playerStats: PlayerStatsState     // Player statistics (summary + per-level)
     // Additional state for groups, user levels, etc.
 }
 ```
