@@ -13,10 +13,12 @@ export function IdeLayout(): React.ReactElement {
     
     return (
         <div className="flex flex-col h-screen bg-[#2d2d2d] text-[#d4d4d4]">
-            <TopBar/>
-            <div className="flex flex-1 overflow-hidden">
-                <SidebarNavigationContainer/>
-                <LevelViewportContainer/>
+            <div className="mx-auto w-full max-w-[1500px] flex flex-col h-full">
+                <TopBar/>
+                <div className="flex flex-1 overflow-hidden">
+                    <SidebarNavigationContainer/>
+                    <LevelViewportContainer/>
+                </div>
             </div>
         </div>
     );
