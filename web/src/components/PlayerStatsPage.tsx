@@ -113,7 +113,7 @@ export function PlayerStatsPage(): React.ReactElement {
     };
 
     // Prepare topic data including all levels
-    const topicData = topics
+    const baseTopicData = topics
         .filter(topic => topic.name !== 'Testing')
         .map(topic => {
             const levelData = topic.levels.map(level => {
@@ -134,6 +134,13 @@ export function PlayerStatsPage(): React.ReactElement {
         return {levelName, stats};
     });
     const collaborativeAggregates = aggregateStats(collaborativeLevels.map(l => l.stats));
+
+    const topicData = [
+        ...baseTopicData,
+        ...(collaborativeLevels.length > 0
+            ? [{topicName: 'My Levels', levelData: collaborativeLevels, aggregates: collaborativeAggregates}]
+            : [])
+    ];
 
     // State for expanded topics
     const [expandedTopics, setExpandedTopics] = useState<Record<string, boolean>>({});
@@ -205,165 +212,72 @@ export function PlayerStatsPage(): React.ReactElement {
                 {topicData.length === 0 ? (
                     <div className="text-gray-400">No levels available.</div>
                 ) : (
-                    <>
-                        <div className="grid grid-cols-8 text-sm text-gray-400 mb-2">
-                            <div>Topic</div>
-                            <div className="text-right">Completions</div>
-                            <div className="text-right">Total Time</div>
-                            <div className="text-right">Best Time</div>
-                            <div className="text-right">Total Hints</div>
-                            <div className="text-right">Min Hints</div>
-                            <div className="text-right">Total Mistakes</div>
-                            <div className="text-right">Min Mistakes</div>
-                        </div>
-                        {topicData.map(topic => (
-                            <div key={topic.topicName} className="mb-4">
-                                <div
-                                    className="grid grid-cols-8 items-center bg-[#2d2d2d] p-2 rounded cursor-pointer"
-                                    onClick={() => toggleTopic(topic.topicName)}
-                                >
-                                    <div className="flex items-center">
-                                        <span className="mr-2">{expandedTopics[topic.topicName] ? '▼' : '▶'}</span>
-                                        <span>{topic.topicName}</span>
-                                    </div>
-                                    <div className="text-right">{topic.aggregates.timesCompleted}</div>
-                                    <div className="text-right">{formatTime(topic.aggregates.totalTimeSpent)}</div>
-                                    <div className="text-right">{formatTime(topic.aggregates.minTimeSpent)}</div>
-                                    <div className="text-right">{topic.aggregates.totalHintsUsed}</div>
-                                    <div className="text-right">{formatMinStat(topic.aggregates.minHintsUsed)}</div>
-                                    <div className="text-right">{topic.aggregates.totalMistakesMade}</div>
-                                    <div className="text-right">{formatMinStat(topic.aggregates.minMistakesMade)}</div>
-                                </div>
-                                {expandedTopics[topic.topicName] && (
-                                    <div className="overflow-x-auto mt-2">
-                                        <table className="w-full text-sm">
-                                            <thead>
-                                            <tr className="bg-[#2d2d2d]">
-                                                <th className="p-2 text-left">Level</th>
-                                                <th className="p-2 text-right">Completions</th>
-                                                <th className="p-2 text-right">Total Time</th>
-                                                <th className="p-2 text-right">Best Time</th>
-                                                <th className="p-2 text-right">Total Hints</th>
-                                                <th className="p-2 text-right">Min Hints</th>
-                                                <th className="p-2 text-right">Total Mistakes</th>
-                                                <th className="p-2 text-right">Min Mistakes</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            {topic.levelData.map(({levelName, stats}) => (
-                                                <tr key={levelName} className="border-b border-[#3c3c3c]">
-                                                    <td className="p-2">{levelName}</td>
-                                                    {stats ? (
-                                                        <>
-                                                            <td className="p-2 text-right">{stats.timesCompleted}</td>
-                                                            <td className="p-2 text-right">{formatTime(stats.totalTimeSpent)}</td>
-                                                            <td className="p-2 text-right">{formatTime(stats.minTimeSpent)}</td>
-                                                            <td className="p-2 text-right">{stats.totalHintsUsed}</td>
-                                                            <td className="p-2 text-right">{formatMinStat(stats.minHintsUsed)}</td>
-                                                            <td className="p-2 text-right">{stats.totalMistakesMade}</td>
-                                                            <td className="p-2 text-right">{formatMinStat(stats.minMistakesMade)}</td>
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <td className="p-2 text-right">-</td>
-                                                            <td className="p-2 text-right">-</td>
-                                                            <td className="p-2 text-right">-</td>
-                                                            <td className="p-2 text-right">-</td>
-                                                            <td className="p-2 text-right">-</td>
-                                                            <td className="p-2 text-right">-</td>
-                                                            <td className="p-2 text-right">-</td>
-                                                        </>
-                                                    )}
-                                                </tr>
-                                            ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                            <thead>
+                            <tr className="text-gray-400">
+                                <th className="p-2 text-left">Topic / Level</th>
+                                <th className="p-2 text-right">Completions</th>
+                                <th className="p-2 text-right">Total Time</th>
+                                <th className="p-2 text-right">Best Time</th>
+                                <th className="p-2 text-right">Total Hints</th>
+                                <th className="p-2 text-right">Min Hints</th>
+                                <th className="p-2 text-right">Total Mistakes</th>
+                                <th className="p-2 text-right">Min Mistakes</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {topicData.map(topic => (
+                                <React.Fragment key={topic.topicName}>
+                                    <tr
+                                        className="bg-[#2d2d2d] cursor-pointer"
+                                        onClick={() => toggleTopic(topic.topicName)}
+                                    >
+                                        <td className="p-2">
+                                            <span className="mr-2">{expandedTopics[topic.topicName] ? '▼' : '▶'}</span>
+                                            {topic.topicName}
+                                        </td>
+                                        <td className="p-2 text-right">{topic.aggregates.timesCompleted}</td>
+                                        <td className="p-2 text-right">{formatTime(topic.aggregates.totalTimeSpent)}</td>
+                                        <td className="p-2 text-right">{formatTime(topic.aggregates.minTimeSpent)}</td>
+                                        <td className="p-2 text-right">{topic.aggregates.totalHintsUsed}</td>
+                                        <td className="p-2 text-right">{formatMinStat(topic.aggregates.minHintsUsed)}</td>
+                                        <td className="p-2 text-right">{topic.aggregates.totalMistakesMade}</td>
+                                        <td className="p-2 text-right">{formatMinStat(topic.aggregates.minMistakesMade)}</td>
+                                    </tr>
+                                    {expandedTopics[topic.topicName] && topic.levelData.map(({levelName, stats}) => (
+                                        <tr key={levelName} className="border-t border-[#3c3c3c]">
+                                            <td className="p-2 pl-8">{levelName}</td>
+                                            {stats ? (
+                                                <>
+                                                    <td className="p-2 text-right">{stats.timesCompleted}</td>
+                                                    <td className="p-2 text-right">{formatTime(stats.totalTimeSpent)}</td>
+                                                    <td className="p-2 text-right">{formatTime(stats.minTimeSpent)}</td>
+                                                    <td className="p-2 text-right">{stats.totalHintsUsed}</td>
+                                                    <td className="p-2 text-right">{formatMinStat(stats.minHintsUsed)}</td>
+                                                    <td className="p-2 text-right">{stats.totalMistakesMade}</td>
+                                                    <td className="p-2 text-right">{formatMinStat(stats.minMistakesMade)}</td>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <td className="p-2 text-right">-</td>
+                                                    <td className="p-2 text-right">-</td>
+                                                    <td className="p-2 text-right">-</td>
+                                                    <td className="p-2 text-right">-</td>
+                                                    <td className="p-2 text-right">-</td>
+                                                    <td className="p-2 text-right">-</td>
+                                                    <td className="p-2 text-right">-</td>
+                                                </>
+                                            )}
+                                        </tr>
+                                    ))}
+                                </React.Fragment>
+                            ))}
+                            </tbody>
+                        </table>
+                    </div>
                 )}
             </div>
-
-            {/* Collaborative Section */}
-            {collaborativeLevels.length > 0 && (
-                <div className="bg-[#252526] p-4 rounded mt-6">
-                    <h2 className="text-xl font-semibold mb-4">Collaborative Levels</h2>
-                    <div className="grid grid-cols-8 text-sm text-gray-400 mb-2">
-                        <div>Topic</div>
-                        <div className="text-right">Completions</div>
-                        <div className="text-right">Total Time</div>
-                        <div className="text-right">Best Time</div>
-                        <div className="text-right">Total Hints</div>
-                        <div className="text-right">Min Hints</div>
-                        <div className="text-right">Total Mistakes</div>
-                        <div className="text-right">Min Mistakes</div>
-                    </div>
-                    <div
-                        className="grid grid-cols-8 items-center bg-[#2d2d2d] p-2 rounded cursor-pointer"
-                        onClick={() => toggleTopic('Collaborative')}
-                    >
-                        <div className="flex items-center">
-                            <span className="mr-2">{expandedTopics['Collaborative'] ? '▼' : '▶'}</span>
-                            <span>My Levels</span>
-                        </div>
-                        <div className="text-right">{collaborativeAggregates.timesCompleted}</div>
-                        <div className="text-right">{formatTime(collaborativeAggregates.totalTimeSpent)}</div>
-                        <div className="text-right">{formatTime(collaborativeAggregates.minTimeSpent)}</div>
-                        <div className="text-right">{collaborativeAggregates.totalHintsUsed}</div>
-                        <div className="text-right">{formatMinStat(collaborativeAggregates.minHintsUsed)}</div>
-                        <div className="text-right">{collaborativeAggregates.totalMistakesMade}</div>
-                        <div className="text-right">{formatMinStat(collaborativeAggregates.minMistakesMade)}</div>
-                    </div>
-                    {expandedTopics['Collaborative'] && (
-                        <div className="overflow-x-auto mt-2">
-                            <table className="w-full text-sm">
-                                <thead>
-                                <tr className="bg-[#2d2d2d]">
-                                    <th className="p-2 text-left">Level</th>
-                                    <th className="p-2 text-right">Completions</th>
-                                    <th className="p-2 text-right">Total Time</th>
-                                    <th className="p-2 text-right">Best Time</th>
-                                    <th className="p-2 text-right">Total Hints</th>
-                                    <th className="p-2 text-right">Min Hints</th>
-                                    <th className="p-2 text-right">Total Mistakes</th>
-                                    <th className="p-2 text-right">Min Mistakes</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {collaborativeLevels.map(({levelName, stats}) => (
-                                    <tr key={levelName} className="border-b border-[#3c3c3c]">
-                                        <td className="p-2">{levelName}</td>
-                                        {stats ? (
-                                            <>
-                                                <td className="p-2 text-right">{stats.timesCompleted}</td>
-                                                <td className="p-2 text-right">{formatTime(stats.totalTimeSpent)}</td>
-                                                <td className="p-2 text-right">{formatTime(stats.minTimeSpent)}</td>
-                                                <td className="p-2 text-right">{stats.totalHintsUsed}</td>
-                                                <td className="p-2 text-right">{formatMinStat(stats.minHintsUsed)}</td>
-                                                <td className="p-2 text-right">{stats.totalMistakesMade}</td>
-                                                <td className="p-2 text-right">{formatMinStat(stats.minMistakesMade)}</td>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <td className="p-2 text-right">-</td>
-                                                <td className="p-2 text-right">-</td>
-                                                <td className="p-2 text-right">-</td>
-                                                <td className="p-2 text-right">-</td>
-                                                <td className="p-2 text-right">-</td>
-                                                <td className="p-2 text-right">-</td>
-                                                <td className="p-2 text-right">-</td>
-                                            </>
-                                        )}
-                                    </tr>
-                                ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-                </div>
-            )}
         </div>
     );
 }
