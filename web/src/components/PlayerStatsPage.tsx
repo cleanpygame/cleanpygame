@@ -23,7 +23,7 @@ export function PlayerStatsPage(): React.ReactElement {
     }
 
     const {state} = context;
-    const {playerStats, topics} = state;
+    const {playerStats, topics, userLevels, customLevels} = state;
 
     // State to store the user's display name
     const [userName, setUserName] = useState<string | null>(null);
@@ -89,33 +89,57 @@ export function PlayerStatsPage(): React.ReactElement {
         return value === Number.MAX_SAFE_INTEGER ? '-' : value.toString();
     };
 
-    // Get level name from key
-    const getLevelName = (levelKey: string): { topicName: string, levelName: string } => {
-        const [topicName, levelId] = levelKey.split('__');
-        return {
-            topicName,
-            levelName: `${levelId}.py`
-        };
+    // Aggregate stats helper
+    const aggregateStats = (statsList: (PlayerLevelStats | undefined)[]) => {
+        return statsList.reduce((acc: PlayerLevelStats, stat) => {
+            if (!stat) return acc;
+            acc.timesCompleted += stat.timesCompleted;
+            acc.totalTimeSpent += stat.totalTimeSpent;
+            acc.minTimeSpent += stat.minTimeSpent;
+            acc.totalHintsUsed += stat.totalHintsUsed;
+            acc.minHintsUsed += stat.minHintsUsed;
+            acc.totalMistakesMade += stat.totalMistakesMade;
+            acc.minMistakesMade += stat.minMistakesMade;
+            return acc;
+        }, {
+            timesCompleted: 0,
+            totalTimeSpent: 0,
+            minTimeSpent: 0,
+            totalHintsUsed: 0,
+            minHintsUsed: 0,
+            totalMistakesMade: 0,
+            minMistakesMade: 0
+        });
     };
 
-    // Group levels by topic
-    const levelsByTopic: Record<string, { levelName: string, stats: PlayerLevelStats }[]> = {};
+    // Prepare topic data including all levels
+    const topicData = topics
+        .filter(topic => topic.name !== 'Testing')
+        .map(topic => {
+            const levelData = topic.levels.map(level => {
+                const levelKey = getLevelKey(topic.name, level.filename);
+                const stats = levels[levelKey];
+                return {levelName: level.filename, stats};
+            });
+            const aggregates = aggregateStats(levelData.map(l => l.stats));
+            return {topicName: topic.name, levelData, aggregates};
+        });
 
-    Object.entries(levels).forEach(([levelKey, stats]) => {
-        const {topicName, levelName} = getLevelName(levelKey);
-
-        if (!levelsByTopic[topicName]) {
-            levelsByTopic[topicName] = [];
-        }
-
-        levelsByTopic[topicName].push({levelName, stats});
+    // Prepare collaborative levels data
+    const collaborativeLevels = userLevels.map(level => {
+        const customLevel = customLevels[level.level_id];
+        const levelName = customLevel?.filename || level.level_id;
+        const levelKey = getLevelKey('community', level.level_id);
+        const stats = levels[levelKey];
+        return {levelName, stats};
     });
+    const collaborativeAggregates = aggregateStats(collaborativeLevels.map(l => l.stats));
 
-    // Sort topics by their order in the game
-    const sortedTopics = topics
-        .filter(topic => topic.name !== "Testing")
-        .map(topic => topic.name)
-        .filter(topicName => levelsByTopic[topicName]);
+    // State for expanded topics
+    const [expandedTopics, setExpandedTopics] = useState<Record<string, boolean>>({});
+    const toggleTopic = (name: string) => {
+        setExpandedTopics(prev => ({...prev, [name]: !prev[name]}));
+    };
 
     return (
         <div className="h-full overflow-y-auto p-6 bg-[#1e1e1e] text-white">
@@ -178,32 +202,141 @@ export function PlayerStatsPage(): React.ReactElement {
             <div className="bg-[#252526] p-4 rounded">
                 <h2 className="text-xl font-semibold mb-4">Level Progress</h2>
 
-                {sortedTopics.length === 0 ? (
-                    <div className="text-gray-400">No levels completed yet.</div>
+                {topicData.length === 0 ? (
+                    <div className="text-gray-400">No levels available.</div>
                 ) : (
-                    sortedTopics.map(topicName => (
-                        <div key={topicName} className="mb-6">
-                            <h3 className="text-lg font-medium mb-2">{topicName}</h3>
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-sm">
-                                    <thead>
-                                    <tr className="bg-[#2d2d2d]">
-                                        <th className="p-2 text-left">Level</th>
-                                        <th className="p-2 text-right">Completions</th>
-                                        <th className="p-2 text-right">Total Time</th>
-                                        <th className="p-2 text-right">Best Time</th>
-                                        <th className="p-2 text-right">Total Hints</th>
-                                        <th className="p-2 text-right">Min Hints</th>
-                                        <th className="p-2 text-right">Total Mistakes</th>
-                                        <th className="p-2 text-right">Min Mistakes</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {levelsByTopic[topicName]
-                                        .sort((a, b) => a.levelName.localeCompare(b.levelName))
-                                        .map(({levelName, stats}) => (
-                                            <tr key={levelName} className="border-b border-[#3c3c3c]">
-                                                <td className="p-2">{levelName}</td>
+                    <>
+                        <div className="grid grid-cols-8 text-sm text-gray-400 mb-2">
+                            <div>Topic</div>
+                            <div className="text-right">Completions</div>
+                            <div className="text-right">Total Time</div>
+                            <div className="text-right">Best Time</div>
+                            <div className="text-right">Total Hints</div>
+                            <div className="text-right">Min Hints</div>
+                            <div className="text-right">Total Mistakes</div>
+                            <div className="text-right">Min Mistakes</div>
+                        </div>
+                        {topicData.map(topic => (
+                            <div key={topic.topicName} className="mb-4">
+                                <div
+                                    className="grid grid-cols-8 items-center bg-[#2d2d2d] p-2 rounded cursor-pointer"
+                                    onClick={() => toggleTopic(topic.topicName)}
+                                >
+                                    <div className="flex items-center">
+                                        <span className="mr-2">{expandedTopics[topic.topicName] ? '▼' : '▶'}</span>
+                                        <span>{topic.topicName}</span>
+                                    </div>
+                                    <div className="text-right">{topic.aggregates.timesCompleted}</div>
+                                    <div className="text-right">{formatTime(topic.aggregates.totalTimeSpent)}</div>
+                                    <div className="text-right">{formatTime(topic.aggregates.minTimeSpent)}</div>
+                                    <div className="text-right">{topic.aggregates.totalHintsUsed}</div>
+                                    <div className="text-right">{formatMinStat(topic.aggregates.minHintsUsed)}</div>
+                                    <div className="text-right">{topic.aggregates.totalMistakesMade}</div>
+                                    <div className="text-right">{formatMinStat(topic.aggregates.minMistakesMade)}</div>
+                                </div>
+                                {expandedTopics[topic.topicName] && (
+                                    <div className="overflow-x-auto mt-2">
+                                        <table className="w-full text-sm">
+                                            <thead>
+                                            <tr className="bg-[#2d2d2d]">
+                                                <th className="p-2 text-left">Level</th>
+                                                <th className="p-2 text-right">Completions</th>
+                                                <th className="p-2 text-right">Total Time</th>
+                                                <th className="p-2 text-right">Best Time</th>
+                                                <th className="p-2 text-right">Total Hints</th>
+                                                <th className="p-2 text-right">Min Hints</th>
+                                                <th className="p-2 text-right">Total Mistakes</th>
+                                                <th className="p-2 text-right">Min Mistakes</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {topic.levelData.map(({levelName, stats}) => (
+                                                <tr key={levelName} className="border-b border-[#3c3c3c]">
+                                                    <td className="p-2">{levelName}</td>
+                                                    {stats ? (
+                                                        <>
+                                                            <td className="p-2 text-right">{stats.timesCompleted}</td>
+                                                            <td className="p-2 text-right">{formatTime(stats.totalTimeSpent)}</td>
+                                                            <td className="p-2 text-right">{formatTime(stats.minTimeSpent)}</td>
+                                                            <td className="p-2 text-right">{stats.totalHintsUsed}</td>
+                                                            <td className="p-2 text-right">{formatMinStat(stats.minHintsUsed)}</td>
+                                                            <td className="p-2 text-right">{stats.totalMistakesMade}</td>
+                                                            <td className="p-2 text-right">{formatMinStat(stats.minMistakesMade)}</td>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <td className="p-2 text-right">-</td>
+                                                            <td className="p-2 text-right">-</td>
+                                                            <td className="p-2 text-right">-</td>
+                                                            <td className="p-2 text-right">-</td>
+                                                            <td className="p-2 text-right">-</td>
+                                                            <td className="p-2 text-right">-</td>
+                                                            <td className="p-2 text-right">-</td>
+                                                        </>
+                                                    )}
+                                                </tr>
+                                            ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </>
+                )}
+            </div>
+
+            {/* Collaborative Section */}
+            {collaborativeLevels.length > 0 && (
+                <div className="bg-[#252526] p-4 rounded mt-6">
+                    <h2 className="text-xl font-semibold mb-4">Collaborative Levels</h2>
+                    <div className="grid grid-cols-8 text-sm text-gray-400 mb-2">
+                        <div>Topic</div>
+                        <div className="text-right">Completions</div>
+                        <div className="text-right">Total Time</div>
+                        <div className="text-right">Best Time</div>
+                        <div className="text-right">Total Hints</div>
+                        <div className="text-right">Min Hints</div>
+                        <div className="text-right">Total Mistakes</div>
+                        <div className="text-right">Min Mistakes</div>
+                    </div>
+                    <div
+                        className="grid grid-cols-8 items-center bg-[#2d2d2d] p-2 rounded cursor-pointer"
+                        onClick={() => toggleTopic('Collaborative')}
+                    >
+                        <div className="flex items-center">
+                            <span className="mr-2">{expandedTopics['Collaborative'] ? '▼' : '▶'}</span>
+                            <span>My Levels</span>
+                        </div>
+                        <div className="text-right">{collaborativeAggregates.timesCompleted}</div>
+                        <div className="text-right">{formatTime(collaborativeAggregates.totalTimeSpent)}</div>
+                        <div className="text-right">{formatTime(collaborativeAggregates.minTimeSpent)}</div>
+                        <div className="text-right">{collaborativeAggregates.totalHintsUsed}</div>
+                        <div className="text-right">{formatMinStat(collaborativeAggregates.minHintsUsed)}</div>
+                        <div className="text-right">{collaborativeAggregates.totalMistakesMade}</div>
+                        <div className="text-right">{formatMinStat(collaborativeAggregates.minMistakesMade)}</div>
+                    </div>
+                    {expandedTopics['Collaborative'] && (
+                        <div className="overflow-x-auto mt-2">
+                            <table className="w-full text-sm">
+                                <thead>
+                                <tr className="bg-[#2d2d2d]">
+                                    <th className="p-2 text-left">Level</th>
+                                    <th className="p-2 text-right">Completions</th>
+                                    <th className="p-2 text-right">Total Time</th>
+                                    <th className="p-2 text-right">Best Time</th>
+                                    <th className="p-2 text-right">Total Hints</th>
+                                    <th className="p-2 text-right">Min Hints</th>
+                                    <th className="p-2 text-right">Total Mistakes</th>
+                                    <th className="p-2 text-right">Min Mistakes</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {collaborativeLevels.map(({levelName, stats}) => (
+                                    <tr key={levelName} className="border-b border-[#3c3c3c]">
+                                        <td className="p-2">{levelName}</td>
+                                        {stats ? (
+                                            <>
                                                 <td className="p-2 text-right">{stats.timesCompleted}</td>
                                                 <td className="p-2 text-right">{formatTime(stats.totalTimeSpent)}</td>
                                                 <td className="p-2 text-right">{formatTime(stats.minTimeSpent)}</td>
@@ -211,51 +344,26 @@ export function PlayerStatsPage(): React.ReactElement {
                                                 <td className="p-2 text-right">{formatMinStat(stats.minHintsUsed)}</td>
                                                 <td className="p-2 text-right">{stats.totalMistakesMade}</td>
                                                 <td className="p-2 text-right">{formatMinStat(stats.minMistakesMade)}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <td className="p-2 text-right">-</td>
+                                                <td className="p-2 text-right">-</td>
+                                                <td className="p-2 text-right">-</td>
+                                                <td className="p-2 text-right">-</td>
+                                                <td className="p-2 text-right">-</td>
+                                                <td className="p-2 text-right">-</td>
+                                                <td className="p-2 text-right">-</td>
+                                            </>
+                                        )}
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
                         </div>
-                    ))
-                )}
-
-                {/* Add a section for levels that haven't been attempted yet */}
-                <div className="mt-6">
-                    <h3 className="text-lg font-medium mb-2">Unplayed Levels</h3>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                            <thead>
-                            <tr className="bg-[#2d2d2d]">
-                                <th className="p-2 text-left">Topic</th>
-                                <th className="p-2 text-left">Level</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {topics
-                                .filter(topic => topic.name !== "Testing")
-                                .map(topic =>
-                                    topic.levels.map(level => {
-                                        const levelKey = getLevelKey(topic.name, level.filename);
-                                        if (!levels[levelKey]) {
-                                            return (
-                                                <tr key={`${topic.name}-${level.filename}`}
-                                                    className="border-b border-[#3c3c3c]">
-                                                    <td className="p-2">{topic.name}</td>
-                                                    <td className="p-2">{level.filename}</td>
-                                                </tr>
-                                            );
-                                        }
-                                        return null;
-                                    })
-                                )
-                                .flat()
-                                .filter(Boolean)}
-                            </tbody>
-                        </table>
-                    </div>
+                    )}
                 </div>
-            </div>
+            )}
         </div>
     );
 }

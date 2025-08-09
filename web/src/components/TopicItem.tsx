@@ -20,8 +20,8 @@ export function TopicItem({state, topic, isExpanded, onToggle, onLevelSelect}: T
                 className="flex items-center p-1 cursor-pointer"
                 onClick={() => onToggle(topic.name)}
             >
-        <span className="mr-1 font-mono">
-          {isExpanded ? '-' : '+'}
+        <span className="mr-2 ml-2">
+          {isExpanded ? '▼' : '▶'}
         </span>
                 <span>{topic.name}</span>
             </div>

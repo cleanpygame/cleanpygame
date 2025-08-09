@@ -129,9 +129,7 @@ export function SidebarNavigationContainer(): React.ReactElement {
                             className="flex items-center p-1 cursor-pointer"
                             onClick={() => toggleTopic('My Levels')}
                         >
-                            <span className="mr-1 font-mono">
-                              {expandedTopics['My Levels'] ? '-' : '+'}
-                            </span>
+                            <span className="mr-2 ml-2">{expandedTopics['My Levels'] ? '▼' : '▶'}</span>
                             <span>My Levels</span>
                         </div>
 
