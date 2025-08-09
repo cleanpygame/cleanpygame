@@ -5,33 +5,38 @@ import {
     codeClick,
     getHint,
     loadLevel,
-    nextLevel,
     postChatMessage,
     resetProgress,
     selectContextMenuItem,
     wrongClick
 } from '../reducers/actionCreators';
 import {GameState, LevelId} from '../types';
-import {getCurrentLevelKey} from '../utils/levelUtils';
+import {getCurrentLevelKey, getLevelKey} from '../utils/levelUtils';
 
 describe('Game Reducer', () => {
     test('all levels can be solved one by one', () => {
         let state: GameState = initialState;
         const solvedLevels: string[] = [];
-        const maxIterations = 10; // Safety limit to prevent infinite loops
-        let iterations = 0;
+        // Compute the total number of levels from the initial state topics
+        const allLevelKeys = initialState.topics.flatMap(t => t.levels.map(l => getLevelKey(t.name, l.filename)));
+        const totalLevels = allLevelKeys.length;
+        // Prepare a deterministic list of all levels to solve one by one
+        const allLevelsToSolve = initialState.topics.flatMap(t => t.levels.map(l => ({
+            topic: t.name,
+            levelId: l.filename
+        })));
 
-        while (iterations < maxIterations && state.currentLevel) {
-            iterations++;
-            const currentLevelId = `${state.currentLevelId.topic}/${state.currentLevelId.levelId}`;
-            if (solvedLevels.includes(currentLevelId)) break;
+        for (const levelId of allLevelsToSolve) {
+            // Load the specific level
+            state = gameReducer(state, loadLevel(levelId));
+
+            const currentLevelKey = getCurrentLevelKey(state);
 
             const eventsToTrigger = state.currentLevel.level.blocks
                 .filter(block => block.event && block.type !== 'neutral')
-                .map(block => block.event as string);
+                .flatMap(block => Array.isArray(block.event) ? block.event : [block.event]) as string[];
 
             for (const eventId of eventsToTrigger) {
-                expect(state.currentLevel.isFinished).toBe(false);
                 const region = state.currentLevel.regions?.find(r => r.eventId === eventId);
 
                 if (region) {
@@ -53,19 +58,18 @@ describe('Game Reducer', () => {
                 }
             }
 
-            // Get level key for the current level
-            const levelKey = getCurrentLevelKey(state);
-
             // Check if the level exists in playerStats.levels and has been completed at least once
-            expect(state.playerStats.levels[levelKey]?.timesCompleted).toBeGreaterThan(0);
+            expect(state.playerStats.levels[currentLevelKey]?.timesCompleted).toBeGreaterThan(0);
 
-            solvedLevels.push(currentLevelId);
-
-            state = gameReducer(state, nextLevel());
+            solvedLevels.push(`${levelId.topic}/${levelId.levelId}`);
         }
 
-        expect(solvedLevels.length).toBeGreaterThan(0);
         console.log('Solved levels:', solvedLevels);
+        expect(solvedLevels.length).toBe(totalLevels);
+        // Verify every level has been completed at least once
+        for (const key of allLevelKeys) {
+            expect(state.playerStats.levels[key]?.timesCompleted).toBeGreaterThan(0);
+        }
     });
 
     test('LOAD_LEVEL transition loads the specified level', () => {
